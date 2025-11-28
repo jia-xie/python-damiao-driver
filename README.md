@@ -7,6 +7,8 @@
 
 Python driver for DaMiao motors over CAN, with support for multiple motors on a single bus.
 
+**Documentation:** [Full documentation available on GitHub Pages](https://jia-xie.github.io/python-damiao-driver/)
+
 **Related Links:**
 - [Motor Firmware Repository](https://gitee.com/kit-miao/motor-firmware) - Official DaMiao motor firmware
 
