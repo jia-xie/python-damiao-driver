@@ -81,6 +81,16 @@ REGISTER_TABLE: Dict[int, RegisterInfo] = {
     54: RegisterInfo(54, "m_off", "Angle offset", "RO", "", "float"),
     55: RegisterInfo(55, "dir", "Direction", "RO", "", "float"),
     
+    # Motor and driver board parameters (56, 59-65) - Read Only
+    56: RegisterInfo(56, "m_off", "Motor side angle offset", "RO", "", "float"),
+    59: RegisterInfo(59, "Imax", "Driver board maximum current", "RO", "", "float"),
+    60: RegisterInfo(60, "VBus", "Power supply voltage", "RO", "", "float"),
+    61: RegisterInfo(61, "Tpcb", "Driver board temperature", "RO", "", "float"),
+    62: RegisterInfo(62, "Tmtr", "Motor temperature", "RO", "", "float"),
+    63: RegisterInfo(63, "Iu_off", "U-phase current offset", "RO", "", "float"),
+    64: RegisterInfo(64, "Iv_off", "V-phase current offset", "RO", "", "float"),
+    65: RegisterInfo(65, "Iw_off", "W-phase current offset", "RO", "", "float"),
+    
     # Position feedback (80-81) - Read Only
     80: RegisterInfo(80, "p_m", "Motor position", "RO", "", "float"),
     81: RegisterInfo(81, "xout", "Output shaft position", "RO", "", "float"),
