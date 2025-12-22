@@ -454,7 +454,7 @@
                 
                 const isReadOnly = regInfo.access === 'RO';
                 
-                // Special handling for hex registers (7, 8) and dropdown (35)
+                // Special handling for hex registers (7, 8) and dropdowns (10, 35)
                 let valueStr, inputHtml;
                 
                 if (rid === 35) {
@@ -472,6 +472,24 @@
                     if (!isReadOnly) {
                         inputHtml = `<select id="input-${rid}">`;
                         baudRateOptions.forEach(opt => {
+                            inputHtml += `<option value="${opt.code}" ${opt.code === currentValue ? 'selected' : ''}>${opt.label}</option>`;
+                        });
+                        inputHtml += `</select>`;
+                    }
+                } else if (rid === 10) {
+                    // Control mode dropdown
+                    const controlModeOptions = [
+                        {code: 1, label: 'MIT (1)'},
+                        {code: 2, label: 'POS_VEL (2)'},
+                        {code: 3, label: 'VEL (3)'},
+                        {code: 4, label: 'POS_VEL_CLIP_TORQUE (4)'}
+                    ];
+                    const currentValue = typeof value === 'string' ? 1 : parseInt(value);
+                    valueStr = controlModeOptions.find(opt => opt.code === currentValue)?.label || `Unknown (${currentValue})`;
+                    
+                    if (!isReadOnly) {
+                        inputHtml = `<select id="input-${rid}">`;
+                        controlModeOptions.forEach(opt => {
                             inputHtml += `<option value="${opt.code}" ${opt.code === currentValue ? 'selected' : ''}>${opt.label}</option>`;
                         });
                         inputHtml += `</select>`;
@@ -544,7 +562,7 @@
             const originalValue = originalValues[rid];
             const input = document.getElementById(`input-${rid}`);
             
-            if (rid === 35) {
+            if (rid === 35 || rid === 10) {
                 input.value = originalValue;
             } else if (rid === 7 || rid === 8) {
                 const numValue = typeof originalValue === 'string' ? 0 : parseInt(originalValue);
@@ -562,6 +580,9 @@
             // Special handling for different input types
             if (rid === 35) {
                 // Dropdown for CAN baud rate
+                newValue = parseInt(input.value);
+            } else if (rid === 10) {
+                // Dropdown for control mode
                 newValue = parseInt(input.value);
             } else if (rid === 7 || rid === 8) {
                 // Hex input for MST_ID and ESC_ID
