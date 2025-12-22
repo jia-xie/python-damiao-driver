@@ -334,6 +334,11 @@ class DaMiaoMotor:
             control_mode: Control mode - "MIT" (default), "POS_VEL", "VEL", or "FORCE_POS"
             velocity_limit: Velocity limit (rad/s, 0-100) for FORCE_POS mode
             current_limit: Current limit normalized (0.0-1.0) for FORCE_POS mode
+
+        Note:
+            Before using this method to send commands, ensure that the motor's control mode register (register 10)
+            is set to match the desired control_mode argument ("MIT", "POS_VEL", "VEL", or "FORCE_POS").
+            If the register does not match, the motor will not respond to commands and will not move.
         """
         # Check if motor is disabled and enable it if necessary
         if self.state and self.state.get("status_code") == DM_MOTOR_DISABLED:
