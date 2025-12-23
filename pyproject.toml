@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "damiao-motor"
 dynamic = ["version"]
-description = "Python driver for DaMiao motors over CAN (MIT-style control, multi-motor support)."
+description = "Python driver for DaMiao motors"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
