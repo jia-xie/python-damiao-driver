@@ -222,8 +222,8 @@ class DaMiaoMotor:
         Returns:
             Dictionary containing current motor state information:
             - can_id: CAN ID
-            - status: Status code
-            - state_name: Human-readable state name
+            - status: Human-readable status name
+            - status_code: Status code
             - pos: Position
             - vel: Velocity
             - torq: Torque
