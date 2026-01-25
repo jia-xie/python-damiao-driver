@@ -448,7 +448,185 @@
                 grid-template-columns: 1fr;
             }
         }
+        .chart-container {
+            margin-top: 15px;
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+        .chart-wrapper {
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chart-reset-btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .chart-reset-btn:hover {
+            background: #5a6268;
+        }
+        .chart-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .chart-control-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .chart-control-group label {
+            font-size: 12px;
+            color: #495057;
+            font-weight: 500;
+            margin: 0;
+        }
+        .chart-control-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .chart-control-group select {
+            padding: 4px 8px;
+            font-size: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .chart-control-group input[type="number"] {
+            padding: 4px 6px;
+            font-size: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            width: 80px;
+        }
+        .chart-control-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .chart-control-btn:hover {
+            background: #0056b3;
+        }
+        .chart-control-btn.secondary {
+            background: #6c757d;
+        }
+        .chart-control-btn.secondary:hover {
+            background: #5a6268;
+        }
+        .chart-export-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        .chart-export-btn:hover {
+            background: #218838;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        .modal-body label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+        .modal-body input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .modal-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .modal-btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .modal-btn-primary:hover {
+            background: #0056b3;
+        }
+        .modal-btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .modal-btn-secondary:hover {
+            background: #5a6268;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -495,6 +673,22 @@
                     <div class="spinner"></div>
                     <p>Select a motor to view registers</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Data Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Export Chart Data</div>
+            <div class="modal-body">
+                <label for="exportFileName">File Name:</label>
+                <input type="text" id="exportFileName" placeholder="Enter file name (without extension)">
+                <small id="exportHelpText" style="color: #6c757d; display: block; margin-top: 5px;">File will be saved as CSV format</small>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeExportModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="confirmExportData()">Save</button>
             </div>
         </div>
     </div>
@@ -584,6 +778,20 @@
                 
                 // Stop continuous mode if running
                 stopContinuousMode();
+                
+                // Destroy charts
+                if (positionChart) {
+                    positionChart.destroy();
+                    positionChart = null;
+                }
+                if (velocityChart) {
+                    velocityChart.destroy();
+                    velocityChart = null;
+                }
+                if (torqueChart) {
+                    torqueChart.destroy();
+                    torqueChart = null;
+                }
                 
                 const response = await fetch('/api/disconnect', {method: 'POST'});
                 const data = await response.json();
@@ -699,6 +907,15 @@
                 if (data.success) {
                     displayRegisters(data.registers);
                     originalValues = {...data.registers};
+                    
+                    // Read PMAX (RID 21), VMAX (RID 22), TMAX (RID 23)
+                    pmaxValue = data.registers[21] !== undefined ? parseFloat(data.registers[21]) : null;
+                    vmaxValue = data.registers[22] !== undefined ? parseFloat(data.registers[22]) : null;
+                    tmaxValue = data.registers[23] !== undefined ? parseFloat(data.registers[23]) : null;
+                    
+                    // Set Y-axis limits from register values
+                    setChartYAxisLimitsFromRegisters();
+                    
                     showStatus('Registers loaded', 'success');
                 } else {
                     showStatus('Failed to load registers: ' + data.error, 'error');
@@ -954,6 +1171,26 @@
         let continuousCommandInterval = null;
         let continuousModeActive = false;
         let isProgrammaticallyChangingToggle = false;
+        
+        // Chart instances
+        let positionChart = null;
+        let velocityChart = null;
+        let torqueChart = null;
+        
+        // Chart data storage (keep last 100 data points)
+        const maxDataPoints = 100;
+        let chartTimeLabels = [];
+        let positionData = [];
+        let velocityData = [];
+        let torqueData = [];
+        let chartTimeCounter = 0;
+        let chartStartTime = null;
+        let chartUpdateInterval = 0.02; // Default 20ms (50Hz) in seconds
+        let chartXDuration = 10; // Default 10 seconds window
+        let pmaxValue = null;
+        let vmaxValue = null;
+        let tmaxValue = null;
+        let currentExportChartId = null;
 
         function displayMotorControl() {
             const container = document.getElementById('motorControlContainer');
@@ -1059,9 +1296,101 @@
                                 <label>Rotor Temp (°C)</label>
                                 <div class="value" id="fbRotorTemp">--</div>
                             </div>
-                            <div class="feedback-item">
-                                <label>CAN ID</label>
-                                <div class="value" id="fbCanId">--</div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Position (rad)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('positionChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="positionChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="positionGridToggle" checked onchange="toggleChartGrid('positionChart', this.checked)">
+                                    <label for="positionGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionXDuration">Duration (s):</label>
+                                    <input type="number" id="positionXDuration" step="any" value="10" min="1" onchange="setChartXDuration('positionChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionYMin">Y Min:</label>
+                                    <input type="number" id="positionYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('positionChart', 'y', this.value, document.getElementById('positionYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionYMax">Y Max:</label>
+                                    <input type="number" id="positionYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('positionChart', 'y', document.getElementById('positionYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('positionChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="positionPointsToggle" onchange="toggleChartPoints('positionChart', this.checked)">
+                                    <label for="positionPointsToggle">Points</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Velocity (rad/s)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('velocityChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="velocityChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="velocityGridToggle" checked onchange="toggleChartGrid('velocityChart', this.checked)">
+                                    <label for="velocityGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityXDuration">Duration (s):</label>
+                                    <input type="number" id="velocityXDuration" step="any" value="10" min="1" onchange="setChartXDuration('velocityChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityYMin">Y Min:</label>
+                                    <input type="number" id="velocityYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('velocityChart', 'y', this.value, document.getElementById('velocityYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityYMax">Y Max:</label>
+                                    <input type="number" id="velocityYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('velocityChart', 'y', document.getElementById('velocityYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('velocityChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="velocityPointsToggle" onchange="toggleChartPoints('velocityChart', this.checked)">
+                                    <label for="velocityPointsToggle">Points</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Torque (Nm)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('torqueChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="torqueChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="torqueGridToggle" checked onchange="toggleChartGrid('torqueChart', this.checked)">
+                                    <label for="torqueGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueXDuration">Duration (s):</label>
+                                    <input type="number" id="torqueXDuration" step="any" value="10" min="1" onchange="setChartXDuration('torqueChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueYMin">Y Min:</label>
+                                    <input type="number" id="torqueYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('torqueChart', 'y', this.value, document.getElementById('torqueYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueYMax">Y Max:</label>
+                                    <input type="number" id="torqueYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('torqueChart', 'y', document.getElementById('torqueYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('torqueChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="torquePointsToggle" onchange="toggleChartPoints('torqueChart', this.checked)">
+                                    <label for="torquePointsToggle">Points</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1079,6 +1408,569 @@
             if (frequencyRow && toggle) {
                 frequencyRow.style.display = toggle.checked ? 'flex' : 'none';
             }
+            
+            // Initialize charts
+            initializeCharts();
+        }
+        
+        function initializeCharts() {
+            // Reset chart data
+            chartTimeLabels = [];
+            positionData = [];
+            velocityData = [];
+            torqueData = [];
+            chartTimeCounter = 0;
+            chartStartTime = Date.now(); // Reset start time
+            
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        pointBackgroundColor: 'rgb(75, 192, 192)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(4);
+                                }
+                            }
+                        },
+                        zoom: {
+                            zoom: {
+                                wheel: {
+                                    enabled: true,
+                                    speed: 0.1
+                                },
+                                pinch: {
+                                    enabled: true
+                                },
+                                mode: 'x'
+                            },
+                            pan: {
+                                enabled: true,
+                                mode: 'x'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: ''
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawBorder: true
+                            },
+                            ticks: {
+                                display: true
+                            }
+                        },
+                        x: {
+                            display: true,
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Time (s)'
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawBorder: true
+                            },
+                            ticks: {
+                                display: true,
+                                callback: function(value, index, ticks) {
+                                    // Format time: show seconds, or minutes:seconds if >= 60
+                                    if (value >= 60) {
+                                        const minutes = Math.floor(value / 60);
+                                        const seconds = (value % 60).toFixed(1);
+                                        return `${minutes}m ${seconds}s`;
+                                    } else {
+                                        return value.toFixed(1) + 's';
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 0
+                    },
+                    onHover: (event, activeElements) => {
+                        event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                    }
+                }
+            };
+            
+            // Initialize position chart
+            const positionCtx = document.getElementById('positionChart');
+            if (positionCtx) {
+                if (positionChart) {
+                    positionChart.destroy();
+                }
+                const positionConfig = JSON.parse(JSON.stringify(chartConfig));
+                positionConfig.options.scales.y.title.text = 'Position (rad)';
+                positionChart = new Chart(positionCtx, {
+                    ...positionConfig,
+                    data: {
+                        labels: chartTimeLabels,
+                        datasets: [{
+                            ...chartConfig.data.datasets[0],
+                            label: 'Position',
+                            borderColor: 'rgb(54, 162, 235)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)'
+                        }]
+                    }
+                });
+            }
+            
+            // Initialize velocity chart
+            const velocityCtx = document.getElementById('velocityChart');
+            if (velocityCtx) {
+                if (velocityChart) {
+                    velocityChart.destroy();
+                }
+                const velocityConfig = JSON.parse(JSON.stringify(chartConfig));
+                velocityConfig.options.scales.y.title.text = 'Velocity (rad/s)';
+                velocityChart = new Chart(velocityCtx, {
+                    ...velocityConfig,
+                    data: {
+                        labels: chartTimeLabels,
+                        datasets: [{
+                            ...chartConfig.data.datasets[0],
+                            label: 'Velocity',
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                        }]
+                    }
+                });
+            }
+            
+            // Initialize torque chart
+            const torqueCtx = document.getElementById('torqueChart');
+            if (torqueCtx) {
+                if (torqueChart) {
+                    torqueChart.destroy();
+                }
+                const torqueConfig = JSON.parse(JSON.stringify(chartConfig));
+                torqueConfig.options.scales.y.title.text = 'Torque (Nm)';
+                torqueChart = new Chart(torqueCtx, {
+                    ...torqueConfig,
+                    data: {
+                        labels: chartTimeLabels,
+                        datasets: [{
+                            ...chartConfig.data.datasets[0],
+                            label: 'Torque',
+                            borderColor: 'rgb(255, 206, 86)',
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)'
+                        }]
+                    }
+                });
+            }
+            
+            // Set Y-axis limits from register values
+            setChartYAxisLimitsFromRegisters();
+        }
+        
+        function setChartYAxisLimitsFromRegisters() {
+            // Set Position chart Y-axis limits: -PMAX to +PMAX
+            if (positionChart && pmaxValue !== null && !isNaN(pmaxValue)) {
+                positionChart.options.scales.y.min = -pmaxValue;
+                positionChart.options.scales.y.max = pmaxValue;
+                positionChart.update();
+            }
+            
+            // Set Velocity chart Y-axis limits: -VMAX to +VMAX
+            if (velocityChart && vmaxValue !== null && !isNaN(vmaxValue)) {
+                velocityChart.options.scales.y.min = -vmaxValue;
+                velocityChart.options.scales.y.max = vmaxValue;
+                velocityChart.update();
+            }
+            
+            // Set Torque chart Y-axis limits: -TMAX to +TMAX
+            if (torqueChart && tmaxValue !== null && !isNaN(tmaxValue)) {
+                torqueChart.options.scales.y.min = -tmaxValue;
+                torqueChart.options.scales.y.max = tmaxValue;
+                torqueChart.update();
+            }
+        }
+        
+        function resetChartZoom(chartId) {
+            let chart = null;
+            if (chartId === 'positionChart') {
+                chart = positionChart;
+            } else if (chartId === 'velocityChart') {
+                chart = velocityChart;
+            } else if (chartId === 'torqueChart') {
+                chart = torqueChart;
+            }
+            
+            if (chart && chart.zoomScale) {
+                chart.zoomScale('reset');
+            } else if (chart) {
+                // Fallback: reset scales manually
+                chart.resetZoom();
+            }
+        }
+        
+        function getChartInstance(chartId) {
+            if (chartId === 'positionChart') {
+                return positionChart;
+            } else if (chartId === 'velocityChart') {
+                return velocityChart;
+            } else if (chartId === 'torqueChart') {
+                return torqueChart;
+            }
+            return null;
+        }
+        
+        function toggleChartGrid(chartId, show) {
+            const chart = getChartInstance(chartId);
+            if (chart) {
+                chart.options.scales.x.grid.display = show;
+                chart.options.scales.y.grid.display = show;
+                chart.update();
+            }
+        }
+        
+        function setChartAxisLimits(chartId, axis, min, max) {
+            const chart = getChartInstance(chartId);
+            if (!chart) return;
+            
+            const scale = axis === 'x' ? chart.options.scales.x : chart.options.scales.y;
+            
+            // Set min if provided
+            if (min !== '' && min !== null && min !== undefined && !isNaN(parseFloat(min))) {
+                scale.min = parseFloat(min);
+            } else {
+                scale.min = undefined; // Auto
+            }
+            
+            // Set max if provided
+            if (max !== '' && max !== null && max !== undefined && !isNaN(parseFloat(max))) {
+                scale.max = parseFloat(max);
+            } else {
+                scale.max = undefined; // Auto
+            }
+            
+            chart.update();
+        }
+        
+        function setChartXDuration(chartId, duration) {
+            const durationValue = parseFloat(duration);
+            if (isNaN(durationValue) || durationValue < 1) {
+                return;
+            }
+            
+            // Duration will be applied in updateChartWithDuration
+            // Just trigger an update by calling updateCharts if we have data
+            if (chartTimeLabels.length > 0) {
+                // Get the last state to trigger update
+                const chart = getChartInstance(chartId);
+                if (chart && chart.data.datasets[0].data.length > 0) {
+                    // Re-apply duration filtering
+                    const prefix = chartId.replace('Chart', '');
+                    const allData = prefix === 'position' ? positionData : 
+                                   prefix === 'velocity' ? velocityData : torqueData;
+                    updateChartWithDuration(chartId, chart, chartTimeLabels, allData, prefix + 'XDuration');
+                }
+            }
+        }
+        
+        function resetChartAxisLimits(chartId) {
+            const chart = getChartInstance(chartId);
+            if (!chart) return;
+            
+            // Reset Y-axis to register values
+            const prefix = chartId.replace('Chart', '');
+            if (prefix === 'position' && pmaxValue !== null && !isNaN(pmaxValue)) {
+                chart.options.scales.y.min = -pmaxValue;
+                chart.options.scales.y.max = pmaxValue;
+            } else if (prefix === 'velocity' && vmaxValue !== null && !isNaN(vmaxValue)) {
+                chart.options.scales.y.min = -vmaxValue;
+                chart.options.scales.y.max = vmaxValue;
+            } else if (prefix === 'torque' && tmaxValue !== null && !isNaN(tmaxValue)) {
+                chart.options.scales.y.min = -tmaxValue;
+                chart.options.scales.y.max = tmaxValue;
+            } else {
+                // Fallback to auto if register values not available
+                chart.options.scales.y.min = undefined;
+                chart.options.scales.y.max = undefined;
+            }
+            
+            // Reset duration to default
+            const durationInput = document.getElementById(prefix + 'XDuration');
+            if (durationInput) {
+                durationInput.value = chartXDuration;
+            }
+            
+            // Clear Y-axis input fields
+            const yMinInput = document.getElementById(prefix + 'YMin');
+            const yMaxInput = document.getElementById(prefix + 'YMax');
+            
+            if (yMinInput) yMinInput.value = '';
+            if (yMaxInput) yMaxInput.value = '';
+            
+            // X-axis limits will be set by updateChartWithDuration
+            // Trigger update if we have data
+            if (chartTimeLabels.length > 0) {
+                const allData = prefix === 'position' ? positionData : 
+                              prefix === 'velocity' ? velocityData : torqueData;
+                updateChartWithDuration(chartId, chart, chartTimeLabels, allData, prefix + 'XDuration');
+            } else {
+                chart.update();
+            }
+        }
+        
+        function toggleChartPoints(chartId, show) {
+            const chart = getChartInstance(chartId);
+            if (chart) {
+                chart.data.datasets[0].pointRadius = show ? 3 : 0;
+                chart.data.datasets[0].pointHoverRadius = show ? 5 : 0;
+                chart.update();
+            }
+        }
+        
+        function showExportModal(chartId) {
+            currentExportChartId = chartId;
+            const modal = document.getElementById('exportModal');
+            const fileNameInput = document.getElementById('exportFileName');
+            const helpText = document.getElementById('exportHelpText');
+            
+            // Generate default filename with motor ID and date/time
+            const chartName = chartId.replace('Chart', '');
+            const motorId = currentMotorId ? `motor${currentMotorId}_` : '';
+            const now = new Date();
+            const dateStr = now.getFullYear() + 
+                          String(now.getMonth() + 1).padStart(2, '0') + 
+                          String(now.getDate()).padStart(2, '0');
+            const timeStr = String(now.getHours()).padStart(2, '0') + 
+                          String(now.getMinutes()).padStart(2, '0') + 
+                          String(now.getSeconds()).padStart(2, '0');
+            const dateTimeStr = `${dateStr}_${timeStr}`;
+            
+            fileNameInput.value = `${motorId}${chartName}_${dateTimeStr}`;
+            
+            // Simple message - file will download to default folder
+            helpText.textContent = 'File will be saved as CSV format to your default download folder.';
+            
+            modal.style.display = 'block';
+            fileNameInput.focus();
+            fileNameInput.select();
+        }
+        
+        function closeExportModal() {
+            const modal = document.getElementById('exportModal');
+            modal.style.display = 'none';
+            currentExportChartId = null;
+        }
+        
+        async function confirmExportData() {
+            if (!currentExportChartId) return;
+            
+            const chart = getChartInstance(currentExportChartId);
+            if (!chart) {
+                closeExportModal();
+                return;
+            }
+            
+            const fileNameInput = document.getElementById('exportFileName');
+            let fileName = fileNameInput.value.trim();
+            
+            // Use default if empty (with motor ID and date/time)
+            if (!fileName) {
+                const chartName = currentExportChartId.replace('Chart', '');
+                const motorId = currentMotorId ? `motor${currentMotorId}_` : '';
+                const now = new Date();
+                const dateStr = now.getFullYear() + 
+                              String(now.getMonth() + 1).padStart(2, '0') + 
+                              String(now.getDate()).padStart(2, '0');
+                const timeStr = String(now.getHours()).padStart(2, '0') + 
+                              String(now.getMinutes()).padStart(2, '0') + 
+                              String(now.getSeconds()).padStart(2, '0');
+                const dateTimeStr = `${dateStr}_${timeStr}`;
+                fileName = `${motorId}${chartName}_${dateTimeStr}`;
+            }
+            
+            // Sanitize filename - remove invalid characters
+            fileName = fileName.replace(/[<>:"/\\|?*]/g, '_');
+            
+            // Ensure .csv extension
+            if (!fileName.endsWith('.csv')) {
+                fileName += '.csv';
+            }
+            
+            // Get data from chart (using {x, y} format)
+            const dataPoints = chart.data.datasets[0].data;
+            const datasetLabel = chart.data.datasets[0].label || 'Data';
+            
+            // Create CSV content
+            let csvContent = `Time (s),${datasetLabel}\n`;
+            for (let i = 0; i < dataPoints.length; i++) {
+                const point = dataPoints[i];
+                if (point && point.x !== null && point.x !== undefined && point.y !== null && point.y !== undefined) {
+                    csvContent += `${point.x},${point.y}\n`;
+                }
+            }
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            
+            // Try to use File System Access API if available (allows choosing save location)
+            // Firefox 112+ supports this, but requires secure context (HTTPS or localhost)
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const fileHandle = await window.showSaveFilePicker({
+                        suggestedName: fileName,
+                        types: [{
+                            description: 'CSV files',
+                            accept: { 'text/csv': ['.csv'] }
+                        }],
+                        excludeAcceptAllOption: false
+                    });
+                    
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                    
+                    showStatus(`Exported ${currentExportChartId} data to ${fileName}`, 'success');
+                    closeExportModal();
+                    return;
+                } catch (error) {
+                    // User cancelled - don't show error, just fall back silently
+                    if (error.name === 'AbortError') {
+                        closeExportModal();
+                        return;
+                    }
+                    // Other errors - log and fall back to download
+                    console.warn('File System Access API error, falling back to download:', error);
+                }
+            }
+            
+            // Fallback: use download link
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showStatus(`Exported ${currentExportChartId} data to ${fileName}`, 'success');
+            closeExportModal();
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('exportModal');
+            if (event.target === modal) {
+                closeExportModal();
+            }
+        }
+        
+        function updateCharts(state) {
+            // Calculate time in seconds since start
+            let timeInSeconds = 0;
+            if (chartStartTime !== null) {
+                timeInSeconds = (Date.now() - chartStartTime) / 1000;
+            } else {
+                // Fallback: use counter if start time not set
+                chartTimeCounter++;
+                timeInSeconds = chartTimeCounter * chartUpdateInterval;
+            }
+            
+            // Store numeric time value (Chart.js will format it using the tick callback)
+            chartTimeLabels.push(timeInSeconds);
+            
+            // Add data values
+            positionData.push(state.pos !== undefined ? state.pos : null);
+            velocityData.push(state.vel !== undefined ? state.vel : null);
+            torqueData.push(state.torq !== undefined ? state.torq : null);
+            
+            // Calculate max points needed based on max duration (assume max 60 seconds) and update frequency
+            // Add some buffer (2x) to ensure we have enough data
+            const maxDuration = 60; // seconds
+            const pointsPerSecond = 1 / chartUpdateInterval;
+            const requiredPoints = Math.ceil(maxDuration * pointsPerSecond * 2);
+            
+            // Keep enough data points to cover the maximum possible duration window
+            if (chartTimeLabels.length > requiredPoints) {
+                chartTimeLabels.shift();
+                positionData.shift();
+                velocityData.shift();
+                torqueData.shift();
+            }
+            
+            // Update all charts with full data
+            updateChartWithDuration('positionChart', positionChart, chartTimeLabels, positionData, 'positionXDuration');
+            updateChartWithDuration('velocityChart', velocityChart, chartTimeLabels, velocityData, 'velocityXDuration');
+            updateChartWithDuration('torqueChart', torqueChart, chartTimeLabels, torqueData, 'torqueXDuration');
+        }
+        
+        function updateChartWithDuration(chartId, chart, allLabels, allData, durationInputId) {
+            if (!chart) return;
+            
+            // Get duration for this chart
+            const durationInput = document.getElementById(durationInputId);
+            const duration = durationInput ? parseFloat(durationInput.value) || chartXDuration : chartXDuration;
+            
+            // Get current time
+            const currentTime = allLabels.length > 0 ? allLabels[allLabels.length - 1] : 0;
+            const minTime = Math.max(0, currentTime - duration);
+            
+            // Convert to {x, y} format for better Chart.js time-series handling
+            // This ensures all data points are properly recognized
+            const dataPoints = [];
+            for (let i = 0; i < allLabels.length; i++) {
+                if (allData[i] !== null && allData[i] !== undefined) {
+                    dataPoints.push({
+                        x: allLabels[i],
+                        y: allData[i]
+                    });
+                }
+            }
+            
+            // Update chart data with all points in {x, y} format
+            // When using {x, y} format, Chart.js uses x values from data points, not labels
+            chart.data.labels = []; // Clear labels when using {x, y} format
+            chart.data.datasets[0].data = dataPoints;
+            
+            // Set X-axis limits to show the duration window
+            chart.options.scales.x.min = minTime;
+            chart.options.scales.x.max = currentTime;
+            
+            // Force update with all data points
+            chart.update('none');
         }
 
         function updateControlVisibility() {
@@ -1218,6 +2110,12 @@
             const frequency = parseFloat(frequencyInput.value) || 50;
             const intervalMs = 1000 / frequency;
             
+            // Set chart update interval in seconds
+            chartUpdateInterval = intervalMs / 1000;
+            
+            // Reset chart start time when starting continuous mode
+            chartStartTime = Date.now();
+            
             // Update status message with current frequency
             const statusDiv = document.getElementById('continuousStatus');
             const currentFreqSpan = document.getElementById('currentFrequency');
@@ -1231,10 +2129,11 @@
                 sendMotorCommandInternal();
             }, intervalMs);
 
-            // Automatically start auto-refresh feedback during continuous mode
-            if (!motorStateInterval) {
-                motorStateInterval = setInterval(updateMotorState, 100);
+            // Automatically start auto-refresh feedback during continuous mode at the same frequency as commands
+            if (motorStateInterval) {
+                clearInterval(motorStateInterval);
             }
+            motorStateInterval = setInterval(updateMotorState, intervalMs);
 
             showStatus(`Continuous mode started (${frequency}Hz)`, 'info');
         }
@@ -1300,19 +2199,28 @@
             
             const intervalMs = 1000 / frequency;
             
+            // Update chart time interval
+            chartUpdateInterval = intervalMs / 1000;
+            
             // Update status message
             const currentFreqSpan = document.getElementById('currentFrequency');
             if (currentFreqSpan) {
                 currentFreqSpan.textContent = frequency;
             }
             
-            // Restart the interval with new frequency
+            // Restart the command interval with new frequency
             if (continuousCommandInterval) {
                 clearInterval(continuousCommandInterval);
             }
             continuousCommandInterval = setInterval(() => {
                 sendMotorCommandInternal();
             }, intervalMs);
+            
+            // Update auto-refresh interval to match command frequency
+            if (motorStateInterval) {
+                clearInterval(motorStateInterval);
+            }
+            motorStateInterval = setInterval(updateMotorState, intervalMs);
             
             showStatus(`Command frequency updated to ${frequency}Hz`, 'info');
         }
@@ -1435,8 +2343,9 @@
                         state.t_mos !== undefined ? state.t_mos.toFixed(1) : '--';
                     document.getElementById('fbRotorTemp').textContent = 
                         state.t_rotor !== undefined ? state.t_rotor.toFixed(1) : '--';
-                    document.getElementById('fbCanId').textContent = 
-                        state.can_id !== undefined ? `0x${state.can_id.toString(16).toUpperCase().padStart(2, '0')}` : '--';
+                    
+                    // Update charts
+                    updateCharts(state);
                 }
             } catch (error) {
                 console.error('Error updating motor state:', error);
