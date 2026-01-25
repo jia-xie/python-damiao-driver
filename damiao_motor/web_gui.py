@@ -332,7 +332,11 @@ def send_motor_command(motor_id: int):
             current_limit=current_limit,
         )
         
-        return jsonify({'success': True})
+        # Poll and return state at same rate as control (avoids separate state fetch)
+        if _controller:
+            _controller.poll_feedback()
+        state = motor.get_states()
+        return jsonify({'success': True, 'state': state})
     except Exception as e:
         import traceback
         error_msg = f"{str(e)}\n{traceback.format_exc()}"

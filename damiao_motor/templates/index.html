@@ -1365,6 +1365,8 @@
         let continuousCommandInterval = null;
         let continuousModeActive = false;
         let isProgrammaticallyChangingToggle = false;
+        let motorStateUpdateInFlight = false;
+        let commandSendInFlight = false;
         
         // Chart instances
         let positionChart = null;
@@ -1381,6 +1383,8 @@
         let chartStartTime = null;
         let chartUpdateInterval = 0.02; // Default 20ms (50Hz) in seconds
         let chartXDuration = 10; // Default 10 seconds window
+        let lastChartRenderTime = 0;
+        const chartMaxRenderHz = 100; // Frontend: only render charts at 100 Hz (state arrives at control freq from backend)
         let pmaxValue = null;
         let vmaxValue = null;
         let tmaxValue = null;
@@ -1519,6 +1523,7 @@
             torqueData = [];
             chartTimeCounter = 0;
             chartStartTime = Date.now(); // Reset start time
+            lastChartRenderTime = 0; // Ensure first updateCharts after init will render
             
             const chartConfig = {
                 type: 'line',
@@ -2029,10 +2034,15 @@
                 torqueData.shift();
             }
             
-            // Update all charts with full data
-            updateChartWithDuration('positionChart', positionChart, chartTimeLabels, positionData, 'positionXDuration');
-            updateChartWithDuration('velocityChart', velocityChart, chartTimeLabels, velocityData, 'velocityXDuration');
-            updateChartWithDuration('torqueChart', torqueChart, chartTimeLabels, torqueData, 'torqueXDuration');
+            // Throttle chart re-renders to avoid main-thread saturation (fixes plot freezing after ~10s)
+            const now = Date.now();
+            const minRenderIntervalMs = 1000 / chartMaxRenderHz;
+            if (now - lastChartRenderTime >= minRenderIntervalMs) {
+                lastChartRenderTime = now;
+                updateChartWithDuration('positionChart', positionChart, chartTimeLabels, positionData, 'positionXDuration');
+                updateChartWithDuration('velocityChart', velocityChart, chartTimeLabels, velocityData, 'velocityXDuration');
+                updateChartWithDuration('torqueChart', torqueChart, chartTimeLabels, torqueData, 'torqueXDuration');
+            }
         }
         
         function updateChartWithDuration(chartId, chart, allLabels, allData, durationInputId) {
@@ -2046,10 +2056,10 @@
             const currentTime = allLabels.length > 0 ? allLabels[allLabels.length - 1] : 0;
             const minTime = Math.max(0, currentTime - duration);
             
-            // Convert to {x, y} format for better Chart.js time-series handling
-            // This ensures all data points are properly recognized
+            // Convert to {x, y} format; only include points in the visible window to reduce Chart.js work
             const dataPoints = [];
             for (let i = 0; i < allLabels.length; i++) {
+                if (allLabels[i] < minTime) continue;
                 if (allData[i] !== null && allData[i] !== undefined) {
                     dataPoints.push({
                         x: allLabels[i],
@@ -2125,40 +2135,19 @@
         }
 
         async function sendMotorCommandInternal() {
-            if (!currentMotorId) {
-                return;
-            }
-
-            // Check if motor is disabled - stop continuous mode if so
+            if (!currentMotorId) return;
+            if (commandSendInFlight) return;
+            commandSendInFlight = true;
             try {
-                const stateResponse = await fetch(`/api/motors/${currentMotorId}/state`);
-                const stateData = await stateResponse.json();
-                if (stateData.success && stateData.state) {
-                    const statusCode = stateData.state.status_code;
-                    // Status code 0 = DISABLED
-                    if (statusCode === 0) {
-                        if (continuousModeActive) {
-                            stopContinuousMode(true); // preserveToggle = true
-                            showStatus('Motor is disabled - stopped continuous mode', 'info');
-                        }
-                        return;
-                    }
-                }
-            } catch (error) {
-                // If we can't check state, continue anyway
-                console.warn('Could not check motor state:', error);
-            }
+                const controlMode = document.getElementById('controlMode').value;
+                const targetPosition = parseFloat(document.getElementById('targetPosition').value) || 0.0;
+                const targetVelocity = parseFloat(document.getElementById('targetVelocity').value) || 0.0;
+                const stiffness = parseFloat(document.getElementById('stiffness').value) || 0.0;
+                const damping = parseFloat(document.getElementById('damping').value) || 0.0;
+                const feedforwardTorque = parseFloat(document.getElementById('feedforwardTorque').value) || 0.0;
+                const velocityLimit = parseFloat(document.getElementById('velocityLimit').value) || 0.0;
+                const currentLimit = parseFloat(document.getElementById('currentLimit').value) || 0.0;
 
-            const controlMode = document.getElementById('controlMode').value;
-            const targetPosition = parseFloat(document.getElementById('targetPosition').value) || 0.0;
-            const targetVelocity = parseFloat(document.getElementById('targetVelocity').value) || 0.0;
-            const stiffness = parseFloat(document.getElementById('stiffness').value) || 0.0;
-            const damping = parseFloat(document.getElementById('damping').value) || 0.0;
-            const feedforwardTorque = parseFloat(document.getElementById('feedforwardTorque').value) || 0.0;
-            const velocityLimit = parseFloat(document.getElementById('velocityLimit').value) || 0.0;
-            const currentLimit = parseFloat(document.getElementById('currentLimit').value) || 0.0;
-
-            try {
                 const response = await fetch(`/api/motors/${currentMotorId}/command`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -2175,10 +2164,15 @@
                 });
                 const data = await response.json();
                 if (data.success) {
-                    // Only show status for single sends, not continuous
-                    if (!continuousModeActive) {
-                        showStatus('Command sent successfully', 'success');
+                    if (data.state) {
+                        if (data.state.status_code === 0 && continuousModeActive) {
+                            stopContinuousMode(true);
+                            showStatus('Motor is disabled - stopped continuous mode', 'info');
+                        } else {
+                            applyMotorState(data.state); // state at control freq; charts render at 100 Hz
+                        }
                     }
+                    if (!continuousModeActive) showStatus('Command sent successfully', 'success');
                 } else {
                     showStatus('Failed to send command: ' + data.error, 'error');
                     stopContinuousMode();
@@ -2186,6 +2180,8 @@
             } catch (error) {
                 showStatus('Error: ' + error.message, 'error');
                 stopContinuousMode();
+            } finally {
+                commandSendInFlight = false;
             }
         }
 
@@ -2203,12 +2199,10 @@
             btn.classList.remove('btn-primary');
             btn.classList.add('btn-danger');
             
-            // Get user-defined frequency
+            // Command up to 1000 Hz; state in /command at same rate; chart render at 100 Hz
             const frequencyInput = document.getElementById('commandFrequency');
             const frequency = parseFloat(frequencyInput.value) || 50;
             const intervalMs = 1000 / frequency;
-            
-            // Set chart update interval in seconds
             chartUpdateInterval = intervalMs / 1000;
             
             // Reset chart start time when starting continuous mode
@@ -2227,11 +2221,7 @@
                 sendMotorCommandInternal();
             }, intervalMs);
 
-            // Automatically start auto-refresh feedback during continuous mode at the same frequency as commands
-            if (motorStateInterval) {
-                clearInterval(motorStateInterval);
-            }
-            motorStateInterval = setInterval(updateMotorState, intervalMs);
+            // No motorStateInterval: state comes from /command response at control frequency
 
             showStatus(`Continuous mode started (${frequency}Hz)`, 'info');
         }
@@ -2286,7 +2276,7 @@
             const frequencyInput = document.getElementById('commandFrequency');
             let frequency = parseFloat(frequencyInput.value) || 50;
             
-            // Validate frequency range
+            // Validate frequency range (commands up to 1000 Hz)
             if (frequency < 1) {
                 frequency = 1;
                 frequencyInput.value = 1;
@@ -2296,30 +2286,15 @@
             }
             
             const intervalMs = 1000 / frequency;
-            
-            // Update chart time interval
             chartUpdateInterval = intervalMs / 1000;
-            
-            // Update status message
+
             const currentFreqSpan = document.getElementById('currentFrequency');
-            if (currentFreqSpan) {
-                currentFreqSpan.textContent = frequency;
-            }
-            
-            // Restart the command interval with new frequency
-            if (continuousCommandInterval) {
-                clearInterval(continuousCommandInterval);
-            }
-            continuousCommandInterval = setInterval(() => {
-                sendMotorCommandInternal();
-            }, intervalMs);
-            
-            // Update auto-refresh interval to match command frequency
-            if (motorStateInterval) {
-                clearInterval(motorStateInterval);
-            }
-            motorStateInterval = setInterval(updateMotorState, intervalMs);
-            
+            if (currentFreqSpan) currentFreqSpan.textContent = frequency;
+
+            if (continuousCommandInterval) clearInterval(continuousCommandInterval);
+            continuousCommandInterval = setInterval(() => sendMotorCommandInternal(), intervalMs);
+            // No motorStateInterval: state from /command at control frequency
+
             showStatus(`Command frequency updated to ${frequency}Hz`, 'info');
         }
 
@@ -2405,48 +2380,43 @@
             }
         }
 
-        async function updateMotorState() {
-            if (!currentMotorId) {
-                return;
+        function applyMotorState(state) {
+            if (!state) return;
+            const statusBadge = document.getElementById('motorStatus');
+            if (statusBadge) {
+                const status = state.status || 'UNKNOWN';
+                const statusCode = state.status_code;
+                statusBadge.textContent = `Status: ${status}`;
+                statusBadge.className = 'status-badge ';
+                if (statusCode === 1) statusBadge.className += 'enabled';
+                else if (statusCode === 0) statusBadge.className += 'disabled';
+                else statusBadge.className += 'error';
             }
+            const fbPos = document.getElementById('fbPosition');
+            if (fbPos) fbPos.textContent = state.pos !== undefined ? state.pos.toFixed(4) : '--';
+            const fbVel = document.getElementById('fbVelocity');
+            if (fbVel) fbVel.textContent = state.vel !== undefined ? state.vel.toFixed(4) : '--';
+            const fbTorq = document.getElementById('fbTorque');
+            if (fbTorq) fbTorq.textContent = state.torq !== undefined ? state.torq.toFixed(4) : '--';
+            const fbMos = document.getElementById('fbMosTemp');
+            if (fbMos) fbMos.textContent = state.t_mos !== undefined ? state.t_mos.toFixed(1) : '--';
+            const fbRot = document.getElementById('fbRotorTemp');
+            if (fbRot) fbRot.textContent = state.t_rotor !== undefined ? state.t_rotor.toFixed(1) : '--';
+            updateCharts(state); // chart render throttled to chartMaxRenderHz (100) inside
+        }
+
+        async function updateMotorState() {
+            if (!currentMotorId) return;
+            if (motorStateUpdateInFlight) return;
+            motorStateUpdateInFlight = true;
             try {
                 const response = await fetch(`/api/motors/${currentMotorId}/state`);
                 const data = await response.json();
-                if (data.success && data.state) {
-                    const state = data.state;
-                    
-                    // Update status badge
-                    const statusBadge = document.getElementById('motorStatus');
-                    const status = state.status || 'UNKNOWN';
-                    const statusCode = state.status_code;
-                    
-                    statusBadge.textContent = `Status: ${status}`;
-                    statusBadge.className = 'status-badge ';
-                    if (statusCode === 1) {
-                        statusBadge.className += 'enabled';
-                    } else if (statusCode === 0) {
-                        statusBadge.className += 'disabled';
-                    } else {
-                        statusBadge.className += 'error';
-                    }
-                    
-                    // Update feedback values
-                    document.getElementById('fbPosition').textContent = 
-                        state.pos !== undefined ? state.pos.toFixed(4) : '--';
-                    document.getElementById('fbVelocity').textContent = 
-                        state.vel !== undefined ? state.vel.toFixed(4) : '--';
-                    document.getElementById('fbTorque').textContent = 
-                        state.torq !== undefined ? state.torq.toFixed(4) : '--';
-                    document.getElementById('fbMosTemp').textContent = 
-                        state.t_mos !== undefined ? state.t_mos.toFixed(1) : '--';
-                    document.getElementById('fbRotorTemp').textContent = 
-                        state.t_rotor !== undefined ? state.t_rotor.toFixed(1) : '--';
-                    
-                    // Update charts
-                    updateCharts(state);
-                }
+                if (data.success && data.state) applyMotorState(data.state);
             } catch (error) {
                 console.error('Error updating motor state:', error);
+            } finally {
+                motorStateUpdateInFlight = false;
             }
         }
 
