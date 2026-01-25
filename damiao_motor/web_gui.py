@@ -243,6 +243,133 @@ def set_register(motor_id: int, rid: int):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@app.route('/api/motors/<int:motor_id>/enable', methods=['POST'])
+def enable_motor(motor_id: int):
+    """Enable a motor."""
+    global _motors
+    try:
+        if motor_id not in _motors:
+            return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
+        
+        motor = _motors[motor_id]
+        motor.enable()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/motors/<int:motor_id>/disable', methods=['POST'])
+def disable_motor(motor_id: int):
+    """Disable a motor."""
+    global _motors
+    try:
+        if motor_id not in _motors:
+            return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
+        
+        motor = _motors[motor_id]
+        motor.disable()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/motors/<int:motor_id>/state', methods=['GET'])
+def get_motor_state(motor_id: int):
+    """Get current motor state/feedback."""
+    global _motors, _controller
+    try:
+        if motor_id not in _motors:
+            return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
+        
+        motor = _motors[motor_id]
+        
+        # Poll for latest feedback
+        if _controller:
+            _controller.poll_feedback()
+        
+        state = motor.get_states()
+        return jsonify({'success': True, 'state': state})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/motors/<int:motor_id>/command', methods=['POST'])
+def send_motor_command(motor_id: int):
+    """Send a command to the motor."""
+    global _motors, _controller
+    try:
+        if motor_id not in _motors:
+            return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
+        
+        if not request.is_json:
+            return jsonify({'success': False, 'error': 'Content-Type must be application/json'}), 400
+        
+        data = request.get_json()
+        if data is None:
+            return jsonify({'success': False, 'error': 'Invalid JSON in request body'}), 400
+        
+        motor = _motors[motor_id]
+        
+        # Get command parameters
+        control_mode = data.get('control_mode', 'MIT')
+        target_position = data.get('target_position', 0.0)
+        target_velocity = data.get('target_velocity', 0.0)
+        stiffness = data.get('stiffness', 0.0)
+        damping = data.get('damping', 0.0)
+        feedforward_torque = data.get('feedforward_torque', 0.0)
+        velocity_limit = data.get('velocity_limit', 0.0)
+        current_limit = data.get('current_limit', 0.0)
+        
+        # Send command
+        motor.send_cmd(
+            target_position=target_position,
+            target_velocity=target_velocity,
+            stiffness=stiffness,
+            damping=damping,
+            feedforward_torque=feedforward_torque,
+            control_mode=control_mode,
+            velocity_limit=velocity_limit,
+            current_limit=current_limit,
+        )
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        import traceback
+        error_msg = f"{str(e)}\n{traceback.format_exc()}"
+        print(f"Send command error: {error_msg}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/motors/<int:motor_id>/set-zero', methods=['POST'])
+def set_zero_position(motor_id: int):
+    """Set the current position to zero."""
+    global _motors
+    try:
+        if motor_id not in _motors:
+            return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
+        
+        motor = _motors[motor_id]
+        motor.set_zero_position()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/motors/<int:motor_id>/clear-error', methods=['POST'])
+def clear_motor_error(motor_id: int):
+    """Clear motor errors."""
+    global _motors
+    try:
+        if motor_id not in _motors:
+            return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
+        
+        motor = _motors[motor_id]
+        motor.clear_error()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 def main():
     """Run the web GUI server."""
     import argparse

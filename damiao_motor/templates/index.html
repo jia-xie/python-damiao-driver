@@ -89,26 +89,72 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
-        .status {
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: none;
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
         }
-        .status.success {
+        .toast {
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 300px;
+            max-width: 500px;
+            pointer-events: auto;
+            animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+            animation-fill-mode: both;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .toast.success {
             background: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border-left: 4px solid #28a745;
         }
-        .status.error {
+        .toast.error {
             background: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
+            border-left: 4px solid #dc3545;
         }
-        .status.info {
+        .toast.info {
             background: #d1ecf1;
             color: #0c5460;
-            border: 1px solid #bee5eb;
+            border-left: 4px solid #17a2b8;
+        }
+        .toast-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .toast-message {
+            flex: 1;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
         }
         .register-table {
             width: 100%;
@@ -237,6 +283,111 @@
             border-color: #007bff;
             box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
         }
+        .motor-control-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .control-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .control-group h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 16px;
+        }
+        .control-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .control-row label {
+            min-width: 120px;
+            font-weight: 500;
+            color: #495057;
+        }
+        .control-row input[type="number"],
+        .control-row select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .control-row input[type="number"]:focus,
+        .control-row select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        .feedback-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .feedback-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .feedback-item label {
+            display: block;
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        .feedback-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-badge.enabled {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-badge.disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status-badge.error {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .motor-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .auto-refresh-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .auto-refresh-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .motor-control-panel {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -244,7 +395,7 @@
         <h1>DaMiao Motor Parameter Editor</h1>
         <p class="subtitle">View and modify motor register parameters via CAN bus</p>
         
-        <div id="status" class="status"></div>
+        <div class="toast-container" id="toastContainer"></div>
         
         <div class="section">
             <div class="section-title">Connection</div>
@@ -268,6 +419,16 @@
         </div>
         
         <div class="section">
+            <div class="section-title">Motor Control</div>
+            <div id="motorControlContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Select a motor to control</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
             <div class="section-title">Register Parameters</div>
             <div id="registerTableContainer">
                 <div class="loading">
@@ -283,13 +444,40 @@
         let originalValues = {};
 
         function showStatus(message, type = 'info') {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = 'status ' + type;
-            status.style.display = 'block';
+            const container = document.getElementById('toastContainer');
+            if (!container) {
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                return;
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            // Add icon based on type
+            const icon = document.createElement('span');
+            icon.className = 'toast-icon';
+            if (type === 'success') {
+                icon.textContent = '✓';
+            } else if (type === 'error') {
+                icon.textContent = '✕';
+            } else {
+                icon.textContent = 'ℹ';
+            }
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.className = 'toast-message';
+            messageSpan.textContent = message;
+            
+            toast.appendChild(icon);
+            toast.appendChild(messageSpan);
+            container.appendChild(toast);
+            
+            // Remove toast after animation completes (3 seconds total)
             setTimeout(() => {
-                status.style.display = 'none';
-            }, 5000);
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
         }
 
         async function connect() {
@@ -328,6 +516,13 @@
 
         async function disconnect() {
             try {
+                // Stop auto-refresh if running
+                if (motorStateInterval) {
+                    clearInterval(motorStateInterval);
+                    motorStateInterval = null;
+                }
+                autoRefreshEnabled = false;
+                
                 const response = await fetch('/api/disconnect', {method: 'POST'});
                 const data = await response.json();
                 if (data.success) {
@@ -337,6 +532,9 @@
                     document.getElementById('refreshBtn').disabled = true;
                     document.getElementById('registerTableContainer').innerHTML = 
                         '<div class="loading"><div class="spinner"></div><p>Select a motor to view registers</p></div>';
+                    document.getElementById('motorControlContainer').innerHTML = 
+                        '<div class="loading"><div class="spinner"></div><p>Select a motor to control</p></div>';
+                    currentMotorId = null;
                 }
             } catch (error) {
                 showStatus('Error: ' + error.message, 'error');
@@ -418,6 +616,8 @@
             if (!motorId) {
                 document.getElementById('registerTableContainer').innerHTML = 
                     '<div class="loading"><div class="spinner"></div><p>Select a motor to view registers</p></div>';
+                document.getElementById('motorControlContainer').innerHTML = 
+                    '<div class="loading"><div class="spinner"></div><p>Select a motor to control</p></div>';
                 return;
             }
             
@@ -437,6 +637,11 @@
             } catch (error) {
                 showStatus('Error: ' + error.message, 'error');
             }
+            
+            // Load motor control panel
+            displayMotorControl();
+            // Load initial motor state
+            await updateMotorState();
         }
 
         function displayRegisters(registers) {
@@ -672,6 +877,298 @@
         async function refreshRegisters() {
             if (currentMotorId) {
                 await loadMotorRegisters();
+            }
+        }
+
+        // Motor control functions
+        let motorStateInterval = null;
+        let autoRefreshEnabled = false;
+
+        function displayMotorControl() {
+            const container = document.getElementById('motorControlContainer');
+            const motorId = currentMotorId;
+            if (!motorId) {
+                container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Select a motor to control</p></div>';
+                return;
+            }
+
+            const html = `
+                <div class="motor-control-panel">
+                    <div class="control-group">
+                        <h3>Control Parameters</h3>
+                        <div class="control-row">
+                            <label>Control Mode:</label>
+                            <select id="controlMode">
+                                <option value="MIT">MIT (Position + Velocity + Torque)</option>
+                                <option value="POS_VEL">POS_VEL (Position + Velocity)</option>
+                                <option value="VEL">VEL (Velocity Only)</option>
+                                <option value="FORCE_POS">FORCE_POS (Force Position)</option>
+                            </select>
+                        </div>
+                        <div class="control-row" id="posRow">
+                            <label>Position (rad):</label>
+                            <input type="number" id="targetPosition" step="0.001" value="0.0">
+                        </div>
+                        <div class="control-row" id="velRow">
+                            <label>Velocity (rad/s):</label>
+                            <input type="number" id="targetVelocity" step="0.001" value="0.0">
+                        </div>
+                        <div class="control-row" id="stiffnessRow">
+                            <label>Stiffness (Kp):</label>
+                            <input type="number" id="stiffness" step="0.1" value="0.0">
+                        </div>
+                        <div class="control-row" id="dampingRow">
+                            <label>Damping (Kd):</label>
+                            <input type="number" id="damping" step="0.01" value="0.0">
+                        </div>
+                        <div class="control-row" id="torqueRow">
+                            <label>Torque (Nm):</label>
+                            <input type="number" id="feedforwardTorque" step="0.01" value="0.0">
+                        </div>
+                        <div class="control-row" id="velLimitRow" style="display:none;">
+                            <label>Vel Limit (rad/s):</label>
+                            <input type="number" id="velocityLimit" step="0.1" value="0.0" min="0" max="100">
+                        </div>
+                        <div class="control-row" id="curLimitRow" style="display:none;">
+                            <label>Current Limit:</label>
+                            <input type="number" id="currentLimit" step="0.01" value="0.0" min="0" max="1">
+                        </div>
+                        <div class="motor-actions">
+                            <button class="btn btn-primary" onclick="sendMotorCommand()">Send Command</button>
+                            <button class="btn btn-success" onclick="enableMotor()">Enable</button>
+                            <button class="btn btn-danger" onclick="disableMotor()">Disable</button>
+                            <button class="btn btn-secondary" onclick="setZeroPosition()">Set Zero</button>
+                            <button class="btn btn-secondary" onclick="clearMotorError()">Clear Error</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <h3>Motor Feedback</h3>
+                        <div id="motorStatus" class="status-badge disabled">Status: Unknown</div>
+                        <div class="feedback-display">
+                            <div class="feedback-item">
+                                <label>Position (rad)</label>
+                                <div class="value" id="fbPosition">--</div>
+                            </div>
+                            <div class="feedback-item">
+                                <label>Velocity (rad/s)</label>
+                                <div class="value" id="fbVelocity">--</div>
+                            </div>
+                            <div class="feedback-item">
+                                <label>Torque (Nm)</label>
+                                <div class="value" id="fbTorque">--</div>
+                            </div>
+                            <div class="feedback-item">
+                                <label>MOS Temp (°C)</label>
+                                <div class="value" id="fbMosTemp">--</div>
+                            </div>
+                            <div class="feedback-item">
+                                <label>Rotor Temp (°C)</label>
+                                <div class="value" id="fbRotorTemp">--</div>
+                            </div>
+                            <div class="feedback-item">
+                                <label>CAN ID</label>
+                                <div class="value" id="fbCanId">--</div>
+                            </div>
+                        </div>
+                        <div class="auto-refresh-toggle">
+                            <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
+                            <label for="autoRefresh">Auto-refresh feedback (100ms)</label>
+                        </div>
+                        <button class="btn btn-secondary" onclick="updateMotorState()" style="margin-top: 10px;">Refresh Now</button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+
+            // Update control visibility based on mode
+            document.getElementById('controlMode').addEventListener('change', updateControlVisibility);
+            updateControlVisibility();
+        }
+
+        function updateControlVisibility() {
+            const mode = document.getElementById('controlMode').value;
+            document.getElementById('posRow').style.display = mode === 'VEL' ? 'none' : 'flex';
+            document.getElementById('velRow').style.display = 'flex';
+            document.getElementById('stiffnessRow').style.display = mode === 'MIT' ? 'flex' : 'none';
+            document.getElementById('dampingRow').style.display = mode === 'MIT' ? 'flex' : 'none';
+            document.getElementById('torqueRow').style.display = mode === 'MIT' ? 'flex' : 'none';
+            document.getElementById('velLimitRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
+            document.getElementById('curLimitRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
+        }
+
+        async function sendMotorCommand() {
+            if (!currentMotorId) {
+                showStatus('Please select a motor first', 'error');
+                return;
+            }
+
+            const controlMode = document.getElementById('controlMode').value;
+            const targetPosition = parseFloat(document.getElementById('targetPosition').value) || 0.0;
+            const targetVelocity = parseFloat(document.getElementById('targetVelocity').value) || 0.0;
+            const stiffness = parseFloat(document.getElementById('stiffness').value) || 0.0;
+            const damping = parseFloat(document.getElementById('damping').value) || 0.0;
+            const feedforwardTorque = parseFloat(document.getElementById('feedforwardTorque').value) || 0.0;
+            const velocityLimit = parseFloat(document.getElementById('velocityLimit').value) || 0.0;
+            const currentLimit = parseFloat(document.getElementById('currentLimit').value) || 0.0;
+
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/command`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        control_mode: controlMode,
+                        target_position: targetPosition,
+                        target_velocity: targetVelocity,
+                        stiffness: stiffness,
+                        damping: damping,
+                        feedforward_torque: feedforwardTorque,
+                        velocity_limit: velocityLimit,
+                        current_limit: currentLimit,
+                    })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showStatus('Command sent successfully', 'success');
+                    await updateMotorState();
+                } else {
+                    showStatus('Failed to send command: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function enableMotor() {
+            if (!currentMotorId) {
+                showStatus('Please select a motor first', 'error');
+                return;
+            }
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/enable`, {method: 'POST'});
+                const data = await response.json();
+                if (data.success) {
+                    showStatus('Motor enabled', 'success');
+                    await updateMotorState();
+                } else {
+                    showStatus('Failed to enable motor: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function disableMotor() {
+            if (!currentMotorId) {
+                showStatus('Please select a motor first', 'error');
+                return;
+            }
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/disable`, {method: 'POST'});
+                const data = await response.json();
+                if (data.success) {
+                    showStatus('Motor disabled', 'success');
+                    await updateMotorState();
+                } else {
+                    showStatus('Failed to disable motor: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function setZeroPosition() {
+            if (!currentMotorId) {
+                showStatus('Please select a motor first', 'error');
+                return;
+            }
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/set-zero`, {method: 'POST'});
+                const data = await response.json();
+                if (data.success) {
+                    showStatus('Zero position set', 'success');
+                    await updateMotorState();
+                } else {
+                    showStatus('Failed to set zero: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function clearMotorError() {
+            if (!currentMotorId) {
+                showStatus('Please select a motor first', 'error');
+                return;
+            }
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/clear-error`, {method: 'POST'});
+                const data = await response.json();
+                if (data.success) {
+                    showStatus('Error cleared', 'success');
+                    await updateMotorState();
+                } else {
+                    showStatus('Failed to clear error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function updateMotorState() {
+            if (!currentMotorId) {
+                return;
+            }
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/state`);
+                const data = await response.json();
+                if (data.success && data.state) {
+                    const state = data.state;
+                    
+                    // Update status badge
+                    const statusBadge = document.getElementById('motorStatus');
+                    const status = state.status || 'UNKNOWN';
+                    const statusCode = state.status_code;
+                    
+                    statusBadge.textContent = `Status: ${status}`;
+                    statusBadge.className = 'status-badge ';
+                    if (statusCode === 1) {
+                        statusBadge.className += 'enabled';
+                    } else if (statusCode === 0) {
+                        statusBadge.className += 'disabled';
+                    } else {
+                        statusBadge.className += 'error';
+                    }
+                    
+                    // Update feedback values
+                    document.getElementById('fbPosition').textContent = 
+                        state.pos !== undefined ? state.pos.toFixed(4) : '--';
+                    document.getElementById('fbVelocity').textContent = 
+                        state.vel !== undefined ? state.vel.toFixed(4) : '--';
+                    document.getElementById('fbTorque').textContent = 
+                        state.torq !== undefined ? state.torq.toFixed(4) : '--';
+                    document.getElementById('fbMosTemp').textContent = 
+                        state.t_mos !== undefined ? state.t_mos.toFixed(1) : '--';
+                    document.getElementById('fbRotorTemp').textContent = 
+                        state.t_rotor !== undefined ? state.t_rotor.toFixed(1) : '--';
+                    document.getElementById('fbCanId').textContent = 
+                        state.can_id !== undefined ? `0x${state.can_id.toString(16).toUpperCase().padStart(2, '0')}` : '--';
+                }
+            } catch (error) {
+                console.error('Error updating motor state:', error);
+            }
+        }
+
+        function toggleAutoRefresh() {
+            const checkbox = document.getElementById('autoRefresh');
+            autoRefreshEnabled = checkbox.checked;
+            
+            if (autoRefreshEnabled) {
+                motorStateInterval = setInterval(updateMotorState, 100);
+            } else {
+                if (motorStateInterval) {
+                    clearInterval(motorStateInterval);
+                    motorStateInterval = null;
+                }
             }
         }
 
