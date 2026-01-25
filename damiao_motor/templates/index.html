@@ -955,6 +955,7 @@
         let autoRefreshEnabled = false;
         let continuousCommandInterval = null;
         let continuousModeActive = false;
+        let isProgrammaticallyChangingToggle = false;
 
         function displayMotorControl() {
             const container = document.getElementById('motorControlContainer');
@@ -1093,12 +1094,14 @@
                 return;
             }
 
-            const isContinuous = document.getElementById('commandModeToggle').checked;
+            const toggle = document.getElementById('commandModeToggle');
+            const isContinuous = toggle.checked;
             
             if (isContinuous) {
                 // If continuous mode is selected, toggle it on/off
                 if (continuousModeActive) {
-                    stopContinuousMode();
+                    // Stop continuous mode but preserve toggle state
+                    stopContinuousMode(true);
                 } else {
                     startContinuousMode();
                 }
@@ -1109,6 +1112,11 @@
         }
 
         function updateCommandMode() {
+            // Ignore programmatic changes to the toggle
+            if (isProgrammaticallyChangingToggle) {
+                return;
+            }
+            
             const isContinuous = document.getElementById('commandModeToggle').checked;
             
             // If switching to single mode, stop continuous if active
@@ -1225,11 +1233,18 @@
                 statusDiv.style.display = 'none';
             }
             
-            // Only uncheck toggle if not preserving it (e.g., when user explicitly stops)
-            if (!preserveToggle) {
-                const toggle = document.getElementById('commandModeToggle');
-                if (toggle) {
+            const toggle = document.getElementById('commandModeToggle');
+            if (toggle) {
+                // Only uncheck toggle if not preserving it (e.g., when user explicitly stops)
+                if (!preserveToggle) {
+                    isProgrammaticallyChangingToggle = true;
                     toggle.checked = false;
+                    isProgrammaticallyChangingToggle = false;
+                } else {
+                    // Explicitly ensure toggle stays checked when preserving
+                    isProgrammaticallyChangingToggle = true;
+                    toggle.checked = true;
+                    isProgrammaticallyChangingToggle = false;
                 }
             }
         }
