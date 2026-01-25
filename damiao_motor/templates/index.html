@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DaMiao Motor Parameter Editor</title>
+    <title>DaMiao Motor Control</title>
     <style>
         * {
             margin: 0;
@@ -13,33 +13,102 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: #f5f5f5;
-            padding: 20px;
+            padding: 10px;
+            margin: 0;
+            min-height: 100vh;
         }
         .container {
-            max-width: 1400px;
+            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 30px;
+            padding: 15px;
         }
         h1 {
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            font-size: 24px;
         }
         .subtitle {
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+        }
+        .top-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .top-bar-section {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .main-content {
+            display: flex;
+            gap: 0;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .main-content-left {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 400px;
+            min-width: 250px;
+            max-width: 70%;
+            flex-shrink: 0;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+        .resizer {
+            width: 5px;
+            background: #dee2e6;
+            cursor: col-resize;
+            flex-shrink: 0;
+            position: relative;
+            user-select: none;
+        }
+        .resizer:hover {
+            background: #007bff;
+        }
+        .resizer.active {
+            background: #007bff;
+        }
+        .main-content-right {
+            flex: 1;
+            min-width: 300px;
+            overflow-y: auto;
+            padding-left: 15px;
+        }
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .main-content-left {
+                width: 100%;
+                max-width: 100%;
+                padding-right: 0;
+            }
+            .resizer {
+                display: none;
+            }
+            .main-content-right {
+                padding-left: 0;
+            }
         }
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
             border-bottom: 2px solid #e0e0e0;
         }
         .motor-selector {
@@ -159,21 +228,27 @@
         .register-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
+        }
+        #registerTableContainer {
+            max-height: 400px;
+            overflow-y: auto;
         }
         .register-table th {
             background: #f8f9fa;
-            padding: 12px;
+            padding: 8px;
             text-align: left;
             font-weight: 600;
             color: #495057;
             border-bottom: 2px solid #dee2e6;
             position: sticky;
             top: 0;
+            font-size: 13px;
         }
         .register-table td {
-            padding: 10px 12px;
+            padding: 6px 8px;
             border-bottom: 1px solid #e9ecef;
+            font-size: 13px;
         }
         .register-table tr:hover {
             background: #f8f9fa;
@@ -252,11 +327,16 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
         .config-section {
             background: #f8f9fa;
-            padding: 15px;
+            padding: 10px;
             border-radius: 5px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .config-section label {
             display: block;
@@ -284,13 +364,13 @@
             box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
         }
         .motor-control-panel {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         .control-group {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 12px;
             border-radius: 5px;
         }
         .control-group h3 {
@@ -451,15 +531,21 @@
         .chart-container {
             margin-top: 15px;
             position: relative;
-            height: 200px;
+            height: 350px;
             width: 100%;
         }
         .chart-wrapper {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: white;
-            padding: 15px;
+            padding: 12px;
             border-radius: 5px;
             border: 1px solid #dee2e6;
+        }
+        .charts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
         }
         .chart-title {
             font-size: 14px;
@@ -630,48 +716,153 @@
 </head>
 <body>
     <div class="container">
-        <h1>DaMiao Motor Parameter Editor</h1>
-        <p class="subtitle">View and modify motor register parameters via CAN bus</p>
+        <h1>DaMiao Motor Control</h1>
         
         <div class="toast-container" id="toastContainer"></div>
         
-        <div class="section">
-            <div class="section-title">Connection</div>
-            <div class="config-section">
-                <label for="can_channel">CAN Channel:</label>
-                <input type="text" id="can_channel" value="can0" placeholder="can0">
-                <button class="btn btn-primary" onclick="connect()">Connect</button>
-                <button class="btn btn-secondary" onclick="disconnect()">Disconnect</button>
+        <div class="top-bar">
+            <div class="top-bar-section">
+                <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Connection</div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <label for="can_channel" style="font-size: 13px;">CAN Channel:</label>
+                    <input type="text" id="can_channel" value="can0" placeholder="can0" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; width: 100px;">
+                    <button class="btn btn-primary" onclick="connect()">Connect</button>
+                    <button class="btn btn-secondary" onclick="disconnect()">Disconnect</button>
+                </div>
             </div>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">Motor Selection</div>
-            <div class="motor-selector">
-                <button class="btn btn-primary" onclick="scanMotors()">Scan Motors</button>
-                <button class="btn btn-success" onclick="refreshRegisters()" id="refreshBtn" disabled>Refresh Registers</button>
-                <select id="motorSelect" onchange="loadMotorRegisters()" style="padding: 10px; border-radius: 5px; border: 1px solid #ced4da; min-width: 200px;" disabled>
-                    <option value="">Select a motor...</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">Motor Control</div>
-            <div id="motorControlContainer">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Select a motor to control</p>
+            <div class="top-bar-section">
+                <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Motor Selection</div>
+                <div class="motor-selector" style="margin: 0;">
+                    <button class="btn btn-primary" onclick="scanMotors()">Scan Motors</button>
+                    <button class="btn btn-success" onclick="refreshRegisters()" id="refreshBtn" disabled>Refresh Registers</button>
+                    <select id="motorSelect" onchange="loadMotorRegisters()" style="padding: 6px; border-radius: 5px; border: 1px solid #ced4da; min-width: 200px;" disabled>
+                        <option value="">Select a motor...</option>
+                    </select>
                 </div>
             </div>
         </div>
         
-        <div class="section">
-            <div class="section-title">Register Parameters</div>
-            <div id="registerTableContainer">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Select a motor to view registers</p>
+        <div class="main-content">
+            <div class="main-content-left">
+                <div class="section">
+                    <div class="section-title">Motor Control</div>
+                    <div id="motorControlContainer">
+                        <div class="message">
+                            <p>Connect to CAN device and select a motor</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Register Parameters</div>
+                    <div id="registerTableContainer">
+                        <div class="message">
+                            <p>Connect to CAN device and select a motor</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="resizer" id="columnResizer"></div>
+            <div class="main-content-right">
+                <div class="section">
+                    <div class="section-title">Chart Visualizations</div>
+                    <div class="charts-container">
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Position (rad)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('positionChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="positionChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="positionGridToggle" checked onchange="toggleChartGrid('positionChart', this.checked)">
+                                    <label for="positionGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionXDuration">Duration (s):</label>
+                                    <input type="number" id="positionXDuration" step="any" value="10" min="1" onchange="setChartXDuration('positionChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionYMin">Y Min:</label>
+                                    <input type="number" id="positionYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('positionChart', 'y', this.value, document.getElementById('positionYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionYMax">Y Max:</label>
+                                    <input type="number" id="positionYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('positionChart', 'y', document.getElementById('positionYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('positionChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="positionPointsToggle" onchange="toggleChartPoints('positionChart', this.checked)">
+                                    <label for="positionPointsToggle">Points</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Velocity (rad/s)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('velocityChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="velocityChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="velocityGridToggle" checked onchange="toggleChartGrid('velocityChart', this.checked)">
+                                    <label for="velocityGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityXDuration">Duration (s):</label>
+                                    <input type="number" id="velocityXDuration" step="any" value="10" min="1" onchange="setChartXDuration('velocityChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityYMin">Y Min:</label>
+                                    <input type="number" id="velocityYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('velocityChart', 'y', this.value, document.getElementById('velocityYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityYMax">Y Max:</label>
+                                    <input type="number" id="velocityYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('velocityChart', 'y', document.getElementById('velocityYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('velocityChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="velocityPointsToggle" onchange="toggleChartPoints('velocityChart', this.checked)">
+                                    <label for="velocityPointsToggle">Points</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Torque (Nm)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('torqueChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="torqueChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="torqueGridToggle" checked onchange="toggleChartGrid('torqueChart', this.checked)">
+                                    <label for="torqueGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueXDuration">Duration (s):</label>
+                                    <input type="number" id="torqueXDuration" step="any" value="10" min="1" onchange="setChartXDuration('torqueChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueYMin">Y Min:</label>
+                                    <input type="number" id="torqueYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('torqueChart', 'y', this.value, document.getElementById('torqueYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueYMax">Y Max:</label>
+                                    <input type="number" id="torqueYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('torqueChart', 'y', document.getElementById('torqueYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('torqueChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="torquePointsToggle" onchange="toggleChartPoints('torqueChart', this.checked)">
+                                    <label for="torquePointsToggle">Points</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -801,9 +992,9 @@
                     document.getElementById('motorSelect').disabled = true;
                     document.getElementById('refreshBtn').disabled = true;
                     document.getElementById('registerTableContainer').innerHTML = 
-                        '<div class="loading"><div class="spinner"></div><p>Select a motor to view registers</p></div>';
+                        '<div class="message"><p>Connect to CAN device and select a motor</p></div>';
                     document.getElementById('motorControlContainer').innerHTML = 
-                        '<div class="loading"><div class="spinner"></div><p>Select a motor to control</p></div>';
+                        '<div class="message"><p>Connect to CAN device and select a motor</p></div>';
                     currentMotorId = null;
                 }
             } catch (error) {
@@ -854,6 +1045,12 @@
                             }
                         }
                         
+                        // Auto-select first motor if no motor is currently selected
+                        if (!select.value && data.motors.length > 0) {
+                            select.value = data.motors[0].id;
+                            select.dispatchEvent(new Event('change'));
+                        }
+                        
                         if (!silent) {
                             showStatus(`Found ${data.motors.length} motor(s)`, 'success');
                         }
@@ -887,9 +1084,9 @@
                 // Stop continuous mode when motor is deselected
                 stopContinuousMode();
                 document.getElementById('registerTableContainer').innerHTML = 
-                    '<div class="loading"><div class="spinner"></div><p>Select a motor to view registers</p></div>';
+                    '<div class="message"><p>Connect to CAN device and select a motor</p></div>';
                 document.getElementById('motorControlContainer').innerHTML = 
-                    '<div class="loading"><div class="spinner"></div><p>Select a motor to control</p></div>';
+                    '<div class="message"><p>Connect to CAN device and select a motor</p></div>';
                 return;
             }
             
@@ -933,7 +1130,7 @@
         function displayRegisters(registers) {
             const container = document.getElementById('registerTableContainer');
             let html = '<table class="register-table"><thead><tr>';
-            html += '<th>RID</th><th>Variable</th><th>Description</th><th>Value</th><th>Type</th><th>Access</th><th>Action</th>';
+            html += '<th>Description</th><th>Value</th><th>Type</th><th>Action</th>';
             html += '</tr></thead><tbody>';
             
             const sortedRids = Object.keys(registers).map(Number).sort((a, b) => a - b);
@@ -1004,8 +1201,6 @@
                 }
                 
                 html += `<tr class="${isReadOnly ? 'read-only' : ''}">`;
-                html += `<td>${rid}</td>`;
-                html += `<td>${regInfo.variable}</td>`;
                 html += `<td>${regInfo.description}</td>`;
                 html += `<td class="value-cell">`;
                 html += `<span class="value-display" id="value-${rid}">${valueStr}</span>`;
@@ -1016,7 +1211,6 @@
                 }
                 html += `</td>`;
                 html += `<td>${regInfo.data_type}</td>`;
-                html += `<td>${regInfo.access}</td>`;
                 html += `<td>`;
                 if (!isReadOnly) {
                     html += `<button class="edit-btn" onclick="editRegister(${rid})" id="edit-btn-${rid}">Edit</button>`;
@@ -1196,7 +1390,7 @@
             const container = document.getElementById('motorControlContainer');
             const motorId = currentMotorId;
             if (!motorId) {
-                container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Select a motor to control</p></div>';
+                container.innerHTML = '<div class="message"><p>Connect to CAN device and select a motor</p></div>';
                 return;
             }
 
@@ -1295,102 +1489,6 @@
                             <div class="feedback-item">
                                 <label>Rotor Temp (°C)</label>
                                 <div class="value" id="fbRotorTemp">--</div>
-                            </div>
-                        </div>
-                        <div class="chart-wrapper">
-                            <div class="chart-title">
-                                <span>Position (rad)</span>
-                                <button class="chart-export-btn" onclick="showExportModal('positionChart')">Export Data</button>
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="positionChart"></canvas>
-                            </div>
-                            <div class="chart-controls">
-                                <div class="chart-control-group">
-                                    <input type="checkbox" id="positionGridToggle" checked onchange="toggleChartGrid('positionChart', this.checked)">
-                                    <label for="positionGridToggle">Grid</label>
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="positionXDuration">Duration (s):</label>
-                                    <input type="number" id="positionXDuration" step="any" value="10" min="1" onchange="setChartXDuration('positionChart', this.value)">
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="positionYMin">Y Min:</label>
-                                    <input type="number" id="positionYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('positionChart', 'y', this.value, document.getElementById('positionYMax').value)">
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="positionYMax">Y Max:</label>
-                                    <input type="number" id="positionYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('positionChart', 'y', document.getElementById('positionYMin').value, this.value)">
-                                </div>
-                                <button class="chart-control-btn" onclick="resetChartAxisLimits('positionChart')">Reset Limits</button>
-                                <div class="chart-control-group">
-                                    <input type="checkbox" id="positionPointsToggle" onchange="toggleChartPoints('positionChart', this.checked)">
-                                    <label for="positionPointsToggle">Points</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chart-wrapper">
-                            <div class="chart-title">
-                                <span>Velocity (rad/s)</span>
-                                <button class="chart-export-btn" onclick="showExportModal('velocityChart')">Export Data</button>
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="velocityChart"></canvas>
-                            </div>
-                            <div class="chart-controls">
-                                <div class="chart-control-group">
-                                    <input type="checkbox" id="velocityGridToggle" checked onchange="toggleChartGrid('velocityChart', this.checked)">
-                                    <label for="velocityGridToggle">Grid</label>
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="velocityXDuration">Duration (s):</label>
-                                    <input type="number" id="velocityXDuration" step="any" value="10" min="1" onchange="setChartXDuration('velocityChart', this.value)">
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="velocityYMin">Y Min:</label>
-                                    <input type="number" id="velocityYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('velocityChart', 'y', this.value, document.getElementById('velocityYMax').value)">
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="velocityYMax">Y Max:</label>
-                                    <input type="number" id="velocityYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('velocityChart', 'y', document.getElementById('velocityYMin').value, this.value)">
-                                </div>
-                                <button class="chart-control-btn" onclick="resetChartAxisLimits('velocityChart')">Reset Limits</button>
-                                <div class="chart-control-group">
-                                    <input type="checkbox" id="velocityPointsToggle" onchange="toggleChartPoints('velocityChart', this.checked)">
-                                    <label for="velocityPointsToggle">Points</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chart-wrapper">
-                            <div class="chart-title">
-                                <span>Torque (Nm)</span>
-                                <button class="chart-export-btn" onclick="showExportModal('torqueChart')">Export Data</button>
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="torqueChart"></canvas>
-                            </div>
-                            <div class="chart-controls">
-                                <div class="chart-control-group">
-                                    <input type="checkbox" id="torqueGridToggle" checked onchange="toggleChartGrid('torqueChart', this.checked)">
-                                    <label for="torqueGridToggle">Grid</label>
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="torqueXDuration">Duration (s):</label>
-                                    <input type="number" id="torqueXDuration" step="any" value="10" min="1" onchange="setChartXDuration('torqueChart', this.value)">
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="torqueYMin">Y Min:</label>
-                                    <input type="number" id="torqueYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('torqueChart', 'y', this.value, document.getElementById('torqueYMax').value)">
-                                </div>
-                                <div class="chart-control-group">
-                                    <label for="torqueYMax">Y Max:</label>
-                                    <input type="number" id="torqueYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('torqueChart', 'y', document.getElementById('torqueYMin').value, this.value)">
-                                </div>
-                                <button class="chart-control-btn" onclick="resetChartAxisLimits('torqueChart')">Reset Limits</button>
-                                <div class="chart-control-group">
-                                    <input type="checkbox" id="torquePointsToggle" onchange="toggleChartPoints('torqueChart', this.checked)">
-                                    <label for="torquePointsToggle">Points</label>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -2365,6 +2463,52 @@
                 console.error('Failed to load register table:', error);
             }
         });
+
+        // Column resizer functionality
+        (function() {
+            const resizer = document.getElementById('columnResizer');
+            const leftPanel = document.querySelector('.main-content-left');
+            const rightPanel = document.querySelector('.main-content-right');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (!resizer || !leftPanel || !rightPanel) return;
+            
+            let isResizing = false;
+            let startX = 0;
+            let startWidth = 0;
+            
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                startX = e.clientX;
+                startWidth = leftPanel.offsetWidth;
+                resizer.classList.add('active');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                
+                const deltaX = e.clientX - startX;
+                const newWidth = startWidth + deltaX;
+                const minWidth = 250;
+                const maxWidth = mainContent.offsetWidth * 0.7;
+                
+                if (newWidth >= minWidth && newWidth <= maxWidth) {
+                    leftPanel.style.width = newWidth + 'px';
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    resizer.classList.remove('active');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            });
+        })();
     </script>
 </body>
 </html>
