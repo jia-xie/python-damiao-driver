@@ -58,6 +58,24 @@ def get_register_table():
     return jsonify({'success': True, 'registers': registers})
 
 
+@app.route('/api/can-interfaces', methods=['GET'])
+def list_can_interfaces():
+    """List available CAN interfaces (e.g. can0, vcan0) on the system.
+    On Linux with SocketCAN, reads /sys/class/net for names starting with 'can'.
+    """
+    interfaces = []
+    try:
+        net_dir = '/sys/class/net'
+        if os.path.isdir(net_dir):
+            for name in os.listdir(net_dir):
+                if name.startswith('can'):
+                    interfaces.append(name)
+            interfaces.sort()
+    except OSError:
+        pass
+    return jsonify({'success': True, 'interfaces': interfaces})
+
+
 @app.route('/api/connect', methods=['POST'])
 def connect():
     """Connect to CAN bus."""

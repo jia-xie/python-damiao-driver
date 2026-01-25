@@ -725,7 +725,9 @@
                 <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Connection</div>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <label for="can_channel" style="font-size: 13px;">CAN Channel:</label>
-                    <input type="text" id="can_channel" value="can0" placeholder="can0" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; width: 100px;">
+                    <input type="text" id="can_channel" list="canInterfaces" value="can0" placeholder="can0" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; width: 100px;" title="Type or choose from detected interfaces">
+                    <datalist id="canInterfaces"></datalist>
+                    <button type="button" class="btn btn-secondary" onclick="loadCanInterfaces()" title="Refresh list of CAN interfaces" style="padding: 4px 8px; font-size: 12px;">↻</button>
                     <button class="btn btn-primary" onclick="connect()">Connect</button>
                     <button class="btn btn-secondary" onclick="disconnect()">Disconnect</button>
                 </div>
@@ -2421,7 +2423,25 @@
             }
         }
 
-        // Load register table on page load
+        async function loadCanInterfaces() {
+            try {
+                const response = await fetch('/api/can-interfaces');
+                const data = await response.json();
+                const list = document.getElementById('canInterfaces');
+                if (data.success && data.interfaces && data.interfaces.length && list) {
+                    list.innerHTML = '';
+                    data.interfaces.forEach(iface => {
+                        const opt = document.createElement('option');
+                        opt.value = iface;
+                        list.appendChild(opt);
+                    });
+                }
+            } catch (e) {
+                console.warn('Could not load CAN interfaces:', e);
+            }
+        }
+
+        // Load register table and CAN interfaces on page load
         window.addEventListener('DOMContentLoaded', async () => {
             try {
                 const response = await fetch('/api/register-table');
@@ -2433,6 +2453,7 @@
             } catch (error) {
                 console.error('Failed to load register table:', error);
             }
+            await loadCanInterfaces();
         });
 
         // Column resizer functionality
