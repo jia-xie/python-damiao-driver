@@ -947,6 +947,7 @@
                 const data = await response.json();
                 if (data.success) {
                     showStatus('Connected to CAN bus: ' + channel, 'success');
+                    await scanMotors();
                 } else {
                     showStatus('Connection failed: ' + data.error, 'error');
                 }
@@ -1003,7 +1004,7 @@
         }
 
         async function scanMotors(silent = false) {
-            const scanBtn = event ? event.target : document.querySelector('button[onclick="scanMotors()"]');
+            const scanBtn = document.querySelector('button[onclick="scanMotors()"]');
             const originalText = scanBtn ? scanBtn.textContent : 'Scan Motors';
             if (scanBtn) {
                 scanBtn.disabled = true;
