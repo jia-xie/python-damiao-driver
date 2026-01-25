@@ -581,7 +581,6 @@
                     clearInterval(motorStateInterval);
                     motorStateInterval = null;
                 }
-                autoRefreshEnabled = false;
                 
                 // Stop continuous mode if running
                 stopContinuousMode();
@@ -952,7 +951,6 @@
 
         // Motor control functions
         let motorStateInterval = null;
-        let autoRefreshEnabled = false;
         let continuousCommandInterval = null;
         let continuousModeActive = false;
         let isProgrammaticallyChangingToggle = false;
@@ -1025,8 +1023,12 @@
                                 <span class="toggle-label">Continuous</span>
                             </div>
                         </div>
+                        <div class="control-row" id="frequencyRow" style="display: none;">
+                            <label>Command Frequency (Hz):</label>
+                            <input type="number" id="commandFrequency" step="1" value="50" min="1" max="1000" onchange="updateContinuousFrequency()">
+                        </div>
                         <div id="continuousStatus" style="margin-top: 5px; margin-bottom: 10px; display: none; padding: 8px; background: #fff3cd; border-radius: 4px; color: #856404; font-size: 13px;">
-                            <strong>Continuous Mode Active</strong> - Sending commands at 50Hz (20ms interval)
+                            <strong>Continuous Mode Active</strong> - Sending commands at <span id="currentFrequency">50</span>Hz
                         </div>
                         <div class="motor-actions-row">
                             <button class="btn btn-secondary" onclick="setZeroPosition()">Set Zero</button>
@@ -1062,11 +1064,6 @@
                                 <div class="value" id="fbCanId">--</div>
                             </div>
                         </div>
-                        <div class="auto-refresh-toggle">
-                            <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
-                            <label for="autoRefresh">Auto-refresh feedback (100ms)</label>
-                        </div>
-                        <button class="btn btn-secondary" onclick="updateMotorState()" style="margin-top: 10px;">Refresh Now</button>
                     </div>
                 </div>
             `;
@@ -1075,6 +1072,13 @@
             // Update control visibility based on mode
             document.getElementById('controlMode').addEventListener('change', updateControlVisibility);
             updateControlVisibility();
+            
+            // Initialize frequency row visibility based on toggle state
+            const toggle = document.getElementById('commandModeToggle');
+            const frequencyRow = document.getElementById('frequencyRow');
+            if (frequencyRow && toggle) {
+                frequencyRow.style.display = toggle.checked ? 'flex' : 'none';
+            }
         }
 
         function updateControlVisibility() {
@@ -1118,6 +1122,10 @@
             }
             
             const isContinuous = document.getElementById('commandModeToggle').checked;
+            const frequencyRow = document.getElementById('frequencyRow');
+            if (frequencyRow) {
+                frequencyRow.style.display = isContinuous ? 'flex' : 'none';
+            }
             
             // If switching to single mode, stop continuous if active
             if (!isContinuous && continuousModeActive) {
@@ -1204,14 +1212,31 @@
             btn.textContent = 'Stop Command';
             btn.classList.remove('btn-primary');
             btn.classList.add('btn-danger');
-            document.getElementById('continuousStatus').style.display = 'block';
+            
+            // Get user-defined frequency
+            const frequencyInput = document.getElementById('commandFrequency');
+            const frequency = parseFloat(frequencyInput.value) || 50;
+            const intervalMs = 1000 / frequency;
+            
+            // Update status message with current frequency
+            const statusDiv = document.getElementById('continuousStatus');
+            const currentFreqSpan = document.getElementById('currentFrequency');
+            if (currentFreqSpan) {
+                currentFreqSpan.textContent = frequency;
+            }
+            statusDiv.style.display = 'block';
 
-            // Send commands at 50Hz (20ms interval) - typical control loop frequency
+            // Send commands at user-defined frequency
             continuousCommandInterval = setInterval(() => {
                 sendMotorCommandInternal();
-            }, 20);
+            }, intervalMs);
 
-            showStatus('Continuous mode started (50Hz)', 'info');
+            // Automatically start auto-refresh feedback during continuous mode
+            if (!motorStateInterval) {
+                motorStateInterval = setInterval(updateMotorState, 100);
+            }
+
+            showStatus(`Continuous mode started (${frequency}Hz)`, 'info');
         }
 
         function stopContinuousMode(preserveToggle = false) {
@@ -1219,6 +1244,12 @@
             if (continuousCommandInterval) {
                 clearInterval(continuousCommandInterval);
                 continuousCommandInterval = null;
+            }
+            
+            // Stop auto-refresh feedback when continuous mode stops
+            if (motorStateInterval) {
+                clearInterval(motorStateInterval);
+                motorStateInterval = null;
             }
             
             const btn = document.getElementById('sendCommandBtn');
@@ -1247,6 +1278,43 @@
                     isProgrammaticallyChangingToggle = false;
                 }
             }
+        }
+
+        function updateContinuousFrequency() {
+            // Only update if continuous mode is active
+            if (!continuousModeActive) {
+                return;
+            }
+            
+            const frequencyInput = document.getElementById('commandFrequency');
+            let frequency = parseFloat(frequencyInput.value) || 50;
+            
+            // Validate frequency range
+            if (frequency < 1) {
+                frequency = 1;
+                frequencyInput.value = 1;
+            } else if (frequency > 1000) {
+                frequency = 1000;
+                frequencyInput.value = 1000;
+            }
+            
+            const intervalMs = 1000 / frequency;
+            
+            // Update status message
+            const currentFreqSpan = document.getElementById('currentFrequency');
+            if (currentFreqSpan) {
+                currentFreqSpan.textContent = frequency;
+            }
+            
+            // Restart the interval with new frequency
+            if (continuousCommandInterval) {
+                clearInterval(continuousCommandInterval);
+            }
+            continuousCommandInterval = setInterval(() => {
+                sendMotorCommandInternal();
+            }, intervalMs);
+            
+            showStatus(`Command frequency updated to ${frequency}Hz`, 'info');
         }
 
         async function enableMotor() {
@@ -1372,20 +1440,6 @@
                 }
             } catch (error) {
                 console.error('Error updating motor state:', error);
-            }
-        }
-
-        function toggleAutoRefresh() {
-            const checkbox = document.getElementById('autoRefresh');
-            autoRefreshEnabled = checkbox.checked;
-            
-            if (autoRefreshEnabled) {
-                motorStateInterval = setInterval(updateMotorState, 100);
-            } else {
-                if (motorStateInterval) {
-                    clearInterval(motorStateInterval);
-                    motorStateInterval = null;
-                }
             }
         }
 
