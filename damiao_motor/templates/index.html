@@ -383,6 +383,66 @@
             height: 18px;
             cursor: pointer;
         }
+        .motor-actions-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .motor-actions-row.full-width {
+            width: 100%;
+        }
+        .toggle-switch-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 10px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #007bff;
+        }
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+        }
         @media (max-width: 768px) {
             .motor-control-panel {
                 grid-template-columns: 1fr;
@@ -523,6 +583,9 @@
                 }
                 autoRefreshEnabled = false;
                 
+                // Stop continuous mode if running
+                stopContinuousMode();
+                
                 const response = await fetch('/api/disconnect', {method: 'POST'});
                 const data = await response.json();
                 if (data.success) {
@@ -614,11 +677,18 @@
             const select = document.getElementById('motorSelect');
             const motorId = parseInt(select.value);
             if (!motorId) {
+                // Stop continuous mode when motor is deselected
+                stopContinuousMode();
                 document.getElementById('registerTableContainer').innerHTML = 
                     '<div class="loading"><div class="spinner"></div><p>Select a motor to view registers</p></div>';
                 document.getElementById('motorControlContainer').innerHTML = 
                     '<div class="loading"><div class="spinner"></div><p>Select a motor to control</p></div>';
                 return;
+            }
+            
+            // Stop continuous mode if switching motors
+            if (currentMotorId !== motorId) {
+                stopContinuousMode();
             }
             
             currentMotorId = motorId;
@@ -883,6 +953,8 @@
         // Motor control functions
         let motorStateInterval = null;
         let autoRefreshEnabled = false;
+        let continuousCommandInterval = null;
+        let continuousModeActive = false;
 
         function displayMotorControl() {
             const container = document.getElementById('motorControlContainer');
@@ -933,10 +1005,29 @@
                             <label>Current Limit:</label>
                             <input type="number" id="currentLimit" step="0.01" value="0.0" min="0" max="1">
                         </div>
-                        <div class="motor-actions">
-                            <button class="btn btn-primary" onclick="sendMotorCommand()">Send Command</button>
-                            <button class="btn btn-success" onclick="enableMotor()">Enable</button>
-                            <button class="btn btn-danger" onclick="disableMotor()">Disable</button>
+                        <div class="motor-actions-row">
+                            <button class="btn btn-success" id="enableBtn" onclick="enableMotor()" style="display:none;">Enable</button>
+                            <button class="btn btn-danger" id="disableBtn" onclick="disableMotor()" style="display:none;">Disable</button>
+                        </div>
+                        <div class="motor-actions-row">
+                            <button class="btn btn-success" id="enableBtn" onclick="enableMotor()">Enable</button>
+                            <button class="btn btn-danger" id="disableBtn" onclick="disableMotor()">Disable</button>
+                        </div>
+                        <div class="motor-actions-row">
+                            <button class="btn btn-primary" id="sendCommandBtn" onclick="sendMotorCommand()">Send Command</button>
+                            <div class="toggle-switch-container">
+                                <span class="toggle-label">Single</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="commandModeToggle" onchange="updateCommandMode()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-label">Continuous</span>
+                            </div>
+                        </div>
+                        <div id="continuousStatus" style="margin-top: 5px; margin-bottom: 10px; display: none; padding: 8px; background: #fff3cd; border-radius: 4px; color: #856404; font-size: 13px;">
+                            <strong>Continuous Mode Active</strong> - Sending commands at 50Hz (20ms interval)
+                        </div>
+                        <div class="motor-actions-row">
                             <button class="btn btn-secondary" onclick="setZeroPosition()">Set Zero</button>
                             <button class="btn btn-secondary" onclick="clearMotorError()">Clear Error</button>
                         </div>
@@ -1002,6 +1093,56 @@
                 return;
             }
 
+            const isContinuous = document.getElementById('commandModeToggle').checked;
+            
+            if (isContinuous) {
+                // If continuous mode is selected, toggle it on/off
+                if (continuousModeActive) {
+                    stopContinuousMode();
+                } else {
+                    startContinuousMode();
+                }
+            } else {
+                // Single mode - send once
+                await sendMotorCommandInternal();
+            }
+        }
+
+        function updateCommandMode() {
+            const isContinuous = document.getElementById('commandModeToggle').checked;
+            
+            // If switching to single mode, stop continuous if active
+            if (!isContinuous && continuousModeActive) {
+                stopContinuousMode();
+            }
+            // Don't auto-start continuous mode - user must press "Send Command" button
+        }
+
+        async function sendMotorCommandInternal() {
+            if (!currentMotorId) {
+                return;
+            }
+
+            // Check if motor is disabled - stop continuous mode if so
+            try {
+                const stateResponse = await fetch(`/api/motors/${currentMotorId}/state`);
+                const stateData = await stateResponse.json();
+                if (stateData.success && stateData.state) {
+                    const statusCode = stateData.state.status_code;
+                    // Status code 0 = DISABLED
+                    if (statusCode === 0) {
+                        if (continuousModeActive) {
+                            stopContinuousMode(true); // preserveToggle = true
+                            showStatus('Motor is disabled - stopped continuous mode', 'info');
+                        }
+                        return;
+                    }
+                }
+            } catch (error) {
+                // If we can't check state, continue anyway
+                console.warn('Could not check motor state:', error);
+            }
+
             const controlMode = document.getElementById('controlMode').value;
             const targetPosition = parseFloat(document.getElementById('targetPosition').value) || 0.0;
             const targetVelocity = parseFloat(document.getElementById('targetVelocity').value) || 0.0;
@@ -1028,13 +1169,68 @@
                 });
                 const data = await response.json();
                 if (data.success) {
-                    showStatus('Command sent successfully', 'success');
-                    await updateMotorState();
+                    // Only show status for single sends, not continuous
+                    if (!continuousModeActive) {
+                        showStatus('Command sent successfully', 'success');
+                    }
                 } else {
                     showStatus('Failed to send command: ' + data.error, 'error');
+                    stopContinuousMode();
                 }
             } catch (error) {
                 showStatus('Error: ' + error.message, 'error');
+                stopContinuousMode();
+            }
+        }
+
+        function startContinuousMode() {
+            if (!currentMotorId) {
+                showStatus('Please select a motor first', 'error');
+                // Uncheck toggle if motor not selected
+                document.getElementById('commandModeToggle').checked = false;
+                return;
+            }
+
+            continuousModeActive = true;
+            const btn = document.getElementById('sendCommandBtn');
+            btn.textContent = 'Stop Command';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-danger');
+            document.getElementById('continuousStatus').style.display = 'block';
+
+            // Send commands at 50Hz (20ms interval) - typical control loop frequency
+            continuousCommandInterval = setInterval(() => {
+                sendMotorCommandInternal();
+            }, 20);
+
+            showStatus('Continuous mode started (50Hz)', 'info');
+        }
+
+        function stopContinuousMode(preserveToggle = false) {
+            continuousModeActive = false;
+            if (continuousCommandInterval) {
+                clearInterval(continuousCommandInterval);
+                continuousCommandInterval = null;
+            }
+            
+            const btn = document.getElementById('sendCommandBtn');
+            if (btn) {
+                btn.textContent = 'Send Command';
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-primary');
+            }
+            
+            const statusDiv = document.getElementById('continuousStatus');
+            if (statusDiv) {
+                statusDiv.style.display = 'none';
+            }
+            
+            // Only uncheck toggle if not preserving it (e.g., when user explicitly stops)
+            if (!preserveToggle) {
+                const toggle = document.getElementById('commandModeToggle');
+                if (toggle) {
+                    toggle.checked = false;
+                }
             }
         }
 
@@ -1062,6 +1258,12 @@
                 showStatus('Please select a motor first', 'error');
                 return;
             }
+            
+            // Stop continuous mode when disabling motor, but preserve toggle state
+            if (continuousModeActive) {
+                stopContinuousMode(true); // preserveToggle = true
+            }
+            
             try {
                 const response = await fetch(`/api/motors/${currentMotorId}/disable`, {method: 'POST'});
                 const data = await response.json();
