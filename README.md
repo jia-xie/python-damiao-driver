@@ -80,9 +80,6 @@ All `damiao` subcommands require `--motor-type` (e.g. `4340`). Use `damiao <cmd>
 damiao gui
 ```
 
-!!! note "Backward Compatibility"
-    The `damiao-gui` command is still available as an alias for backward compatibility, but `damiao gui` is the recommended way to launch the GUI.
-
 Then open **http://127.0.0.1:5000**.
 
 The interface provides:

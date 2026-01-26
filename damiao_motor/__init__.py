@@ -1,5 +1,16 @@
-from .motor import DaMiaoMotor, REGISTER_TABLE, RegisterInfo, CAN_BAUD_RATE_CODES, MOTOR_TYPE_PRESETS, KP_MIN, KP_MAX, KD_MIN, KD_MAX
-from .controller import DaMiaoController
+# Re-export from core for backward compatibility
+from .core import (
+    DaMiaoMotor,
+    DaMiaoController,
+    REGISTER_TABLE,
+    RegisterInfo,
+    CAN_BAUD_RATE_CODES,
+    MOTOR_TYPE_PRESETS,
+    KP_MIN,
+    KP_MAX,
+    KD_MIN,
+    KD_MAX,
+)
 
 try:
     from ._version import version as __version__  # type: ignore

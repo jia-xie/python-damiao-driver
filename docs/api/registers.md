@@ -4,7 +4,7 @@ This page documents all motor registers available in the DaMiao motor.
 
 ## RegisterInfo
 
-::: damiao_motor.motor.RegisterInfo
+::: damiao_motor.core.motor.RegisterInfo
 
 ## Register Table
 

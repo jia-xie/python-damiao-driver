@@ -8,27 +8,27 @@ This page documents the Python API for the CLI module. For user-facing CLI docum
 
 ## Command Handlers
 
-::: damiao_motor.cli.cmd_scan
+::: damiao_motor.cli.commands.cmd_scan
 
-::: damiao_motor.cli.cmd_send_cmd_mit
+::: damiao_motor.cli.commands.cmd_send_cmd_mit
 
-::: damiao_motor.cli.cmd_send_cmd_pos_vel
+::: damiao_motor.cli.commands.cmd_send_cmd_pos_vel
 
-::: damiao_motor.cli.cmd_send_cmd_vel
+::: damiao_motor.cli.commands.cmd_send_cmd_vel
 
-::: damiao_motor.cli.cmd_send_cmd_force_pos
+::: damiao_motor.cli.commands.cmd_send_cmd_force_pos
 
-::: damiao_motor.cli.cmd_set_zero
+::: damiao_motor.cli.commands.cmd_set_zero
 
-::: damiao_motor.cli.cmd_set_zero_position
+::: damiao_motor.cli.commands.cmd_set_zero_position
 
-::: damiao_motor.cli.cmd_set_can_timeout
+::: damiao_motor.cli.commands.cmd_set_can_timeout
 
-::: damiao_motor.cli.cmd_set_motor_id
+::: damiao_motor.cli.commands.cmd_set_motor_id
 
-::: damiao_motor.cli.cmd_set_feedback_id
+::: damiao_motor.cli.commands.cmd_set_feedback_id
 
 ## Utility Functions
 
-::: damiao_motor.cli.scan_motors
+::: damiao_motor.cli.display.scan_motors
 

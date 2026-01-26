@@ -1,3 +1,3 @@
 # DaMiaoController
 
-::: damiao_motor.controller.DaMiaoController
+::: damiao_motor.core.controller.DaMiaoController

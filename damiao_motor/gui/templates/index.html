@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaMiao Motor Control</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>DaMiao Motor Control</h1>
+        
+        <div class="toast-container" id="toastContainer"></div>
+        
+        <div class="top-bar">
+            <div class="top-bar-section">
+                <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Connection</div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <label for="can_channel" style="font-size: 13px;">CAN Channel:</label>
+                    <input type="text" id="can_channel" list="canInterfaces" value="can0" placeholder="can0" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; width: 100px;" title="Type or choose from detected interfaces">
+                    <datalist id="canInterfaces"></datalist>
+                    <button type="button" class="btn btn-secondary" onclick="loadCanInterfaces()" title="Refresh list of CAN interfaces" style="padding: 4px 8px; font-size: 12px;">↻</button>
+                    <button class="btn btn-primary" onclick="connect()">Connect</button>
+                    <button class="btn btn-secondary" onclick="disconnect()">Disconnect</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="main-content-left">
+                <div class="section">
+                    <div class="section-title">Motor Selection</div>
+                    <div class="motor-selector" style="margin: 0;">
+                        <button class="btn btn-primary" onclick="scanMotors()">Scan Motors</button>
+                        <select id="motorSelect" onchange="loadMotorRegisters()" style="padding: 6px; border-radius: 5px; border: 1px solid #ced4da; min-width: 200px;" disabled>
+                            <option value="">Select a motor...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Motor Control</div>
+                    <div id="motorControlContainer">
+                        <div class="message">
+                            <p>Connect to CAN device and select a motor</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Register Parameters</div>
+                    <div id="registerTableContainer">
+                        <div class="message">
+                            <p>Connect to CAN device and select a motor</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="resizer" id="columnResizer"></div>
+            <div class="main-content-right">
+                <div class="section">
+                    <div class="section-title">Chart Visualizations</div>
+                    <div class="charts-container">
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Position (rad)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('positionChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="positionChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="positionGridToggle" checked onchange="toggleChartGrid('positionChart', this.checked)">
+                                    <label for="positionGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionXDuration">Duration (s):</label>
+                                    <input type="number" id="positionXDuration" step="any" value="10" min="1" onchange="setChartXDuration('positionChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionYMin">Y Min:</label>
+                                    <input type="number" id="positionYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('positionChart', 'y', this.value, document.getElementById('positionYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="positionYMax">Y Max:</label>
+                                    <input type="number" id="positionYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('positionChart', 'y', document.getElementById('positionYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('positionChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="positionPointsToggle" onchange="toggleChartPoints('positionChart', this.checked)">
+                                    <label for="positionPointsToggle">Points</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Velocity (rad/s)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('velocityChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="velocityChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="velocityGridToggle" checked onchange="toggleChartGrid('velocityChart', this.checked)">
+                                    <label for="velocityGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityXDuration">Duration (s):</label>
+                                    <input type="number" id="velocityXDuration" step="any" value="10" min="1" onchange="setChartXDuration('velocityChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityYMin">Y Min:</label>
+                                    <input type="number" id="velocityYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('velocityChart', 'y', this.value, document.getElementById('velocityYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="velocityYMax">Y Max:</label>
+                                    <input type="number" id="velocityYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('velocityChart', 'y', document.getElementById('velocityYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('velocityChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="velocityPointsToggle" onchange="toggleChartPoints('velocityChart', this.checked)">
+                                    <label for="velocityPointsToggle">Points</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                <span>Torque (Nm)</span>
+                                <button class="chart-export-btn" onclick="showExportModal('torqueChart')">Export Data</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="torqueChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="torqueGridToggle" checked onchange="toggleChartGrid('torqueChart', this.checked)">
+                                    <label for="torqueGridToggle">Grid</label>
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueXDuration">Duration (s):</label>
+                                    <input type="number" id="torqueXDuration" step="any" value="10" min="1" onchange="setChartXDuration('torqueChart', this.value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueYMin">Y Min:</label>
+                                    <input type="number" id="torqueYMin" step="any" placeholder="Auto" onchange="setChartAxisLimits('torqueChart', 'y', this.value, document.getElementById('torqueYMax').value)">
+                                </div>
+                                <div class="chart-control-group">
+                                    <label for="torqueYMax">Y Max:</label>
+                                    <input type="number" id="torqueYMax" step="any" placeholder="Auto" onchange="setChartAxisLimits('torqueChart', 'y', document.getElementById('torqueYMin').value, this.value)">
+                                </div>
+                                <button class="chart-control-btn" onclick="resetChartAxisLimits('torqueChart')">Reset Limits</button>
+                                <div class="chart-control-group">
+                                    <input type="checkbox" id="torquePointsToggle" onchange="toggleChartPoints('torqueChart', this.checked)">
+                                    <label for="torquePointsToggle">Points</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Data Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Export Chart Data</div>
+            <div class="modal-body">
+                <label for="exportFileName">File Name:</label>
+                <input type="text" id="exportFileName" placeholder="Enter file name (without extension)">
+                <small id="exportHelpText" style="color: #6c757d; display: block; margin-top: 5px;">File will be saved as CSV format</small>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeExportModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="confirmExportData()">Save</button>
+            </div>
+        </div>
+    </div>
+
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
+

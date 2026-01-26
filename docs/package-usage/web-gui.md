@@ -23,7 +23,7 @@ damiao gui
 Open **http://127.0.0.1:5000** in your browser.
 
 !!! note "Backward Compatibility"
-    The `damiao-gui` command is still available as an alias for backward compatibility, but `damiao gui` is the recommended way to launch the GUI.
+    Use `damiao gui` to launch the GUI.
 
 ### Command options
 

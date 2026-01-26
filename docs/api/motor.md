@@ -1,3 +1,3 @@
 # DaMiaoMotor
 
-::: damiao_motor.motor.DaMiaoMotor
+::: damiao_motor.core.motor.DaMiaoMotor

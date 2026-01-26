@@ -7,14 +7,15 @@ from typing import Dict, Any, Optional
 
 from flask import Flask, render_template, jsonify, request
 
-from .controller import DaMiaoController
-from .motor import REGISTER_TABLE, RegisterInfo, MOTOR_TYPE_PRESETS
+from damiao_motor.core.controller import DaMiaoController
+from damiao_motor.core.motor import REGISTER_TABLE, RegisterInfo, MOTOR_TYPE_PRESETS
 
 import os
 
 # Get the directory where this module is located
 _template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-app = Flask(__name__, template_folder=_template_dir)
+_static_dir = os.path.join(os.path.dirname(__file__), 'static')
+app = Flask(__name__, template_folder=_template_dir, static_folder=_static_dir)
 
 # Global controller instance (will be initialized when needed)
 _controller: Optional[DaMiaoController] = None
