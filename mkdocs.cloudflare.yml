@@ -26,14 +26,35 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.indexes
+    - navigation.tracking
+    - navigation.tabs
+    - toc.integrate
     - search.suggest
     - search.highlight
+    - search.share
+    - shortcuts
     - content.code.copy
     - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - content.action.edit
+    - content.action.view
+    - tags
+  icon:
+    repo: fontawesome/brands/github
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jia-xie/python-damiao-driver
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/damiao-motor/
 
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      use_pygments: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences:
@@ -51,6 +72,8 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  - search:
+      lang: en
   - mkdocstrings:
       handlers:
         python:
@@ -62,23 +85,42 @@ plugins:
             show_root_toc_entry: true
             show_signature_annotations: true
             separate_signature: true
+            show_submodules: true
+            group_by_category: true
+            filters: ["!^_"]
+            members_order: alphabetical
+            merge_init_into_class: true
 
 nav:
   - Home: index.md
   - Concept:
-    - CAN Bus Fundamentals: concept/can.md
-    - Communication Protocol: concept/communication-protocol.md
-    - Motor Control Modes: concept/motor-control-modes.md
+      - CAN Bus Fundamentals: concept/can.md
+      - Communication Protocol: concept/communication-protocol.md
+      - Motor Control Modes: concept/motor-control-modes.md
   - Hardware Setup:
-    - CAN Setup: hardware-setup/can-set-up.md
-    - Motor Connection: hardware-setup/motor-connection.md
+      - CAN Setup: hardware-setup/can-set-up.md
+      - Motor Connection: hardware-setup/motor-connection.md
   - Package Usage:
-    - CLI Tool: package-usage/cli-tool.md
-    - Web GUI: package-usage/web-gui.md
+      - CLI Tool: package-usage/cli-tool.md
+      - Web GUI: package-usage/web-gui.md
   - API Reference:
-    - DaMiaoController: api/controller.md
-    - DaMiaoMotor: api/motor.md
-    - Registers: api/registers.md
-    - CLI Module: api/cli.md
+      - DaMiaoController: api/controller.md
+      - DaMiaoMotor: api/motor.md
+      - Registers: api/registers.md
+      - CLI Module: api/cli.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jia-xie/python-damiao-driver
+      name: GitHub
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/damiao-motor/
+      name: PyPI
+  version:
+    provider: mike
+
+extra_css:
+  - assets/extra.css
 
 copyright: Copyright &copy; 2025-Present jia-xie

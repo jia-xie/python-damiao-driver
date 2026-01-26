@@ -1,3 +1,10 @@
+---
+tags:
+  - api
+  - reference
+  - registers
+---
+
 # Registers
 
 This page documents all motor registers available in the DaMiao motor.

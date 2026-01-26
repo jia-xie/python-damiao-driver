@@ -1,3 +1,10 @@
+---
+tags:
+  - api
+  - reference
+  - cli
+---
+
 # CLI Module API
 
 This page documents the Python API for the CLI module. For user-facing CLI documentation, see the [CLI Tool](../package-usage/cli-tool.md).

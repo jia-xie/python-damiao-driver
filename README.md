@@ -4,7 +4,7 @@
 ![Platform](https://img.shields.io/badge/platform-Linux-lightgrey)
 [![PyPI](https://img.shields.io/badge/pypi-damiao--motor-blue)](https://pypi.org/project/damiao-motor/)
 
-<img src="docs/gui-screenshot.png" alt="DaMiao Motor Control GUI" width="1000">
+<img src="docs/package-usage/gui-screenshot.png" alt="DaMiao Motor Control GUI" width="1000">
 
 Python driver for **DaMiao** brushless motors over CAN with a unified CLI, web GUI, and library API.
 

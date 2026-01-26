@@ -1,3 +1,10 @@
+---
+tags:
+  - usage
+  - cli
+  - reference
+---
+
 # CLI Tool Reference
 
 The `damiao` command-line tool provides a unified interface for scanning, configuring, and controlling DaMiao motors.

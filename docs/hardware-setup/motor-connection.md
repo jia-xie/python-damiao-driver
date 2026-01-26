@@ -1,3 +1,10 @@
+---
+tags:
+  - hardware
+  - setup
+  - wiring
+---
+
 # Motor Connection
 
 This guide covers the physical connection of DaMiao motors to your system.

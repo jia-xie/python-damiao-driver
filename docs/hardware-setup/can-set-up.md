@@ -1,3 +1,10 @@
+---
+tags:
+  - hardware
+  - setup
+  - can
+---
+
 # CAN Setup
 
 This guide covers setting up the CAN interface for use with DaMiao motors.

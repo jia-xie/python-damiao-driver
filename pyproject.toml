@@ -30,6 +30,7 @@ write_to = "damiao_motor/_version.py"
 
 [tool.setuptools.package-data]
 damiao_motor = ["gui/templates/*.html", "gui/static/css/*.css", "gui/static/js/*.js"]
+damiao_motor_docs = ["docs/assets/*.css"]
 
 [project.scripts]
 damiao = "damiao_motor.cli:unified_main"

@@ -1,3 +1,10 @@
+---
+tags:
+  - concept
+  - can
+  - hardware
+---
+
 # CAN Bus Fundamentals
 
 This document explains the CAN (Controller Area Network) bus fundamentals as they relate to DaMiao motors.

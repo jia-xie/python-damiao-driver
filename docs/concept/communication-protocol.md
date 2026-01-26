@@ -1,3 +1,10 @@
+---
+tags:
+  - concept
+  - protocol
+  - advanced
+---
+
 # Communication Protocol
 
 This document describes the CAN bus communication protocol used by DaMiao motors.

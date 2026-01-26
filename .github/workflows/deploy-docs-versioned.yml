@@ -1,0 +1,106 @@
+name: Deploy Versioned Documentation
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., 1.0.0)'
+        required: true
+      alias:
+        description: 'Alias for this version (e.g., latest, dev)'
+        required: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history needed for mike
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: |
+          pip install mkdocs-material mkdocs mkdocstrings[python] mike
+          pip install -e .
+
+      - name: Extract version from tag or input
+        id: version_info
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual run: user supplies the version name (e.g. "1.0.1" or "v1.0.1").
+            VERSION="${{ github.event.inputs.version }}"
+            # Derive the tag name: if it already starts with "v", use it as-is,
+            # otherwise prepend "v" to match the repository tag naming convention.
+            case "$VERSION" in
+              v*) TAG_NAME="$VERSION" ;;
+              *)  TAG_NAME="v$VERSION" ;;
+            esac
+          else
+            # Tag push: use the tag ref and strip the leading "v" for the docs version.
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+            VERSION=${TAG_NAME#v}
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "Deploying version: $VERSION from tag: $TAG_NAME"
+
+      - name: Checkout tag for building
+        run: |
+          TAG_NAME="${{ steps.version_info.outputs.tag_name }}"
+          # Ensure we have the tag locally, then check it out.
+          git fetch --tags --force
+          git checkout "$TAG_NAME"
+
+      - name: Build and deploy with mike
+        run: |
+          VERSION="${{ steps.version_info.outputs.version }}"
+          
+          # Deploy this tagged version to gh-pages with mike (builds and commits)
+          mike deploy --push "$VERSION"
+
+      - name: Fetch and checkout gh-pages branch
+        run: |
+          # Fetch all branches to get the latest state (including updates from mike)
+          git fetch origin
+          # Checkout gh-pages branch (create local tracking branch if needed)
+          git checkout gh-pages 2>/dev/null || git checkout -b gh-pages origin/gh-pages
+          # Pull latest changes from remote
+          git pull origin gh-pages || true
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .  # Upload entire gh-pages branch content
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

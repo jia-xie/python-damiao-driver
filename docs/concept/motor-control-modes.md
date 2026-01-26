@@ -1,3 +1,10 @@
+---
+tags:
+  - concept
+  - control-modes
+  - reference
+---
+
 # Motor Control Modes
 
 DaMiao motors support four different control modes, each optimized for different use cases.

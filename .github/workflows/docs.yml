@@ -1,4 +1,4 @@
-name: Deploy Documentation
+name: Deploy Documentation (Dev)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -24,30 +24,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          fetch-depth: 0  # Full history needed for mike
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.8'
-      
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Install dependencies
         run: |
-          pip install mkdocs-material
-          pip install mkdocs
-          pip install mkdocstrings[python]
+          pip install mkdocs-material mkdocs mkdocstrings[python] mike
           pip install -e .
-      
-      - name: Build documentation
-        run: mkdocs build
-      
+
+      - name: Deploy dev version with mike
+        run: |
+          # Deploy documentation for the development version.
+          # The docs are always published under the single "dev" version.
+          mike deploy --push dev
+          # Make "dev" the default version (root of the site).
+          mike set-default --push dev
+
+      - name: Fetch and checkout gh-pages branch
+        run: |
+          # Fetch all branches to get the latest state (including updates from mike)
+          git fetch origin
+          # Checkout gh-pages branch (create local tracking branch if needed)
+          git checkout gh-pages 2>/dev/null || git checkout -b gh-pages origin/gh-pages
+          # Pull latest changes from remote
+          git pull origin gh-pages || true
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./site
-      
+          path: .  # Upload entire gh-pages branch content
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
