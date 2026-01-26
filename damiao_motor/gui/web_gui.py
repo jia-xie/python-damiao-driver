@@ -92,7 +92,17 @@ def connect():
         init_controller(channel=channel)
         return jsonify({'success': True})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        error_msg = str(e)
+        # Check if it's a "Network is down" error
+        if "Error Code 100" in error_msg or "Network is down" in error_msg or "[Errno 100]" in error_msg:
+            hint = (
+                f"To fix this, bring up the CAN interface:\n"
+                f"  sudo ip link set {channel} up type can bitrate 1000000\n\n"
+                f"Or check the interface status:\n"
+                f"  ip link show {channel}"
+            )
+            return jsonify({'success': False, 'error': error_msg, 'hint': hint}), 500
+        return jsonify({'success': False, 'error': error_msg}), 500
 
 
 @app.route('/api/disconnect', methods=['POST'])
@@ -128,7 +138,23 @@ def scan():
         _controller._motors_by_feedback = {}
         
         # Flush bus
-        _controller.flush_bus()
+        try:
+            _controller.flush_bus()
+        except Exception as e:
+            error_msg = str(e)
+            # Check if it's a "Network is down" error
+            if "Error Code 100" in error_msg or "Network is down" in error_msg or "[Errno 100]" in error_msg:
+                # Extract channel name if available
+                channel = getattr(_controller.bus, 'channel', 'can0')
+                hint = (
+                    f"To fix this, bring up the CAN interface:\n"
+                    f"  sudo ip link set {channel} up type can bitrate 1000000\n\n"
+                    f"Or check the interface status:\n"
+                    f"  ip link show {channel}"
+                )
+                return jsonify({'success': False, 'error': error_msg, 'hint': hint}), 500
+            # Re-raise other errors
+            raise
         
         # Send zero commands to potential motor IDs (0x01-0x10)
         motors_found = []
@@ -166,9 +192,22 @@ def scan():
         return jsonify({'success': True, 'motors': motors_found})
     except Exception as e:
         import traceback
-        error_msg = f"{str(e)}\n{traceback.format_exc()}"
-        print(f"Scan error: {error_msg}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+        error_msg = str(e)
+        error_full = f"{error_msg}\n{traceback.format_exc()}"
+        print(f"Scan error: {error_full}")
+        
+        # Check if it's a "Network is down" error and provide hint
+        if "Error Code 100" in error_msg or "Network is down" in error_msg or "[Errno 100]" in error_msg:
+            channel = getattr(_controller.bus, 'channel', 'can0') if _controller else 'can0'
+            hint = (
+                f"To fix this, bring up the CAN interface:\n"
+                f"  sudo ip link set {channel} up type can bitrate 1000000\n\n"
+                f"Or check the interface status:\n"
+                f"  ip link show {channel}"
+            )
+            return jsonify({'success': False, 'error': error_msg, 'hint': hint}), 500
+        
+        return jsonify({'success': False, 'error': error_msg}), 500
 
 
 @app.route('/api/motors/<int:motor_id>/registers', methods=['GET'])

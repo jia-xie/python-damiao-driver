@@ -62,11 +62,35 @@ let currentMotorId = null;
                     showStatus('Connected to CAN bus: ' + channel, 'success');
                     await scanMotors();
                 } else {
-                    showStatus('Connection failed: ' + data.error, 'error');
+                    const errorMsg = 'Connection failed: ' + (data.error || 'Unknown error');
+                    if (data.hint) {
+                        // Show error in popup modal if hint is provided
+                        showErrorModal(errorMsg, data.hint);
+                    } else {
+                        // Show in status bar for errors without hints
+                        showStatus(errorMsg, 'error');
+                    }
                 }
             } catch (error) {
                 console.error('Connect error:', error);
-                showStatus('Error: ' + error.message, 'error');
+                // Try to parse error response if it's JSON
+                let errorMsg = error.message || 'Unknown error';
+                try {
+                    if (error.message && error.message.includes('HTTP')) {
+                        const match = error.message.match(/\{.*\}/);
+                        if (match) {
+                            const errorData = JSON.parse(match[0]);
+                            errorMsg = errorData.error || errorMsg;
+                            if (errorData.hint) {
+                                showErrorModal('Error: ' + errorMsg, errorData.hint);
+                                return;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // Ignore JSON parse errors
+                }
+                showStatus('Error: ' + errorMsg, 'error');
             } finally {
                 connectBtn.disabled = false;
                 connectBtn.textContent = originalText;
@@ -132,11 +156,14 @@ let currentMotorId = null;
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ motor_type: '4310' })
                 });
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
-                }
                 const data = await response.json();
+                if (!response.ok) {
+                    const error = new Error(data.error || `HTTP ${response.status}`);
+                    if (data.hint) {
+                        error.hint = data.hint;
+                    }
+                    throw error;
+                }
                 console.log('Scan response:', data);
                 
                 if (data.success) {
@@ -177,13 +204,27 @@ let currentMotorId = null;
                     }
                 } else {
                     if (!silent) {
-                        showStatus('Scan failed: ' + (data.error || 'Unknown error'), 'error');
+                        const errorMsg = 'Scan failed: ' + (data.error || 'Unknown error');
+                        if (data.hint) {
+                            // Show error in popup modal if hint is provided
+                            showErrorModal(errorMsg, data.hint);
+                        } else {
+                            // Show in status bar for errors without hints
+                            showStatus(errorMsg, 'error');
+                        }
                     }
                 }
             } catch (error) {
                 console.error('Scan error:', error);
                 if (!silent) {
-                    showStatus('Error: ' + error.message, 'error');
+                    const errorMsg = error.message || 'Unknown error';
+                    if (error.hint) {
+                        // Show error in popup modal if hint is provided
+                        showErrorModal('Error: ' + errorMsg, error.hint);
+                    } else {
+                        // Show in status bar for errors without hints
+                        showStatus('Error: ' + errorMsg, 'error');
+                    }
                 }
             } finally {
                 if (scanBtn) {
@@ -523,19 +564,20 @@ let currentMotorId = null;
 
             const html = `
                 <div class="motor-control-panel">
-                    <div class="control-group">
-                        <h3>Control Parameters</h3>
+                    <div class="control-params-feedback-container">
+                        <div class="control-group control-params-group">
+                            <h3>Control Parameters</h3>
                         <div class="control-row">
                             <label>Motor type:</label>
                             <select id="motorTypeSelect" onchange="setMotorType()">${motorTypeOptions}</select>
                         </div>
                         <div class="control-row">
-                            <label>Control Mode:</label>
+                            <label>Control Mode: <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/" target="_blank" class="docs-link" title="View control modes documentation">ⓘ</a></label>
                             <select id="controlMode">
-                                <option value="MIT">MIT (Position + Velocity + Torque)</option>
-                                <option value="POS_VEL">POS_VEL (Position + Velocity)</option>
-                                <option value="VEL">VEL (Velocity Only)</option>
-                                <option value="FORCE_POS">FORCE_POS (Force Position)</option>
+                                <option value="MIT">MIT</option>
+                                <option value="POS_VEL">POS_VEL</option>
+                                <option value="VEL">VEL</option>
+                                <option value="FORCE_POS">FORCE_POS</option>
                             </select>
                         </div>
                         <div class="control-row" id="posRow">
@@ -596,9 +638,9 @@ let currentMotorId = null;
                             <button class="btn btn-secondary" onclick="setZeroPosition()">Set Zero</button>
                             <button class="btn btn-secondary" onclick="clearMotorError()">Clear Error</button>
                         </div>
-                    </div>
-                    <div class="control-group">
-                        <h3>Motor Feedback</h3>
+                        </div>
+                        <div class="control-group motor-feedback-group">
+                            <h3>Motor Feedback</h3>
                         <div id="motorStatus" class="status-badge disabled">Status: Unknown</div>
                         <div class="feedback-display">
                             <div class="feedback-item">
@@ -1120,11 +1162,202 @@ let currentMotorId = null;
             closeExportModal();
         }
         
+        // Error Modal Functions
+        function showErrorModal(errorMessage, hint = null) {
+            const modal = document.getElementById('errorModal');
+            const errorMsgEl = document.getElementById('errorMessage');
+            const errorHintEl = document.getElementById('errorHint');
+            
+            errorMsgEl.textContent = errorMessage;
+            if (hint) {
+                // Clear container and add header
+                errorHintEl.innerHTML = '';
+                const header = document.createElement('div');
+                header.className = 'error-hint-header';
+                header.textContent = 'Hint';
+                errorHintEl.appendChild(header);
+                
+                // Parse hint and format bash commands as code blocks
+                const content = document.createElement('div');
+                formatErrorHint(hint, content);
+                errorHintEl.appendChild(content);
+                errorHintEl.style.display = 'block';
+            } else {
+                errorHintEl.style.display = 'none';
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        function formatErrorHint(hintText, container) {
+            // Clear container
+            container.innerHTML = '';
+            
+            // Split by lines and process
+            const lines = hintText.split('\n');
+            let currentParagraph = null;
+            
+            lines.forEach((line, index) => {
+                const trimmedLine = line.trim();
+                
+                // Check if line is a bash command (starts with common command patterns)
+                const isCommand = /^\s*(sudo\s+)?(ip|ifconfig|canconfig|systemctl|service|modprobe|ls|cat|echo|grep|awk|sed)/.test(line) ||
+                                 /^\s*\$/.test(line) ||
+                                 (trimmedLine && !trimmedLine.endsWith(':') && !trimmedLine.endsWith('.') && 
+                                  (trimmedLine.includes('sudo') || trimmedLine.includes('ip link') || 
+                                   trimmedLine.includes('ip link show') || trimmedLine.includes('ip link set')));
+                
+                if (isCommand) {
+                    // Close current paragraph if open
+                    if (currentParagraph) {
+                        container.appendChild(currentParagraph);
+                        currentParagraph = null;
+                    }
+                    
+                    // Create wrapper for code block with copy button
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'error-hint-code-wrapper';
+                    
+                    // Create code block for command
+                    const codeEl = document.createElement('code');
+                    codeEl.className = 'error-hint-code';
+                    // Remove leading $ or spaces, but keep the command
+                    const commandText = line.replace(/^\s*\$?\s*/, '');
+                    codeEl.textContent = commandText;
+                    
+                    // Create copy button with icon
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'error-hint-code-copy';
+                    copyBtn.title = 'Copy command to clipboard';
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    `;
+                    copyBtn.onclick = function() {
+                        copyToClipboard(commandText, copyBtn);
+                    };
+                    
+                    wrapper.appendChild(codeEl);
+                    wrapper.appendChild(copyBtn);
+                    container.appendChild(wrapper);
+                } else if (trimmedLine) {
+                    // Regular text line
+                    if (!currentParagraph) {
+                        currentParagraph = document.createElement('p');
+                    }
+                    if (currentParagraph.textContent) {
+                        currentParagraph.textContent += ' ' + trimmedLine;
+                    } else {
+                        currentParagraph.textContent = trimmedLine;
+                    }
+                } else if (!trimmedLine && currentParagraph) {
+                    // Empty line - close current paragraph
+                    container.appendChild(currentParagraph);
+                    currentParagraph = null;
+                }
+            });
+            
+            // Close any remaining paragraph
+            if (currentParagraph) {
+                container.appendChild(currentParagraph);
+            }
+        }
+        
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Show success feedback - change icon to checkmark with smooth transition
+                const originalHTML = button.innerHTML;
+                
+                // Fade out current icon
+                button.style.opacity = '0';
+                button.style.transform = 'scale(0.8)';
+                
+                setTimeout(function() {
+                    // Change to checkmark
+                    button.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    `;
+                    button.classList.add('copied');
+                    button.style.opacity = '1';
+                    button.style.transform = 'scale(1)';
+                    
+                    // Fade back to clipboard icon
+                    setTimeout(function() {
+                        button.style.opacity = '0';
+                        button.style.transform = 'scale(0.8)';
+                        setTimeout(function() {
+                            button.innerHTML = originalHTML;
+                            button.classList.remove('copied');
+                            button.style.opacity = '';
+                            button.style.transform = '';
+                        }, 150);
+                    }, 800);
+                }, 100);
+            }).catch(function(err) {
+                console.error('Failed to copy text: ', err);
+                // Fallback: select text
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const originalHTML = button.innerHTML;
+                    
+                    // Fade out current icon
+                    button.style.opacity = '0';
+                    button.style.transform = 'scale(0.8)';
+                    
+                    setTimeout(function() {
+                        // Change to checkmark
+                        button.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        `;
+                        button.classList.add('copied');
+                        button.style.opacity = '1';
+                        button.style.transform = 'scale(1)';
+                        
+                        // Fade back to clipboard icon
+                        setTimeout(function() {
+                            button.style.opacity = '0';
+                            button.style.transform = 'scale(0.8)';
+                            setTimeout(function() {
+                                button.innerHTML = originalHTML;
+                                button.classList.remove('copied');
+                                button.style.opacity = '';
+                                button.style.transform = '';
+                            }, 150);
+                        }, 800);
+                    }, 100);
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+        
+        function closeErrorModal() {
+            const modal = document.getElementById('errorModal');
+            modal.style.display = 'none';
+        }
+        
         // Close modal when clicking outside of it
         window.onclick = function(event) {
-            const modal = document.getElementById('exportModal');
-            if (event.target === modal) {
+            const exportModal = document.getElementById('exportModal');
+            const errorModal = document.getElementById('errorModal');
+            if (event.target === exportModal) {
                 closeExportModal();
+            }
+            if (event.target === errorModal) {
+                closeErrorModal();
             }
         }
         

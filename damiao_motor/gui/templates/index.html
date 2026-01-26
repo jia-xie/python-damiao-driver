@@ -181,6 +181,22 @@
         </div>
     </div>
 
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content modal-error">
+            <div class="modal-header modal-error-header">
+                <span style="color: #dc3545;">⚠️ Error</span>
+            </div>
+            <div class="modal-body">
+                <div id="errorMessage" style="color: #333; margin-bottom: 15px; white-space: pre-line;"></div>
+                <div id="errorHint" class="error-hint-container"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeErrorModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
         <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
 </body>

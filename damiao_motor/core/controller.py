@@ -120,13 +120,38 @@ class DaMiaoController:
         
         Returns:
             Number of messages flushed.
+        
+        Raises:
+            can.CanOperationError: If CAN interface is down (Error Code 100) with helpful hint
+            OSError: If other network/system errors occur
         """
         count = 0
-        while True:
-            msg = self.bus.recv(timeout=0)
-            if msg is None:
-                break
-            count += 1
+        try:
+            while True:
+                msg = self.bus.recv(timeout=0)
+                if msg is None:
+                    break
+                count += 1
+        except can.CanOperationError as e:
+            error_str = str(e)
+            errno = getattr(e, 'errno', None)
+            
+            # Error Code 100: Network is down - CAN interface not up
+            if errno == 100 or "Error Code 100" in error_str or "Network is down" in error_str or "[Errno 100]" in error_str:
+                channel = getattr(self.bus, 'channel', 'can0')
+                raise can.CanOperationError(
+                    f"CAN interface '{channel}' is down (Error Code 100)"
+                ) from e
+            # Re-raise other CanOperationError
+            raise
+        except OSError as e:
+            errno = getattr(e, 'errno', None)
+            if errno == 100 or "Network is down" in str(e) or "[Errno 100]" in str(e):
+                channel = getattr(self.bus, 'channel', 'can0')
+                raise OSError(
+                    f"CAN interface '{channel}' is down (Error Code 100)"
+                ) from e
+            raise
         return count
 
     # -----------------------
