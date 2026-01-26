@@ -2216,6 +2216,17 @@
             const intervalMs = 1000 / frequency;
             chartUpdateInterval = intervalMs / 1000;
             
+            // Clear chart data so a new run does not overlay previous run's data
+            chartTimeLabels = [];
+            positionData = [];
+            velocityData = [];
+            torqueData = [];
+            chartTimeCounter = 0;
+            lastChartRenderTime = 0;
+            if (positionChart) { positionChart.data.datasets[0].data = []; positionChart.update('none'); }
+            if (velocityChart) { velocityChart.data.datasets[0].data = []; velocityChart.update('none'); }
+            if (torqueChart) { torqueChart.data.datasets[0].data = []; torqueChart.update('none'); }
+            
             // Reset chart start time when starting continuous mode
             chartStartTime = Date.now();
             
