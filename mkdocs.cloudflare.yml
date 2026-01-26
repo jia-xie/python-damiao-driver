@@ -1,4 +1,4 @@
-site_name: DaMiao Motor Driver
+site_name: DaMiao Motor
 site_description: Python driver for DaMiao motors over CAN
 site_author: jia-xie
 site_url: https://damiao-motor.jia-xie.com/
@@ -65,10 +65,16 @@ plugins:
 
 nav:
   - Home: index.md
-  - Guide:
-    - Hardware Setup: guide/hardware-setup.md
-    - CLI Tool: guide/cli-tool.md
-    - Web GUI: guide/web-gui.md
+  - Concept:
+    - CAN Bus Fundamentals: concept/can.md
+    - Communication Protocol: concept/communication-protocol.md
+    - Motor Control Modes: concept/motor-control-modes.md
+  - Hardware Setup:
+    - CAN Setup: hardware-setup/can-set-up.md
+    - Motor Connection: hardware-setup/motor-connection.md
+  - Package Usage:
+    - CLI Tool: package-usage/cli-tool.md
+    - Web GUI: package-usage/web-gui.md
   - API Reference:
     - DaMiaoController: api/controller.md
     - DaMiaoMotor: api/motor.md

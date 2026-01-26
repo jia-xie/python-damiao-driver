@@ -47,10 +47,11 @@ sudo candump can0
 
 This will show all CAN messages on the bus.
 
-### Using damiao-scan
+### Using damiao scan
 
 ```bash
-damiao-scan --channel can0
+# Motor type is optional (defaults to 4310)
+damiao scan --channel can0
 ```
 
 ## Troubleshooting
@@ -89,8 +90,3 @@ Then specify the channel in your code:
 ```python
 controller = DaMiaoController(channel="can1", bustype="socketcan")
 ```
-
-## Next Steps
-
-- [Motor Configuration](motor-config.md) - Configure motor parameters
-

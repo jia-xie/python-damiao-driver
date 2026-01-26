@@ -101,6 +101,6 @@ The interface provides:
 - **`motor.get_states()`** — last decoded feedback (pos, vel, torq, status, etc.).  
 - **`motor.get_register` / `motor.write_register`** — read/write registers by ID.  
 
-See the [API docs](https://jia-xie.github.io/python-damiao-driver/api/controller/) and [motor configuration](https://jia-xie.github.io/python-damiao-driver/configuration/motor-config/) for details.
+See the [API docs](https://jia-xie.github.io/python-damiao-driver/api/controller/) for details.
 
 ---

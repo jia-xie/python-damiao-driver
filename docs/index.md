@@ -1,16 +1,16 @@
-# DaMiao Motor Driver
+# DaMiao Motor
 
 ![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
 ![Platform](https://img.shields.io/badge/platform-Linux-lightgrey)
 [![PyPI](https://img.shields.io/badge/pypi-damiao--motor-blue)](https://pypi.org/project/damiao-motor/)
 
-We created this Python driver because many people in the robot learning community use DaMiao motors, and we want to make using this excellent product as easy to use as possible.
+![DaMiao Motor Control Web GUI](package-usage/gui-screenshot.png)
 
 ## Features
 
-- ✅ **CLI tools** - Command-line utilities for scanning and configuration
-- ✅ **Web GUI** - Browser-based interface for viewing and editing motor parameters
-- ✅ **Easy to use** - Simple Python API for integration into your projects
+- ✅ **[CLI tools](package-usage/cli-tool.md)** - Command-line utilities for easy motor control
+- ✅ **[GUI](package-usage/web-gui.md)** - Browser-based interface for viewing and editing motor parameters
+- ✅ **[Python API](api/motor.md)** - Simple API for integrating motor control into your Python projects
 
 ## Installation
 ### Install from PyPI
@@ -18,7 +18,7 @@ Install using `pip`
 ```bash
 pip install damiao-motor
 ```
-### Install from Source
+### Install from source for latest updates
 To install from the source repository:
 
 ```bash
@@ -39,33 +39,9 @@ You should also be able to use the command-line tools:
 
 ```bash
 damiao --help
-damiao gui --help
 ```
-
-## Quick Start
-Minimal python script to control the motor
-
-```python
-from damiao_motor import DaMiaoController
-
-controller = DaMiaoController(channel="can0", bustype="socketcan")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
-
-controller.enable_all()
-motor.send_cmd(target_position=1.0, target_velocity=0.0, stiffness=20.0, damping=0.5, feedforward_torque=0.0)
-```
-
-## Related Links
-
-- [Motor Firmware Repository](https://gitee.com/kit-miao/motor-firmware) - Official DaMiao motor firmware
-- [GitHub Repository](https://github.com/jia-xie/python-damiao-driver) - Source code and issues
-- [PyPI Package](https://pypi.org/project/damiao-motor/) - Python package index
-
-## Safety Warning
-
-!!! warning "Safety First"
-    Always ensure motors are securely mounted and operated in safe conditions. Keep clear of moving parts and follow your lab/robot safety guidelines.
 
 ## Next Steps
 
-- [Guide](guide/hardware-setup.md) - Complete setup and concepts guide
+- [Hardware Setup](hardware-setup/can-set-up.md) - CAN interface setup
+- [Package Usage](package-usage/cli-tool.md) - Using the CLI tools

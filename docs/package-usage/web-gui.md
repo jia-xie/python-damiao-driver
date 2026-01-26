@@ -2,7 +2,7 @@
 
 The `damiao gui` command provides a web-based interface to connect to the CAN bus, scan for DaMiao motors, run commands, view and edit registers, and plot position, velocity, and torque in real time.
 
-![DaMiao Motor Control – full interface](../gui-screenshot.png)
+![DaMiao Motor Control – full interface](gui-screenshot.png)
 
 ---
 

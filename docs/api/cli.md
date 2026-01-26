@@ -1,6 +1,6 @@
 # CLI Module API
 
-This page documents the Python API for the CLI module. For user-facing CLI documentation, see the [CLI Reference](../cli-reference/index.md).
+This page documents the Python API for the CLI module. For user-facing CLI documentation, see the [CLI Tool](../package-usage/cli-tool.md).
 
 ## Main Entry Point
 

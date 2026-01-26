@@ -275,7 +275,7 @@ def scan_motors(
     bitrate: int = 1000000,
     debug: bool = False,
     *,
-    motor_type: str,
+    motor_type: str = "4310",
 ) -> Set[int]:
     """
     Scan for connected motors by sending zero commands and listening for feedback.
@@ -285,7 +285,9 @@ def scan_motors(
         bustype: CAN bus type (e.g., "socketcan")
         motor_ids: List of motor IDs to test. If None, tests IDs 0x01-0x10.
         duration_s: How long to listen for responses (seconds)
-        motor_type: Motor type for P/V/T presets (e.g. 4340, 4310, 3507). Required.
+        motor_type: Motor type for P/V/T presets (e.g. 4340, 4310, 3507). 
+                    Defaults to "4310". Only used for encoding zero commands; 
+                    doesn't affect which motors are detected.
 
     Returns:
         Set of motor IDs that responded with feedback.
@@ -618,7 +620,7 @@ def cmd_scan(args) -> None:
     config_lines = [
         f" CAN channel: {args.channel}",
         f" Bus type: {args.bustype}",
-        f" Motor type: {args.motor_type}",
+        f" Motor type: {args.motor_type} (for encoding only)",
         f" Testing motor IDs: {', '.join([hex(i) for i in args.ids]) if args.ids else '0x01-0x10 (default range)'}",
         f" Listen duration: {args.duration}s",
     ]
@@ -1346,10 +1348,10 @@ For more information about a specific command, use:
         subparser.add_argument(
             "--motor-type",
             type=str,
-            required=True,
+            default="4340",
             choices=["4310", "4310P", "4340", "4340P", "6006", "8006", "8009", "10010L", "10010", "H3510", "G6215", "H6220", "JH11", "6248P", "3507"],
             dest="motor_type",
-            help="Motor type for P/V/T presets (e.g. 4340, 4310, 3507)",
+            help="Motor type for P/V/T presets (e.g. 4340, 4310, 3507). Defaults to 4340. Only needed for encoding commands; doesn't affect which motors are detected during scan.",
         )
     
     # scan command
@@ -1360,20 +1362,20 @@ For more information about a specific command, use:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Scan default ID range (0x01-0x10)
-  damiao scan --motor-type 4340
+  # Scan default ID range (0x01-0x10) - motor-type is optional
+  damiao scan
 
   # Scan specific motor IDs
-  damiao scan --motor-type 4340 --ids 1 2 3
+  damiao scan --ids 1 2 3
 
   # Scan with longer listen duration
-  damiao scan --motor-type 4340 --duration 2.0
+  damiao scan --duration 2.0
 
-  # Scan with motor type 4310
-  damiao scan --motor-type 4310
+  # Scan with specific motor type (optional, defaults to 4310)
+  damiao scan --motor-type 4340
 
   # Scan with debug output (print all raw CAN messages)
-  damiao scan --motor-type 4340 --debug
+  damiao scan --debug
         """
     )
     scan_parser.add_argument(
@@ -1394,7 +1396,34 @@ Examples:
         action="store_true",
         help="Print all raw CAN messages for debugging.",
     )
-    add_global_args(scan_parser)
+    # Add global args (channel, bustype, bitrate) but NOT motor-type
+    scan_parser.add_argument(
+        "--channel",
+        type=str,
+        default="can0",
+        help="CAN channel (default: can0)",
+    )
+    scan_parser.add_argument(
+        "--bustype",
+        type=str,
+        default="socketcan",
+        help="CAN bus type (default: socketcan)",
+    )
+    scan_parser.add_argument(
+        "--bitrate",
+        type=int,
+        default=1000000,
+        help="CAN bitrate in bits per second (default: 1000000). Only used when bringing up interface.",
+    )
+    # Motor type is optional for scan (defaults to 4310)
+    scan_parser.add_argument(
+        "--motor-type",
+        type=str,
+        default="4310",
+        choices=["4310", "4310P", "4340", "4340P", "6006", "8006", "8009", "10010L", "10010", "H3510", "G6215", "H6220", "JH11", "6248P", "3507"],
+        dest="motor_type",
+        help="Motor type for P/V/T presets (default: 4310). Only used for encoding zero commands; doesn't affect which motors are detected.",
+    )
     scan_parser.set_defaults(func=cmd_scan)
     
     # set-zero-command (renamed from set-zero)

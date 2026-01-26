@@ -2,14 +2,6 @@
 
 The `damiao` command-line tool provides a unified interface for scanning, configuring, and controlling DaMiao motors.
 
-## Installation
-
-After installing the package, the `damiao` command will be available in your PATH:
-
-```bash
-pip install damiao-motor
-```
-
 ## Getting Help
 
 To see all available commands:
@@ -47,7 +39,7 @@ damiao scan [OPTIONS]
 
 **Examples:**
 ```bash
-# Scan default ID range (0x01-0x10)
+# Scan default ID range (0x01-0x10) - motor-type is optional
 damiao scan
 
 # Scan specific motor IDs
@@ -56,13 +48,16 @@ damiao scan --ids 1 2 3
 # Scan with longer listen duration
 damiao scan --duration 2.0
 
+# Scan with specific motor type (optional, defaults to 4310)
+damiao scan --motor-type 4340
+
 # Scan with debug output
 damiao scan --debug
 ```
 
 ### send-cmd
 
-Send command to motor with specified control mode. Loops continuously until Ctrl+C.
+Send command to motor with specified control mode. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on available control modes.
 
 ```bash
 damiao send-cmd [OPTIONS]
@@ -283,38 +278,6 @@ These options can be specified either before or after the subcommand:
 damiao --channel can1 scan
 damiao scan --channel can1
 ```
-
-## Control Modes
-
-The `send-cmd` command supports multiple control modes:
-
-### MIT Mode (Default)
-
-MIT-style control mode with position, velocity, stiffness (kp), damping (kd), and feedforward torque.
-
-- CAN ID: `motor_id`
-- Parameters: position, velocity, stiffness, damping, feedforward_torque
-
-### Position-Velocity Mode
-
-Position-velocity control mode for trapezoidal motion profiles.
-
-- CAN ID: `0x100 + motor_id`
-- Parameters: position, velocity (maximum velocity during acceleration)
-
-### Velocity Mode
-
-Velocity control mode.
-
-- CAN ID: `0x200 + motor_id`
-- Parameters: velocity
-
-### Force-Position Hybrid Mode
-
-Hybrid control mode combining position control with velocity and current limits.
-
-- CAN ID: `0x300 + motor_id`
-- Parameters: position, velocity_limit (0-100 rad/s), current_limit (0.0-1.0 normalized)
 
 ## Real-time Feedback
 
