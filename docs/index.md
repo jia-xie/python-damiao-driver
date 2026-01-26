@@ -39,7 +39,7 @@ You should also be able to use the command-line tools:
 
 ```bash
 damiao --help
-damiao-gui --help
+damiao gui --help
 ```
 
 ## Quick Start

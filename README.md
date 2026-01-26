@@ -10,7 +10,7 @@ Python driver for **DaMiao** brushless motors over CAN with a unified CLI, web G
 
 - **Control modes:** MIT, POS_VEL, VEL, FORCE_POS  
 - **Motor types:** 3507, 4310, 4340, 6006, 8006, 8009, 10010/L, and more  
-- **Tools:** `damiao` CLI (scan, send-cmd, set-zero-command, set-motor-id, etc.) and `damiao-gui` web interface  
+- **Tools:** `damiao` CLI (scan, send-cmd, set-zero-command, set-motor-id, gui, etc.) with unified interface  
 
 **Docs:** [GitHub Pages](https://jia-xie.github.io/python-damiao-driver/) · **Firmware:** [DaMiao motor firmware (Gitee)](https://gitee.com/kit-miao/motor-firmware)
 
@@ -67,14 +67,18 @@ All `damiao` subcommands require `--motor-type` (e.g. `4340`). Use `damiao <cmd>
 | `damiao set-zero-position --motor-type 4340 --id 1` | Set current position to zero |
 | `damiao set-can-timeout --motor-type 4340 --id 1 --timeout-ms 1000` | Set CAN timeout (register 9) |
 | `damiao set-motor-id` / `damiao set-feedback-id` | Change motor or feedback ID (registers 8, 7) |
+| `damiao gui` | Launch web-based GUI for motor control |
 
 ---
 
-## Web GUI: `damiao-gui`
+## Web GUI: `damiao gui`
 
 ```bash
-damiao-gui
+damiao gui
 ```
+
+!!! note "Backward Compatibility"
+    The `damiao-gui` command is still available as an alias for backward compatibility, but `damiao gui` is the recommended way to launch the GUI.
 
 Then open **http://127.0.0.1:5000**.
 

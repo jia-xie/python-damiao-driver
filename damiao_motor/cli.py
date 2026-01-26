@@ -14,6 +14,7 @@ import can
 from . import __version__
 from .controller import DaMiaoController
 from .motor import DaMiaoMotor, REGISTER_TABLE
+from . import web_gui
 
 # ANSI color codes
 RED = "\033[91m"
@@ -1098,6 +1099,42 @@ def cmd_send_cmd(args) -> None:
         controller.shutdown()
 
 
+def cmd_gui(args) -> None:
+    """
+    Handle 'gui' subcommand.
+    
+    Launches the web-based GUI for viewing and controlling DaMiao motors.
+    
+    Args:
+        args: Parsed command-line arguments containing:
+            - host: Host to bind to (default: 127.0.0.1)
+            - port: Port to bind to (default: 5000)
+            - debug: Enable debug mode (default: False)
+            - production: Use production WSGI server (default: False)
+    
+    Examples:
+        ```bash
+        # Start GUI on default host and port
+        damiao gui
+        
+        # Start GUI on custom port
+        damiao gui --port 8080
+        
+        # Start GUI on all interfaces
+        damiao gui --host 0.0.0.0
+        
+        # Start GUI with production server
+        damiao gui --production
+        ```
+    """
+    web_gui.run_server(
+        host=args.host,
+        port=args.port,
+        debug=args.debug,
+        production=args.production
+    )
+
+
 def cmd_set_feedback_id(args) -> None:
     """
     Handle 'set-feedback-id' subcommand.
@@ -1191,6 +1228,7 @@ def unified_main() -> None:
         - set-can-timeout: Set CAN timeout alarm time
         - set-motor-id: Change motor receive ID
         - set-feedback-id: Change motor feedback ID
+        - gui: Launch web-based GUI for motor control
     
     Global options (available for all commands):
         - --version: Show version number and exit
@@ -1232,6 +1270,10 @@ Examples:
 
   # Set CAN timeout
   damiao set-can-timeout --id 1 --timeout 1000
+
+  # Launch web GUI
+  damiao gui
+  damiao gui --port 8080
 
   # Use different CAN channel (can be before or after command)
   damiao scan --channel can_leader_l
@@ -1588,6 +1630,54 @@ Examples:
     )
     add_global_args(send_cmd_parser)
     send_cmd_parser.set_defaults(func=cmd_send_cmd)
+    
+    # gui command
+    gui_parser = subparsers.add_parser(
+        "gui",
+        help="Launch web-based GUI for motor control",
+        description="Launch the web-based GUI for viewing and controlling DaMiao motors.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Start GUI on default host and port (http://127.0.0.1:5000)
+  damiao gui
+
+  # Start GUI on custom port
+  damiao gui --port 8080
+
+  # Start GUI on all interfaces
+  damiao gui --host 0.0.0.0
+
+  # Start GUI with production server (requires waitress)
+  damiao gui --production
+
+  # Start GUI with debug mode
+  damiao gui --debug
+        """
+    )
+    gui_parser.add_argument(
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="Host to bind to (default: 127.0.0.1)",
+    )
+    gui_parser.add_argument(
+        "--port",
+        type=int,
+        default=5000,
+        help="Port to bind to (default: 5000)",
+    )
+    gui_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug mode",
+    )
+    gui_parser.add_argument(
+        "--production",
+        action="store_true",
+        help="Use production WSGI server (requires waitress)",
+    )
+    gui_parser.set_defaults(func=cmd_gui)
     
     args = parser.parse_args()
     

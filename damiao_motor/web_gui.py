@@ -427,25 +427,26 @@ def set_motor_type(motor_id: int):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-def main():
-    """Run the web GUI server."""
-    import argparse
+def run_server(host='127.0.0.1', port=5000, debug=False, production=False):
+    """
+    Run the web GUI server.
+    
+    Args:
+        host: Host to bind to (default: 127.0.0.1)
+        port: Port to bind to (default: 5000)
+        debug: Enable debug mode (default: False)
+        production: Use production WSGI server (default: False)
+    """
     import warnings
-    parser = argparse.ArgumentParser(description="Web-based GUI for DaMiao motor parameters")
-    parser.add_argument('--host', default='127.0.0.1', help='Host to bind to (default: 127.0.0.1)')
-    parser.add_argument('--port', type=int, default=5000, help='Port to bind to (default: 5000)')
-    parser.add_argument('--debug', action='store_true', help='Enable debug mode')
-    parser.add_argument('--production', action='store_true', help='Use production WSGI server (requires waitress)')
-    args = parser.parse_args()
     
     print(f"Starting DaMiao Motor Parameter Editor...")
-    print(f"Open http://{args.host}:{args.port} in your browser")
+    print(f"Open http://{host}:{port} in your browser")
     
-    if args.production:
+    if production:
         try:
             from waitress import serve
             print("Using Waitress production server")
-            serve(app, host=args.host, port=args.port)
+            serve(app, host=host, port=port)
         except ImportError:
             print("Warning: waitress not installed. Install with: pip install waitress")
             print("Falling back to development server...")
@@ -453,14 +454,27 @@ def main():
             import logging
             log = logging.getLogger('werkzeug')
             log.setLevel(logging.ERROR)
-            app.run(host=args.host, port=args.port, debug=args.debug)
+            app.run(host=host, port=port, debug=debug)
     else:
         # Suppress the development server warning for local use
         import logging
         log = logging.getLogger('werkzeug')
         log.setLevel(logging.ERROR)
         warnings.filterwarnings('ignore', message='.*development server.*')
-        app.run(host=args.host, port=args.port, debug=args.debug)
+        app.run(host=host, port=port, debug=debug)
+
+
+def main():
+    """Run the web GUI server (CLI entry point)."""
+    import argparse
+    parser = argparse.ArgumentParser(description="Web-based GUI for DaMiao motor parameters")
+    parser.add_argument('--host', default='127.0.0.1', help='Host to bind to (default: 127.0.0.1)')
+    parser.add_argument('--port', type=int, default=5000, help='Port to bind to (default: 5000)')
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode')
+    parser.add_argument('--production', action='store_true', help='Use production WSGI server (requires waitress)')
+    args = parser.parse_args()
+    
+    run_server(host=args.host, port=args.port, debug=args.debug, production=args.production)
 
 
 if __name__ == '__main__':

@@ -111,7 +111,7 @@ success = motor.write_register(register_id, value)
 
 ### Using Web GUI
 
-The web GUI provides an easy way to view and edit all registers. Use the `damiao-gui` command-line tool to launch the web interface.
+The web GUI provides an easy way to view and edit all registers. Use the `damiao gui` command-line tool to launch the web interface.
 
 ## Common Configurations
 

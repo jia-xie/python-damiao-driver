@@ -1,6 +1,6 @@
 # Web GUI
 
-The `damiao-gui` command provides a web-based interface to connect to the CAN bus, scan for DaMiao motors, run commands, view and edit registers, and plot position, velocity, and torque in real time.
+The `damiao gui` command provides a web-based interface to connect to the CAN bus, scan for DaMiao motors, run commands, view and edit registers, and plot position, velocity, and torque in real time.
 
 ![DaMiao Motor Control – full interface](../gui-screenshot.png)
 
@@ -8,7 +8,7 @@ The `damiao-gui` command provides a web-based interface to connect to the CAN bu
 
 ## Installation
 
-Install the package; the `damiao-gui` command will be available in your PATH:
+Install the package; the `damiao` command will be available in your PATH:
 
 ```bash
 pip install damiao-motor
@@ -17,10 +17,13 @@ pip install damiao-motor
 ## Starting the GUI
 
 ```bash
-damiao-gui
+damiao gui
 ```
 
 Open **http://127.0.0.1:5000** in your browser.
+
+!!! note "Backward Compatibility"
+    The `damiao-gui` command is still available as an alias for backward compatibility, but `damiao gui` is the recommended way to launch the GUI.
 
 ### Command options
 
@@ -34,9 +37,9 @@ Open **http://127.0.0.1:5000** in your browser.
 Examples:
 
 ```bash
-damiao-gui --port 8080
-damiao-gui --host 0.0.0.0
-damiao-gui --production
+damiao gui --port 8080
+damiao gui --host 0.0.0.0
+damiao gui --production
 ```
 
 ---

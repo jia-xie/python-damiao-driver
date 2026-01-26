@@ -232,6 +232,41 @@ damiao set-feedback-id --current 1 --target 3
 !!! note "Note"
     The motor will now respond with feedback using the new feedback ID.
 
+### gui
+
+Launch the web-based GUI for viewing and controlling DaMiao motors.
+
+```bash
+damiao gui [OPTIONS]
+```
+
+**Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `--host` | `STR` | Host to bind to (default: 127.0.0.1) |
+| `--port` | `INT` | Port to bind to (default: 5000) |
+| `--debug` | flag | Enable debug mode |
+| `--production` | flag | Use production WSGI server (requires waitress) |
+
+**Examples:**
+```bash
+# Start GUI on default host and port (http://127.0.0.1:5000)
+damiao gui
+
+# Start GUI on custom port
+damiao gui --port 8080
+
+# Start GUI on all interfaces
+damiao gui --host 0.0.0.0
+
+# Start GUI with production server
+damiao gui --production
+```
+
+!!! note "Backward Compatibility"
+    The `damiao-gui` command is still available as an alias for backward compatibility, but `damiao gui` is the recommended way to launch the GUI.
+
 ## Global Options
 
 All commands support the following global options:
