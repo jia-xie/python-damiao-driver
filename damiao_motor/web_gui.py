@@ -288,13 +288,14 @@ def enable_motor(motor_id: int):
 
 @app.route('/api/motors/<int:motor_id>/disable', methods=['POST'])
 def disable_motor(motor_id: int):
-    """Disable a motor."""
+    """Disable a motor. Sends a zero-command first to zero torque, then the disable message."""
     global _motors
     try:
         if motor_id not in _motors:
             return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
         
         motor = _motors[motor_id]
+        motor.set_zero_command()  # zero torque before disable
         motor.disable()
         return jsonify({'success': True})
     except Exception as e:

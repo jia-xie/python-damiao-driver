@@ -2120,8 +2120,8 @@
             if (isContinuous) {
                 // If continuous mode is selected, toggle it on/off
                 if (continuousModeActive) {
-                    // Stop continuous mode but preserve toggle state
-                    stopContinuousMode(true);
+                    // Stop continuous mode and disable the motor
+                    await disableMotor();
                 } else {
                     startContinuousMode();
                 }
@@ -2181,12 +2181,7 @@
                 const data = await response.json();
                 if (data.success) {
                     if (data.state) {
-                        if (data.state.status_code === 0 && continuousModeActive) {
-                            stopContinuousMode(true);
-                            showStatus('Motor is disabled - stopped continuous mode', 'info');
-                        } else {
-                            applyMotorState(data.state); // state at control freq; charts render at 100 Hz
-                        }
+                        applyMotorState(data.state); // always apply so plot/status update
                     }
                     if (!continuousModeActive) showStatus('Command sent successfully', 'success');
                 } else {
@@ -2238,6 +2233,9 @@
             }, intervalMs);
 
             // No motorStateInterval: state comes from /command response at control frequency
+
+            // Fire first command immediately so CAN and plot update on first click (don't wait for first interval tick)
+            sendMotorCommandInternal();
 
             showStatus(`Continuous mode started (${frequency}Hz)`, 'info');
         }
@@ -2338,12 +2336,14 @@
                 showStatus('Please select a motor first', 'error');
                 return;
             }
-            
-            // Stop continuous mode when disabling motor, but preserve toggle state
-            if (continuousModeActive) {
+
+            const wasContinuous = continuousModeActive;
+            if (wasContinuous) {
                 stopContinuousMode(true); // preserveToggle = true
+                // Brief delay so any in-flight /command completes before we send /disable
+                await new Promise(r => setTimeout(r, 50));
             }
-            
+
             try {
                 const response = await fetch(`/api/motors/${currentMotorId}/disable`, {method: 'POST'});
                 const data = await response.json();
