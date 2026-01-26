@@ -1018,7 +1018,7 @@
                 const response = await fetch('/api/scan', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: '{}'
+                    body: JSON.stringify({ motor_type: 'DM4340' })
                 });
                 if (!response.ok) {
                     const errorText = await response.text();

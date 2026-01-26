@@ -34,7 +34,7 @@ class DaMiaoController:
     # -----------------------
     # Motor management
     # -----------------------
-    def add_motor(self, motor_id: int, feedback_id: int, **kwargs: Any) -> DaMiaoMotor:
+    def add_motor(self, motor_id: int, feedback_id: int, motor_type: str, **kwargs: Any) -> DaMiaoMotor:
         if motor_id in self.motors:
             raise ValueError(f"Motor with ID {motor_id} already exists")
 
@@ -42,6 +42,7 @@ class DaMiaoController:
             motor_id=motor_id,
             feedback_id=feedback_id,
             bus=self.bus,
+            motor_type=motor_type,
             **kwargs,
         )
         self.motors[motor_id] = motor

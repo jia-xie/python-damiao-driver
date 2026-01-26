@@ -118,6 +118,8 @@ def scan():
 
         data = request.get_json() or {}
         motor_type = data.get('motor_type')
+        if not motor_type:
+            return jsonify({'success': False, 'error': 'motor_type is required'}), 400
 
         # Clear existing motors
         _motors = {}

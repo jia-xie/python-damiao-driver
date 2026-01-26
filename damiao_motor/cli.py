@@ -273,7 +273,8 @@ def scan_motors(
     duration_s: float = 3.0,
     bitrate: int = 1000000,
     debug: bool = False,
-    motor_type: str | None = None,
+    *,
+    motor_type: str,
 ) -> Set[int]:
     """
     Scan for connected motors by sending zero commands and listening for feedback.
@@ -283,7 +284,7 @@ def scan_motors(
         bustype: CAN bus type (e.g., "socketcan")
         motor_ids: List of motor IDs to test. If None, tests IDs 0x01-0x10.
         duration_s: How long to listen for responses (seconds)
-        motor_type: Motor type for P/V/T presets (e.g. DM4340, DM4310, DM3507). None uses DM4340.
+        motor_type: Motor type for P/V/T presets (e.g. DM4340, DM4310, DM3507). Required.
 
     Returns:
         Set of motor IDs that responded with feedback.
@@ -676,7 +677,7 @@ def cmd_scan(args) -> None:
     config_lines = [
         f" CAN channel: {args.channel}",
         f" Bus type: {args.bustype}",
-        f" Motor type: {args.motor_type or 'DM4340 (default)'}",
+        f" Motor type: {args.motor_type}",
         f" Testing motor IDs: {', '.join([hex(i) for i in args.ids]) if args.ids else '0x01-0x10 (default range)'}",
         f" Listen duration: {args.duration}s",
     ]
@@ -1363,10 +1364,10 @@ For more information about a specific command, use:
         subparser.add_argument(
             "--motor-type",
             type=str,
-            default=None,
+            required=True,
             choices=["DM4310", "DM4310_48", "DM4340", "DM4340_48", "DM6006", "DM8006", "DM8009", "DM10010L", "DM10010", "DMH3510", "DMG6215", "DMH6220", "DMJH11", "DM6248P", "DM3507"],
             dest="motor_type",
-            help="Motor type for P/V/T presets (default: DM4340). Omit to use DM4340.",
+            help="Motor type for P/V/T presets (e.g. DM4340, DM4310, DM3507)",
         )
     
     # scan command
@@ -1378,19 +1379,19 @@ For more information about a specific command, use:
         epilog="""
 Examples:
   # Scan default ID range (0x01-0x10)
-  damiao scan
+  damiao scan --motor-type DM4340
 
   # Scan specific motor IDs
-  damiao scan --ids 1 2 3
+  damiao scan --motor-type DM4340 --ids 1 2 3
 
   # Scan with longer listen duration
-  damiao scan --duration 2.0
+  damiao scan --motor-type DM4340 --duration 2.0
 
   # Scan with motor type DM4310
   damiao scan --motor-type DM4310
 
   # Scan with debug output (print all raw CAN messages)
-  damiao scan --debug
+  damiao scan --motor-type DM4340 --debug
         """
     )
     scan_parser.add_argument(

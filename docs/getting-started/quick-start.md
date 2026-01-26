@@ -20,8 +20,8 @@ from damiao_motor import DaMiaoController
 # Create controller and connect to CAN bus
 controller = DaMiaoController(channel="can0", bustype="socketcan")
 
-# Add a motor (ID 0x01, feedback ID 0x00)
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00)
+# Add a motor (ID 0x01, feedback ID 0x00, motor type DM4340)
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
 
 # Enable the motor
 controller.enable_all()

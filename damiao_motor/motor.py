@@ -237,7 +237,7 @@ class DaMiaoMotor:
         feedback_id: int,
         bus: can.Bus,
         *,
-        motor_type: Optional[str] = None,
+        motor_type: str,
         p_min: Optional[float] = None,
         p_max: Optional[float] = None,
         v_min: Optional[float] = None,
@@ -249,7 +249,7 @@ class DaMiaoMotor:
         self.feedback_id = feedback_id
         self.bus = bus
 
-        # Resolve P/V/T limits from motor_type preset (DM4340 default) + optional overrides. kp and kd use fixed KP_MIN/KP_MAX, KD_MIN/KD_MAX.
+        # Resolve P/V/T limits from motor_type preset + optional overrides. kp and kd use fixed KP_MIN/KP_MAX, KD_MIN/KD_MAX.
         base = self._resolve_limits(motor_type)
         overrides = {
             k: v
@@ -264,7 +264,7 @@ class DaMiaoMotor:
         for k in _LIMITS_KEYS:
             setattr(self, f"_{k}", base[k])
 
-        self.motor_type = motor_type if motor_type is not None else "DM4340"
+        self.motor_type = motor_type
 
         # last decoded feedback
         self.state: Dict[str, Any] = {}
@@ -278,10 +278,8 @@ class DaMiaoMotor:
         self.register_reply_time: Dict[int, float] = {}
         self.register_reply_time_lock = threading.Lock()
 
-    def _resolve_limits(self, motor_type: Optional[str]) -> Dict[str, float]:
+    def _resolve_limits(self, motor_type: str) -> Dict[str, float]:
         """Resolve limits from motor_type preset. Returns a dict of the 6 P/V/T limit values."""
-        if motor_type is None:
-            motor_type = "DM4340"
         if motor_type not in MOTOR_TYPE_PRESETS:
             raise ValueError(
                 f"Unknown motor_type: {motor_type!r}. "

@@ -62,7 +62,7 @@ import time
 from damiao_motor import DaMiaoController
 
 controller = DaMiaoController(channel="can0", bustype="socketcan")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00)
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
 
 controller.enable_all()
 time.sleep(0.1)

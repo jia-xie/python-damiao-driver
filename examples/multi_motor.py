@@ -52,6 +52,12 @@ Examples:
         help='CAN channel (default: can0)'
     )
     parser.add_argument(
+        '--motor-type',
+        type=str,
+        default='DM4340',
+        help='Motor type for P/V/T presets (default: DM4340)'
+    )
+    parser.add_argument(
         '--no-confirm',
         action='store_true',
         help='Skip safety confirmation prompt'
@@ -83,7 +89,7 @@ Examples:
     controller = DaMiaoController(channel=args.channel, bustype="socketcan")
 
     for motor_id, feedback_id in zip(args.motor_ids, feedback_ids):
-        controller.add_motor(motor_id=motor_id, feedback_id=feedback_id)
+        controller.add_motor(motor_id=motor_id, feedback_id=feedback_id, motor_type=args.motor_type)
 
     controller.enable_all()
     time.sleep(0.1)

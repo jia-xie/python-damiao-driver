@@ -49,7 +49,7 @@ Minimal python script to control the motor
 from damiao_motor import DaMiaoController
 
 controller = DaMiaoController(channel="can0", bustype="socketcan")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00)
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
 
 controller.enable_all()
 motor.send_cmd(target_position=1.0, target_velocity=0.0, stiffness=20.0, damping=0.5, feedforward_torque=0.0)

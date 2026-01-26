@@ -32,7 +32,7 @@ The feedback ID can be set via register writes:
 from damiao_motor import DaMiaoController
 
 controller = DaMiaoController(channel="can0")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00)
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
 
 # Write feedback ID register (check register table for correct ID)
 motor.write_register(feedback_id_register, new_feedback_id)
@@ -59,7 +59,7 @@ P/V/T min/max are fixed per motor type (PMAX, VMAX, TMAX). The driver uses the s
 
 Use the `motor_type` parameter when creating a motor. It selects the P/V/T preset (PMAX, VMAX, TMAX) for the motor model:
 
-- **`motor_type`**: Optional string. When `None` or omitted, `"DM4340"` is used. Use `MOTOR_TYPE_PRESETS` to inspect presets.
+- **`motor_type`**: Required string. Use `"DM4340"` as a common default. Use `MOTOR_TYPE_PRESETS` to inspect presets.
 
 | Motor type | PMAX | VMAX | TMAX |
 |------------|------|------|------|
@@ -83,8 +83,8 @@ Use the `motor_type` parameter when creating a motor. It selects the P/V/T prese
 from damiao_motor import DaMiaoController, MOTOR_TYPE_PRESETS
 
 controller = DaMiaoController(channel="can0")
-# DM4340 (default) — motor_type omitted
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00)
+# DM4340 (common default)
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
 
 # Other motor types
 motor = controller.add_motor(motor_id=0x02, feedback_id=0x01, motor_type="DM4310")
@@ -119,7 +119,7 @@ The web GUI provides an easy way to view and edit all registers. Use the `damiao
 
 ```python
 controller = DaMiaoController(channel="can0")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00)
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
 ```
 
 ### Multiple Motors (Same Feedback ID)
@@ -127,16 +127,16 @@ motor = controller.add_motor(motor_id=0x01, feedback_id=0x00)
 ```python
 controller = DaMiaoController(channel="can0")
 for motor_id in [0x01, 0x02, 0x03]:
-    controller.add_motor(motor_id=motor_id, feedback_id=0x00)
+    controller.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type="DM4340")
 ```
 
 ### Multiple Motors (Different Feedback IDs)
 
 ```python
 controller = DaMiaoController(channel="can0")
-controller.add_motor(motor_id=0x01, feedback_id=0x00)
-controller.add_motor(motor_id=0x02, feedback_id=0x01)
-controller.add_motor(motor_id=0x03, feedback_id=0x02)
+controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
+controller.add_motor(motor_id=0x02, feedback_id=0x01, motor_type="DM4340")
+controller.add_motor(motor_id=0x03, feedback_id=0x02, motor_type="DM4340")
 ```
 
 ## Control Gains
