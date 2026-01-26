@@ -425,7 +425,48 @@ class DaMiaoMotor:
     def set_zero_command(self) -> None:
         """Send zero command (pos=0, vel=0, torq=0, kp=0, kd=0)."""
         self.send_cmd(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
-    
+
+    def ensure_control_mode(self, control_mode: str) -> None:
+        """
+        Ensure control mode (register 10) matches the desired mode.
+        Reads register 10; if it differs, writes and verifies.
+
+        Args:
+            control_mode: "MIT", "POS_VEL", "VEL", or "FORCE_POS"
+
+        Raises:
+            ValueError: If control_mode is invalid or register value is invalid
+            TimeoutError: If reading/writing register times out
+            RuntimeError: Other errors during register operations, or if verification after write fails
+        """
+        mode_to_register = {"MIT": 1, "POS_VEL": 2, "VEL": 3, "FORCE_POS": 4}
+        if control_mode not in mode_to_register:
+            raise ValueError(f"Invalid control_mode: {control_mode}. Must be one of {list(mode_to_register.keys())}")
+        desired = mode_to_register[control_mode]
+
+        try:
+            current = int(self.get_register(10, timeout=1.0))
+            if current == desired:
+                return
+            print(f"⚠ Control mode mismatch: register 10 = {current}, required = {desired}")
+            print(f"  Setting control mode to {control_mode} (register value: {desired})...")
+            self.write_register(10, desired)
+            time.sleep(0.1)
+            verify = int(self.get_register(10, timeout=1.0))
+            if verify != desired:
+                raise RuntimeError(
+                    f"Control mode verification failed after write: expected {desired}, got {verify}"
+                )
+            print(f"✓ Control mode set to {control_mode}")
+        except TimeoutError as e:
+            raise TimeoutError(f"Timeout while checking/setting control mode (register 10): {e}") from e
+        except ValueError as e:
+            raise ValueError(f"Invalid control mode value in register 10: {e}") from e
+        except RuntimeError:
+            raise  # verification failure, preserve message
+        except Exception as e:
+            raise RuntimeError(f"Error checking/setting control mode: {e}") from e
+
     def set_can_timeout(self, timeout_ms: int) -> None:
         """
         Set CAN timeout alarm time (register 9).

@@ -44,39 +44,10 @@ The package provides two command-line tools:
 
 ### Quick usage
 
-**Safety note:** The examples below will move the motor. Make sure the motor is securely mounted, keep clear of moving parts, and follow your lab/robot safety guidelines.
-
-Single/multi-motor examples are in the `examples/` directory. After installation you can run, for example:
+**Safety note:** The example will move the motor. Ensure it is securely mounted and keep clear of moving parts.
 
 ```bash
-python examples/multi_motor.py
+python examples/example.py
 ```
 
-Adjust motor IDs and gains in the example scripts to match your hardware.
-
-A minimal single-motor example using the library API:
-
-```python
-import math
-import time
-from damiao_motor import DaMiaoController
-
-controller = DaMiaoController(channel="can0", bustype="socketcan")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
-
-controller.enable_all()
-time.sleep(0.1)
-
-# Control loop - feedback is automatically polled in background
-try:
-    while True:
-        target_pos = 1.0 * math.sin(2.0 * math.pi * 0.2 * time.time())
-        motor.send_cmd(target_position=target_pos, target_velocity=0.0, stiffness=20.0, damping=0.5, feedforward_torque=0.0)
-        # Access feedback (automatically updated in background)
-        states = motor.get_states()
-        if states:
-            print(f"pos={states.get('pos'):.3f}, vel={states.get('vel'):.3f}")
-        time.sleep(0.01)
-except KeyboardInterrupt:
-    controller.shutdown()
-```
+Edit `examples/example.py` to change `motor_id`, `motor_type`, or `channel` (defaults: 0x01, DM4340, can0).

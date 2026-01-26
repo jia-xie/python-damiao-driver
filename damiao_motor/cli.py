@@ -574,66 +574,6 @@ def scan_motors(
     return responded_ids
 
 
-def ensure_control_mode(motor, control_mode: str) -> None:
-    """
-    Ensure motor's control mode (register 10) matches the desired mode.
-    
-    Args:
-        motor: DaMiaoMotor instance
-        control_mode: Desired control mode - "MIT", "POS_VEL", "VEL", or "FORCE_POS"
-    
-    Raises:
-        ValueError: If control_mode is invalid
-        TimeoutError: If reading/writing register times out
-        Exception: Other errors during register operations
-    """
-    # Map control mode strings to register values
-    mode_to_register = {
-        "MIT": 1,
-        "POS_VEL": 2,
-        "VEL": 3,
-        "FORCE_POS": 4,
-    }
-    
-    if control_mode not in mode_to_register:
-        raise ValueError(f"Invalid control_mode: {control_mode}. Must be one of {list(mode_to_register.keys())}")
-    
-    desired_register_value = mode_to_register[control_mode]
-    
-    try:
-        # Read current control mode (register 10)
-        current_mode = motor.get_register(10, timeout=1.0)
-        current_mode_int = int(current_mode)
-        
-        if current_mode_int == desired_register_value:
-            # Mode already matches, no action needed
-            return
-        
-        # Mode doesn't match, set it
-        print(f"⚠ Control mode mismatch: register 10 = {current_mode_int}, required = {desired_register_value}")
-        print(f"  Setting control mode to {control_mode} (register value: {desired_register_value})...")
-        
-        motor.write_register(10, desired_register_value)
-        
-        # Verify the write by reading back
-        time.sleep(0.1)  # Small delay to allow register to update
-        verify_mode = motor.get_register(10, timeout=1.0)
-        verify_mode_int = int(verify_mode)
-        
-        if verify_mode_int == desired_register_value:
-            print(f"✓ Control mode set to {control_mode}")
-        else:
-            print(f"⚠ Warning: Control mode verification failed. Expected {desired_register_value}, got {verify_mode_int}")
-            print(f"  Continuing anyway, but motor may not respond correctly to commands.")
-        
-    except TimeoutError as e:
-        raise TimeoutError(f"Timeout while checking/setting control mode (register 10): {e}")
-    except ValueError as e:
-        raise ValueError(f"Invalid control mode value in register 10: {e}")
-    except Exception as e:
-        raise RuntimeError(f"Error checking/setting control mode: {e}")
-
-
 def cmd_scan(args) -> None:
     """
     Handle 'scan' subcommand.
@@ -784,7 +724,7 @@ def cmd_set_zero(args) -> None:
         
         # Ensure control mode is set to MIT (register 10 = 1) for zero command
         try:
-            ensure_control_mode(motor, "MIT")
+            motor.ensure_control_mode("MIT")
         except Exception as e:
             print(f"⚠ Warning: Could not verify/set control mode: {e}")
             print(f"  Continuing anyway, but motor may not respond correctly.")
@@ -1092,7 +1032,7 @@ def cmd_send_cmd(args) -> None:
         motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
         
         # Ensure control mode (register 10) matches the desired mode
-        ensure_control_mode(motor, args.mode)
+        motor.ensure_control_mode(args.mode)
         
         # Determine CAN ID based on mode
         can_id_map = {
