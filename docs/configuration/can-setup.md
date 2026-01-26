@@ -93,5 +93,4 @@ controller = DaMiaoController(channel="can1", bustype="socketcan")
 ## Next Steps
 
 - [Motor Configuration](motor-config.md) - Configure motor parameters
-- [Quick Start](../getting-started/quick-start.md) - Start using the library
 
