@@ -1,0 +1,39 @@
+# Deploy docs to Cloudflare Pages (damiao-motor.jia-xie.com).
+# Requires repository secrets: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+# Create the Pages project in the Cloudflare dashboard (or it may be created on first deploy).
+# To serve at jia-xie.com/damiao-motor, add a redirect from /damiao-motor to this project's URL on the jia-xie.com site.
+
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          pip install mkdocs mkdocs-material mkdocstrings[python]
+          pip install -e .
+
+      - name: Build documentation
+        run: ./scripts/build-for-cloudflare.sh
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=damiao-motor-docs
