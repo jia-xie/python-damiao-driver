@@ -1,0 +1,26 @@
+/* Custom CSS for DaMiao Motor documentation */
+
+/* Ensure proper spacing for git revision dates */
+.md-source__fact {
+    margin-right: 0.5rem;
+}
+
+/* Improve code block readability */
+.highlight {
+    border-radius: 4px;
+}
+
+/* Better table styling */
+.md-typeset table:not([class]) {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.md-typeset table:not([class]) th {
+    background-color: rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+}
+
+/* Improve tag styling */
+.md-typeset .md-tag {
+    border-radius: 0.25rem;
+}
