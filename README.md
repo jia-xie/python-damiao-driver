@@ -10,7 +10,7 @@ Python driver for **DaMiao** brushless motors over CAN with a unified CLI, web G
 
 - **Control modes:** MIT, POS_VEL, VEL, FORCE_POS  
 - **Motor types:** 3507, 4310, 4340, 6006, 8006, 8009, 10010/L, and more  
-- **Tools:** `damiao` CLI (scan, send-cmd, set-zero-command, set-motor-id, gui, etc.) with unified interface  
+- **Tools:** `damiao` CLI (scan, send-cmd-mit, send-cmd-pos-vel, send-cmd-vel, send-cmd-force-pos, set-zero-command, set-motor-id, gui, etc.) with unified interface  
 
 **Docs:** [GitHub Pages](https://jia-xie.github.io/python-damiao-driver/) · **Firmware:** [DaMiao motor firmware (Gitee)](https://gitee.com/kit-miao/motor-firmware)
 
@@ -62,7 +62,10 @@ All `damiao` subcommands require `--motor-type` (e.g. `4340`). Use `damiao <cmd>
 | Command | Description |
 |---------|-------------|
 | `damiao scan --motor-type 4340` | Scan for motors on the bus |
-| `damiao send-cmd --motor-type 4340 --id 1 --mode MIT` | Send position/velocity/stiffness commands (MIT, POS_VEL, VEL, FORCE_POS) |
+| `damiao send-cmd-mit --motor-type 4340 --id 1` | Send MIT control mode command |
+| `damiao send-cmd-pos-vel --motor-type 4340 --id 1` | Send POS_VEL control mode command |
+| `damiao send-cmd-vel --motor-type 4340 --id 1` | Send VEL control mode command |
+| `damiao send-cmd-force-pos --motor-type 4340 --id 1` | Send FORCE_POS control mode command |
 | `damiao set-zero-command --motor-type 4340 --id 1` | Send zero command (hold at zero) |
 | `damiao set-zero-position --motor-type 4340 --id 1` | Set current position to zero |
 | `damiao set-can-timeout --motor-type 4340 --id 1 --timeout-ms 1000` | Set CAN timeout (register 9) |

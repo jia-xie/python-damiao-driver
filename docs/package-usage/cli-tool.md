@@ -55,12 +55,12 @@ damiao scan --motor-type 4340
 damiao scan --debug
 ```
 
-### send-cmd
+### send-cmd-mit
 
-Send command to motor with specified control mode. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on available control modes.
+Send MIT control mode command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on MIT mode.
 
 ```bash
-damiao send-cmd [OPTIONS]
+damiao send-cmd-mit [OPTIONS]
 ```
 
 **Options:**
@@ -68,14 +68,11 @@ damiao send-cmd [OPTIONS]
 | Option | Type | Description |
 |--------|------|-------------|
 | `--id` | `INT` | Motor ID (required) |
-| `--mode` | `{MIT,position_velocity,velocity,force_position_hybrid}` | Control mode (default: MIT) |
-| `--position` | `FLOAT` | Desired position (radians). Required for MIT, position_velocity, force_position_hybrid modes. |
-| `--velocity` | `FLOAT` | Desired velocity (rad/s). Required for MIT, position_velocity, velocity modes. |
-| `--stiffness` | `FLOAT` | Stiffness (kp) for MIT mode (default: 0.0) |
-| `--damping` | `FLOAT` | Damping (kd) for MIT mode (default: 0.0) |
-| `--feedforward-torque` | `FLOAT` | Feedforward torque for MIT mode (default: 0.0) |
-| `--velocity-limit` | `FLOAT` | Velocity limit (rad/s, 0-100) for force_position_hybrid mode |
-| `--current-limit` | `FLOAT` | Torque current limit normalized (0.0-1.0) for force_position_hybrid mode |
+| `--position` | `FLOAT` | Desired position (radians) (required) |
+| `--velocity` | `FLOAT` | Desired velocity (rad/s) (required) |
+| `--stiffness` | `FLOAT` | Stiffness (kp), range 0–500 (default: 0.0) |
+| `--damping` | `FLOAT` | Damping (kd), range 0–5 (default: 0.0) |
+| `--feedforward-torque` | `FLOAT` | Feedforward torque (default: 0.0) |
 | `--frequency` | `FLOAT` | Command frequency in Hz (default: 100.0) |
 | `--channel` | `STR` | CAN channel (default: can0) |
 | `--bustype` | `STR` | CAN bus type (default: socketcan) |
@@ -83,20 +80,98 @@ damiao send-cmd [OPTIONS]
 
 **Examples:**
 ```bash
-# MIT mode (default)
-damiao send-cmd --id 1 --mode MIT --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
-
-# Position-Velocity mode
-damiao send-cmd --id 1 --mode position_velocity --position 1.5 --velocity 2.0
-
-# Velocity mode
-damiao send-cmd --id 1 --mode velocity --velocity 3.0
-
-# Force-Position Hybrid mode
-damiao send-cmd --id 1 --mode force_position_hybrid --position 1.5 --velocity-limit 50.0 --current-limit 0.8
+# MIT mode with all parameters
+damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
 
 # With custom frequency
-damiao send-cmd --id 1 --mode MIT --position 1.5 --frequency 50.0
+damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5 --frequency 50.0
+```
+
+### send-cmd-pos-vel
+
+Send POS_VEL control mode command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on POS_VEL mode.
+
+```bash
+damiao send-cmd-pos-vel [OPTIONS]
+```
+
+**Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `--id` | `INT` | Motor ID (required) |
+| `--position` | `FLOAT` | Desired position (radians) (required) |
+| `--velocity` | `FLOAT` | Desired velocity (rad/s) (required) |
+| `--frequency` | `FLOAT` | Command frequency in Hz (default: 100.0) |
+| `--channel` | `STR` | CAN channel (default: can0) |
+| `--bustype` | `STR` | CAN bus type (default: socketcan) |
+| `--bitrate` | `INT` | CAN bitrate in bits per second (default: 1000000) |
+
+**Examples:**
+```bash
+# POS_VEL mode
+damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0
+
+# With custom frequency
+damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0 --frequency 50.0
+```
+
+### send-cmd-vel
+
+Send VEL control mode command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on VEL mode.
+
+```bash
+damiao send-cmd-vel [OPTIONS]
+```
+
+**Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `--id` | `INT` | Motor ID (required) |
+| `--velocity` | `FLOAT` | Desired velocity (rad/s) (required) |
+| `--frequency` | `FLOAT` | Command frequency in Hz (default: 100.0) |
+| `--channel` | `STR` | CAN channel (default: can0) |
+| `--bustype` | `STR` | CAN bus type (default: socketcan) |
+| `--bitrate` | `INT` | CAN bitrate in bits per second (default: 1000000) |
+
+**Examples:**
+```bash
+# VEL mode
+damiao send-cmd-vel --id 1 --velocity 3.0
+
+# With custom frequency
+damiao send-cmd-vel --id 1 --velocity 3.0 --frequency 50.0
+```
+
+### send-cmd-force-pos
+
+Send FORCE_POS control mode command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on FORCE_POS mode.
+
+```bash
+damiao send-cmd-force-pos [OPTIONS]
+```
+
+**Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `--id` | `INT` | Motor ID (required) |
+| `--position` | `FLOAT` | Desired position (radians) (required) |
+| `--velocity-limit` | `FLOAT` | Velocity limit (rad/s, 0-100) (required) |
+| `--current-limit` | `FLOAT` | Torque current limit normalized (0.0-1.0) (required) |
+| `--frequency` | `FLOAT` | Command frequency in Hz (default: 100.0) |
+| `--channel` | `STR` | CAN channel (default: can0) |
+| `--bustype` | `STR` | CAN bus type (default: socketcan) |
+| `--bitrate` | `INT` | CAN bitrate in bits per second (default: 1000000) |
+
+**Examples:**
+```bash
+# FORCE_POS mode
+damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8
+
+# With custom frequency
+damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8 --frequency 50.0
 ```
 
 ### set-zero-command
@@ -281,7 +356,7 @@ damiao scan --channel can1
 
 ## Real-time Feedback
 
-All looping send commands (`send-cmd`, `set-zero-command`) continuously print motor state information:
+All looping send commands (`send-cmd-mit`, `send-cmd-pos-vel`, `send-cmd-vel`, `send-cmd-force-pos`, `set-zero-command`) continuously print motor state information:
 
 ```
 State: 1 (ENABLED) | Pos:   1.234 rad | Vel:   0.567 rad/s | Torq:   0.123 Nm | T_mos: 45.0°C | T_rotor: 50.0°C

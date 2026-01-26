@@ -20,6 +20,10 @@ from . import web_gui
 RED = "\033[91m"
 YELLOW = "\033[93m"
 GREEN = "\033[92m"
+CYAN = "\033[96m"
+BRIGHT_CYAN = "\033[1;96m"
+BLUE = "\033[94m"
+BOLD = "\033[1m"
 RESET = "\033[0m"
 
 # Box drawing characters
@@ -961,24 +965,20 @@ def cmd_set_can_timeout(args) -> None:
         controller.shutdown()
 
 
-def cmd_send_cmd(args) -> None:
+def cmd_send_cmd_mit(args) -> None:
     """
-    Handle unified 'send-cmd' subcommand.
+    Handle 'send-cmd-mit' subcommand.
     
-    Sends command to motor with specified control mode. Loops continuously until Ctrl+C.
-    Supports MIT, POS_VEL, VEL, and FORCE_POS control modes.
+    Sends MIT control mode command to motor. Loops continuously until Ctrl+C.
     
     Args:
         args: Parsed command-line arguments containing:
             - motor_id: Motor ID (required)
-            - mode: Control mode - "MIT", "POS_VEL", "VEL", or "FORCE_POS" (default: MIT)
-            - position: Desired position (radians) - for MIT, POS_VEL, FORCE_POS modes
-            - velocity: Desired velocity (rad/s) - for MIT, POS_VEL, VEL modes
-            - stiffness: Stiffness (kp) for MIT mode (default: 0.0)
-            - damping: Damping (kd) for MIT mode (default: 0.0)
-            - feedforward_torque: Feedforward torque for MIT mode (default: 0.0)
-            - velocity_limit: Velocity limit (rad/s, 0-100) for FORCE_POS mode
-            - current_limit: Torque current limit normalized (0.0-1.0) for FORCE_POS mode
+            - position: Desired position (radians) (required)
+            - velocity: Desired velocity (rad/s) (required)
+            - stiffness: Stiffness (kp) (default: 0.0)
+            - damping: Damping (kd) (default: 0.0)
+            - feedforward_torque: Feedforward torque (default: 0.0)
             - frequency: Command frequency in Hz (default: 100.0)
             - channel: CAN channel (default: can0)
             - bustype: CAN bus type (default: socketcan)
@@ -986,40 +986,20 @@ def cmd_send_cmd(args) -> None:
     
     Examples:
         ```bash
-        # MIT mode (default)
-        damiao send-cmd --id 1 --mode MIT --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
-        
-        # POS_VEL mode
-        damiao send-cmd --id 1 --mode POS_VEL --position 1.5 --velocity 2.0
-        
-        # VEL mode
-        damiao send-cmd --id 1 --mode VEL --velocity 3.0
-        
-        # FORCE_POS mode
-        damiao send-cmd --id 1 --mode FORCE_POS --position 1.5 --velocity-limit 50.0 --current-limit 0.8
+        damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
         ```
     """
     print("=" * 60)
-    print("DaMiao Motor - Send Command")
+    print("DaMiao Motor - Send MIT Command")
     print("=" * 60)
     print(f"CAN channel: {args.channel}")
     print(f"Motor ID: 0x{args.motor_id:02X} ({args.motor_id})")
-    print(f"Control Mode: {args.mode}")
-    if args.mode == "MIT":
-        print(f"  Position: {args.position:.6f} rad")
-        print(f"  Velocity: {args.velocity:.6f} rad/s")
-        print(f"  Stiffness (kp): {args.stiffness:.6f}")
-        print(f"  Damping (kd): {args.damping:.6f}")
-        print(f"  Feedforward Torque: {args.feedforward_torque:.6f} Nm")
-    elif args.mode == "POS_VEL":
-        print(f"  Position: {args.position:.6f} rad")
-        print(f"  Velocity: {args.velocity:.6f} rad/s")
-    elif args.mode == "VEL":
-        print(f"  Velocity: {args.velocity:.6f} rad/s")
-    elif args.mode == "FORCE_POS":
-        print(f"  Position: {args.position:.6f} rad")
-        print(f"  Velocity Limit: {args.velocity_limit:.6f} rad/s")
-        print(f"  Current Limit: {args.current_limit:.6f}")
+    print(f"Control Mode: MIT")
+    print(f"  Position: {args.position:.6f} rad")
+    print(f"  Velocity: {args.velocity:.6f} rad/s")
+    print(f"  Stiffness (kp): {args.stiffness:.6f}")
+    print(f"  Damping (kd): {args.damping:.6f}")
+    print(f"  Feedforward Torque: {args.feedforward_torque:.6f} Nm")
     print(f"Frequency: {args.frequency} Hz")
     print("=" * 60)
     print()
@@ -1033,22 +1013,10 @@ def cmd_send_cmd(args) -> None:
     
     try:
         motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
+        motor.ensure_control_mode("MIT")
         
-        # Ensure control mode (register 10) matches the desired mode
-        motor.ensure_control_mode(args.mode)
-        
-        # Determine CAN ID based on mode
-        can_id_map = {
-            "MIT": args.motor_id,
-            "POS_VEL": 0x100 + args.motor_id,
-            "VEL": 0x200 + args.motor_id,
-            "FORCE_POS": 0x300 + args.motor_id,
-        }
-        can_id = can_id_map.get(args.mode, args.motor_id)
-        
-        print(f"Sending command continuously (press Ctrl+C to stop)...")
-        print(f"  CAN ID: 0x{can_id:03X}")
-        print(f"  Mode: {args.mode}")
+        print(f"Sending MIT command continuously (press Ctrl+C to stop)...")
+        print(f"  CAN ID: 0x{args.motor_id:03X}")
         print(f"  Frequency: {args.frequency} Hz")
         print()
         
@@ -1056,34 +1024,239 @@ def cmd_send_cmd(args) -> None:
         
         try:
             while True:
-                if args.mode == "MIT":
-                    motor.send_cmd(
-                        target_position=args.position,
-                        target_velocity=args.velocity,
-                        stiffness=args.stiffness,
-                        damping=args.damping,
-                        feedforward_torque=args.feedforward_torque,
-                        control_mode="MIT"
-                    )
-                elif args.mode == "POS_VEL":
-                    motor.send_cmd(
-                        target_position=args.position,
-                        target_velocity=args.velocity,
-                        control_mode="POS_VEL"
-                    )
-                elif args.mode == "VEL":
-                    motor.send_cmd(
-                        target_velocity=args.velocity,
-                        control_mode="VEL"
-                    )
-                elif args.mode == "FORCE_POS":
-                    motor.send_cmd(
-                        target_position=args.position,
-                        velocity_limit=args.velocity_limit,
-                        current_limit=args.current_limit,
-                        control_mode="FORCE_POS"
-                    )
+                motor.send_cmd(
+                    target_position=args.position,
+                    target_velocity=args.velocity,
+                    stiffness=args.stiffness,
+                    damping=args.damping,
+                    feedforward_torque=args.feedforward_torque,
+                    control_mode="MIT"
+                )
+                controller.poll_feedback()
                 
+                if motor.state:
+                    print_motor_state(motor.state)
+                
+                time.sleep(interval)
+        except KeyboardInterrupt:
+            print("\n\nStopped by user.")
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
+    finally:
+        print("Shutting down controller...")
+        controller.shutdown()
+
+
+def cmd_send_cmd_pos_vel(args) -> None:
+    """
+    Handle 'send-cmd-pos-vel' subcommand.
+    
+    Sends POS_VEL control mode command to motor. Loops continuously until Ctrl+C.
+    
+    Args:
+        args: Parsed command-line arguments containing:
+            - motor_id: Motor ID (required)
+            - position: Desired position (radians) (required)
+            - velocity: Desired velocity (rad/s) (required)
+            - frequency: Command frequency in Hz (default: 100.0)
+            - channel: CAN channel (default: can0)
+            - bustype: CAN bus type (default: socketcan)
+            - bitrate: CAN bitrate in bits per second (default: 1000000)
+    
+    Examples:
+        ```bash
+        damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0
+        ```
+    """
+    print("=" * 60)
+    print("DaMiao Motor - Send POS_VEL Command")
+    print("=" * 60)
+    print(f"CAN channel: {args.channel}")
+    print(f"Motor ID: 0x{args.motor_id:02X} ({args.motor_id})")
+    print(f"Control Mode: POS_VEL")
+    print(f"  Position: {args.position:.6f} rad")
+    print(f"  Velocity: {args.velocity:.6f} rad/s")
+    print(f"Frequency: {args.frequency} Hz")
+    print("=" * 60)
+    print()
+
+    # Check and bring up CAN interface if needed
+    if args.bustype == "socketcan":
+        if not check_and_bring_up_can_interface(args.channel, bitrate=args.bitrate):
+            print(f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway...")
+
+    controller = DaMiaoController(channel=args.channel, bustype=args.bustype)
+    
+    try:
+        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
+        motor.ensure_control_mode("POS_VEL")
+        
+        print(f"Sending POS_VEL command continuously (press Ctrl+C to stop)...")
+        print(f"  CAN ID: 0x{0x100 + args.motor_id:03X}")
+        print(f"  Frequency: {args.frequency} Hz")
+        print()
+        
+        interval = 1.0 / args.frequency if args.frequency > 0 else 0.01
+        
+        try:
+            while True:
+                motor.send_cmd(
+                    target_position=args.position,
+                    target_velocity=args.velocity,
+                    control_mode="POS_VEL"
+                )
+                controller.poll_feedback()
+                
+                if motor.state:
+                    print_motor_state(motor.state)
+                
+                time.sleep(interval)
+        except KeyboardInterrupt:
+            print("\n\nStopped by user.")
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
+    finally:
+        print("Shutting down controller...")
+        controller.shutdown()
+
+
+def cmd_send_cmd_vel(args) -> None:
+    """
+    Handle 'send-cmd-vel' subcommand.
+    
+    Sends VEL control mode command to motor. Loops continuously until Ctrl+C.
+    
+    Args:
+        args: Parsed command-line arguments containing:
+            - motor_id: Motor ID (required)
+            - velocity: Desired velocity (rad/s) (required)
+            - frequency: Command frequency in Hz (default: 100.0)
+            - channel: CAN channel (default: can0)
+            - bustype: CAN bus type (default: socketcan)
+            - bitrate: CAN bitrate in bits per second (default: 1000000)
+    
+    Examples:
+        ```bash
+        damiao send-cmd-vel --id 1 --velocity 3.0
+        ```
+    """
+    print("=" * 60)
+    print("DaMiao Motor - Send VEL Command")
+    print("=" * 60)
+    print(f"CAN channel: {args.channel}")
+    print(f"Motor ID: 0x{args.motor_id:02X} ({args.motor_id})")
+    print(f"Control Mode: VEL")
+    print(f"  Velocity: {args.velocity:.6f} rad/s")
+    print(f"Frequency: {args.frequency} Hz")
+    print("=" * 60)
+    print()
+
+    # Check and bring up CAN interface if needed
+    if args.bustype == "socketcan":
+        if not check_and_bring_up_can_interface(args.channel, bitrate=args.bitrate):
+            print(f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway...")
+
+    controller = DaMiaoController(channel=args.channel, bustype=args.bustype)
+    
+    try:
+        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
+        motor.ensure_control_mode("VEL")
+        
+        print(f"Sending VEL command continuously (press Ctrl+C to stop)...")
+        print(f"  CAN ID: 0x{0x200 + args.motor_id:03X}")
+        print(f"  Frequency: {args.frequency} Hz")
+        print()
+        
+        interval = 1.0 / args.frequency if args.frequency > 0 else 0.01
+        
+        try:
+            while True:
+                motor.send_cmd(
+                    target_velocity=args.velocity,
+                    control_mode="VEL"
+                )
+                controller.poll_feedback()
+                
+                if motor.state:
+                    print_motor_state(motor.state)
+                
+                time.sleep(interval)
+        except KeyboardInterrupt:
+            print("\n\nStopped by user.")
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
+    finally:
+        print("Shutting down controller...")
+        controller.shutdown()
+
+
+def cmd_send_cmd_force_pos(args) -> None:
+    """
+    Handle 'send-cmd-force-pos' subcommand.
+    
+    Sends FORCE_POS control mode command to motor. Loops continuously until Ctrl+C.
+    
+    Args:
+        args: Parsed command-line arguments containing:
+            - motor_id: Motor ID (required)
+            - position: Desired position (radians) (required)
+            - velocity_limit: Velocity limit (rad/s, 0-100) (required)
+            - current_limit: Torque current limit normalized (0.0-1.0) (required)
+            - frequency: Command frequency in Hz (default: 100.0)
+            - channel: CAN channel (default: can0)
+            - bustype: CAN bus type (default: socketcan)
+            - bitrate: CAN bitrate in bits per second (default: 1000000)
+    
+    Examples:
+        ```bash
+        damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8
+        ```
+    """
+    print("=" * 60)
+    print("DaMiao Motor - Send FORCE_POS Command")
+    print("=" * 60)
+    print(f"CAN channel: {args.channel}")
+    print(f"Motor ID: 0x{args.motor_id:02X} ({args.motor_id})")
+    print(f"Control Mode: FORCE_POS")
+    print(f"  Position: {args.position:.6f} rad")
+    print(f"  Velocity Limit: {args.velocity_limit:.6f} rad/s")
+    print(f"  Current Limit: {args.current_limit:.6f}")
+    print(f"Frequency: {args.frequency} Hz")
+    print("=" * 60)
+    print()
+
+    # Check and bring up CAN interface if needed
+    if args.bustype == "socketcan":
+        if not check_and_bring_up_can_interface(args.channel, bitrate=args.bitrate):
+            print(f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway...")
+
+    controller = DaMiaoController(channel=args.channel, bustype=args.bustype)
+    
+    try:
+        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
+        motor.ensure_control_mode("FORCE_POS")
+        
+        print(f"Sending FORCE_POS command continuously (press Ctrl+C to stop)...")
+        print(f"  CAN ID: 0x{0x300 + args.motor_id:03X}")
+        print(f"  Frequency: {args.frequency} Hz")
+        print()
+        
+        interval = 1.0 / args.frequency if args.frequency > 0 else 0.01
+        
+        try:
+            while True:
+                motor.send_cmd(
+                    target_position=args.position,
+                    velocity_limit=args.velocity_limit,
+                    current_limit=args.current_limit,
+                    control_mode="FORCE_POS"
+                )
                 controller.poll_feedback()
                 
                 if motor.state:
@@ -1215,6 +1388,99 @@ def cmd_set_feedback_id(args) -> None:
         controller.shutdown()
 
 
+class ColorizedHelpFormatter(argparse.RawDescriptionHelpFormatter):
+    """Custom help formatter that adds colors to help text."""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Check if stdout is a TTY to enable colors
+        self._use_colors = sys.stdout.isatty()
+    
+    def _colorize(self, text: str, color: str) -> str:
+        """Add color to text if colors are enabled."""
+        if self._use_colors:
+            return f"{color}{text}{RESET}"
+        return text
+    
+    def _format_usage(self, usage, actions, groups, prefix):
+        """Format usage with colors."""
+        usage_text = super()._format_usage(usage, actions, groups, prefix)
+        if self._use_colors:
+            # Colorize the "usage:" prefix
+            usage_text = usage_text.replace("usage: ", self._colorize("usage: ", BOLD))
+        return usage_text
+    
+    def start_section(self, heading):
+        """Start a section with colorized heading."""
+        if self._use_colors:
+            # Colorize section headings
+            if heading in ["positional arguments", "options", "optional arguments", "Commands", "Commands:"]:
+                heading = self._colorize(heading, BOLD + CYAN)
+        super().start_section(heading)
+    
+    def _format_action_invocation(self, action):
+        """Format action invocation (command/option name) with colors."""
+        if not self._use_colors:
+            return super()._format_action_invocation(action)
+        
+        # For subcommands, the action has choices dict - handle in _format_action
+        if hasattr(action, 'choices') and isinstance(action.choices, dict):
+            return super()._format_action_invocation(action)
+        
+        # For regular options, colorize them
+        if hasattr(action, 'option_strings') and action.option_strings:
+            parts = []
+            for option_string in action.option_strings:
+                parts.append(self._colorize(option_string, BLUE))
+            return ', '.join(parts)
+        
+        return super()._format_action_invocation(action)
+    
+    def _format_action(self, action):
+        """Format individual action with colors."""
+        # Get the default formatting
+        parts = super()._format_action(action)
+        
+        if not self._use_colors:
+            return parts
+        
+        # Handle subparsers (subcommands)
+        if hasattr(action, 'choices') and isinstance(action.choices, dict):
+            # This is a subparsers action - format each subcommand
+            for cmd_name, cmd_parser in action.choices.items():
+                if cmd_name == 'gui':
+                    # Highlight gui command name - match the pattern in help output
+                    # Format: "    gui               Launch web-based GUI..."
+                    pattern = r'(\s{4})(' + re.escape(cmd_name) + r')(\s+)'
+                    replacement = r'\1' + self._colorize(r'\2', BRIGHT_CYAN + BOLD) + r'\3'
+                    parts = re.sub(pattern, replacement, parts)
+                    # Highlight (recommended) text
+                    parts = parts.replace('(recommended)', self._colorize('(recommended)', GREEN + BOLD))
+                else:
+                    # Colorize other command names
+                    pattern = r'(\s{4})(' + re.escape(cmd_name) + r')(\s+)'
+                    replacement = r'\1' + self._colorize(r'\2', CYAN) + r'\3'
+                    parts = re.sub(pattern, replacement, parts)
+        
+        # Options are already colored by _format_action_invocation, so skip here
+        
+        return parts
+    
+    def _format_text(self, text):
+        """Format text with colors."""
+        if not self._use_colors:
+            return super()._format_text(text)
+        
+        # Colorize common patterns in epilog/description
+        text = text.replace('COMMAND', self._colorize('COMMAND', BOLD))
+        text = text.replace('damiao', self._colorize('damiao', BLUE + BOLD))
+        # Be careful with gui replacement - only replace standalone word
+        text = re.sub(r'\b(gui)\b', self._colorize(r'\1', BRIGHT_CYAN + BOLD), text)
+        text = text.replace('(recommended)', self._colorize('(recommended)', GREEN + BOLD))
+        
+        return super()._format_text(text)
+
+
 def unified_main() -> None:
     """
     Unified CLI entry point with subcommands.
@@ -1224,7 +1490,10 @@ def unified_main() -> None:
     
     Available commands:
         - scan: Scan for connected motors
-        - send-cmd: Send command to motor (all control modes)
+        - send-cmd-mit: Send MIT control mode command
+        - send-cmd-pos-vel: Send POS_VEL control mode command
+        - send-cmd-vel: Send VEL control mode command
+        - send-cmd-force-pos: Send FORCE_POS control mode command
         - set-zero-command: Send zero command continuously
         - set-zero-position: Set current position to zero
         - set-can-timeout: Set CAN timeout alarm time
@@ -1243,8 +1512,8 @@ def unified_main() -> None:
         # Scan for motors
         damiao scan
         
-        # Send command in MIT mode
-        damiao send-cmd --id 1 --mode MIT --position 1.5 --velocity 0.0 --stiffness 3.0 --stiffness 0.5
+        # Send MIT command
+        damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
         
         # Set current position to zero
         damiao set-zero-position --id 1
@@ -1252,38 +1521,8 @@ def unified_main() -> None:
     """
     parser = argparse.ArgumentParser(
         description="DaMiao Motor CLI Tool - Control and configure DaMiao motors over CAN bus",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=ColorizedHelpFormatter,
         epilog="""
-Examples:
-  # Scan for motors on default CAN channel (can0)
-  damiao scan
-
-  # Scan specific motor IDs with debug output
-  damiao scan --ids 1 2 3 --debug
-
-  # Send command in MIT mode
-  damiao send-cmd --id 1 --mode MIT --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
-
-  # Send command in VEL mode
-  damiao send-cmd --id 1 --mode VEL --velocity 3.0
-
-  # Set current position to zero
-  damiao set-zero-position --id 1
-
-  # Set CAN timeout
-  damiao set-can-timeout --id 1 --timeout 1000
-
-  # Launch web GUI
-  damiao gui
-  damiao gui --port 8080
-
-  # Use different CAN channel (can be before or after command)
-  damiao scan --channel can_leader_l
-  damiao send-cmd --id 1 --mode MIT --channel can_leader_l
-
-  # Show version
-  damiao --version
-
 For more information about a specific command, use:
   damiao <command> --help
         """,
@@ -1324,6 +1563,54 @@ For more information about a specific command, use:
         description="Use 'damiao <command> --help' for more information about a specific command."
     )
     
+    # gui command (highlighted - listed first)
+    gui_parser = subparsers.add_parser(
+        "gui",
+        help="Launch web-based GUI for motor control (recommended)",
+        description="Launch the web-based GUI for viewing and controlling DaMiao motors.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Start GUI on default host and port (http://127.0.0.1:5000)
+  damiao gui
+
+  # Start GUI on custom port
+  damiao gui --port 8080
+
+  # Start GUI on all interfaces
+  damiao gui --host 0.0.0.0
+
+  # Start GUI with production server (requires waitress)
+  damiao gui --production
+
+  # Start GUI with debug mode
+  damiao gui --debug
+        """
+    )
+    gui_parser.add_argument(
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="Host to bind to (default: 127.0.0.1)",
+    )
+    gui_parser.add_argument(
+        "--port",
+        type=int,
+        default=5000,
+        help="Port to bind to (default: 5000)",
+    )
+    gui_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug mode",
+    )
+    gui_parser.add_argument(
+        "--production",
+        action="store_true",
+        help="Use production WSGI server (requires waitress)",
+    )
+    gui_parser.set_defaults(func=cmd_gui)
+    
     # Helper function to add global arguments to subcommands
     def add_global_args(subparser):
         """Add global arguments to a subcommand parser."""
@@ -1358,7 +1645,7 @@ For more information about a specific command, use:
     scan_parser = subparsers.add_parser(
         "scan",
         help="Scan for connected motors on CAN bus",
-        description="Scan for connected DaMiao motors by sending zero commands and listening for responses.",
+        description="Scan for connected motors on CAN bus by sending zero commands and listening for responses.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -1566,147 +1853,200 @@ Note: The motor will now respond with feedback using the new feedback ID.
     add_global_args(set_feedback_id_parser)
     set_feedback_id_parser.set_defaults(func=cmd_set_feedback_id)
     
-    # send-cmd command (unified command for all modes)
-    send_cmd_parser = subparsers.add_parser(
-        "send-cmd",
-        help="Send command to motor (unified command for all control modes)",
-        description="Send command to motor with specified control mode. Loops continuously until Ctrl+C.",
+    # send-cmd-mit command
+    send_cmd_mit_parser = subparsers.add_parser(
+        "send-cmd-mit",
+        help="Send MIT control mode command to motor",
+        description="Send MIT control mode command to motor. Loops continuously until Ctrl+C.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # MIT mode (default)
-  damiao send-cmd --id 1 --mode MIT --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
-
-  # POS_VEL mode
-  damiao send-cmd --id 1 --mode POS_VEL --position 1.5 --velocity 2.0
-
-  # VEL mode
-  damiao send-cmd --id 1 --mode VEL --velocity 3.0
-
-  # FORCE_POS mode
-  damiao send-cmd --id 1 --mode FORCE_POS --position 1.5 --velocity-limit 50.0 --current-limit 0.8
+  # MIT mode with all parameters
+  damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
 
   # With custom frequency
-  damiao send-cmd --id 1 --mode MIT --position 1.5 --frequency 50.0
+  damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5 --frequency 50.0
         """
     )
-    send_cmd_parser.add_argument(
+    send_cmd_mit_parser.add_argument(
         "--id",
         type=int,
         required=True,
         dest="motor_id",
         help="Motor ID",
     )
-    send_cmd_parser.add_argument(
-        "--mode",
-        type=str,
-        default="MIT",
-        choices=["MIT", "POS_VEL", "VEL", "FORCE_POS"],
-        help="Control mode (default: MIT)",
-    )
-    send_cmd_parser.add_argument(
+    send_cmd_mit_parser.add_argument(
         "--position",
         type=float,
-        default=0.0,
-        help="Desired position (radians). Required for MIT, POS_VEL, FORCE_POS modes.",
+        required=True,
+        help="Desired position (radians)",
     )
-    send_cmd_parser.add_argument(
+    send_cmd_mit_parser.add_argument(
         "--velocity",
         type=float,
-        default=0.0,
-        help="Desired velocity (rad/s). Required for MIT, POS_VEL, VEL modes.",
+        required=True,
+        help="Desired velocity (rad/s)",
     )
-    send_cmd_parser.add_argument(
+    send_cmd_mit_parser.add_argument(
         "--stiffness",
         type=float,
         default=0.0,
         dest="stiffness",
-        help="Stiffness (kp) for MIT mode, range 0–500 (default: 0.0)",
+        help="Stiffness (kp), range 0–500 (default: 0.0)",
     )
-    send_cmd_parser.add_argument(
+    send_cmd_mit_parser.add_argument(
         "--damping",
         type=float,
         default=0.0,
         dest="damping",
-        help="Damping (kd) for MIT mode, range 0–5 (default: 0.0)",
+        help="Damping (kd), range 0–5 (default: 0.0)",
     )
-    send_cmd_parser.add_argument(
+    send_cmd_mit_parser.add_argument(
         "--feedforward-torque",
         type=float,
         default=0.0,
         dest="feedforward_torque",
-        help="Feedforward torque for MIT mode (default: 0.0)",
+        help="Feedforward torque (default: 0.0)",
     )
-    send_cmd_parser.add_argument(
-        "--velocity-limit",
-        type=float,
-        default=0.0,
-        dest="velocity_limit",
-        help="Velocity limit (rad/s, 0-100) for FORCE_POS mode",
-    )
-    send_cmd_parser.add_argument(
-        "--current-limit",
-        type=float,
-        default=0.0,
-        dest="current_limit",
-        help="Torque current limit normalized (0.0-1.0) for FORCE_POS mode",
-    )
-    send_cmd_parser.add_argument(
+    send_cmd_mit_parser.add_argument(
         "--frequency",
         type=float,
         default=100.0,
         help="Command frequency in Hz (default: 100.0)",
     )
-    add_global_args(send_cmd_parser)
-    send_cmd_parser.set_defaults(func=cmd_send_cmd)
+    add_global_args(send_cmd_mit_parser)
+    send_cmd_mit_parser.set_defaults(func=cmd_send_cmd_mit)
     
-    # gui command
-    gui_parser = subparsers.add_parser(
-        "gui",
-        help="Launch web-based GUI for motor control",
-        description="Launch the web-based GUI for viewing and controlling DaMiao motors.",
+    # send-cmd-pos-vel command
+    send_cmd_pos_vel_parser = subparsers.add_parser(
+        "send-cmd-pos-vel",
+        help="Send POS_VEL control mode command to motor",
+        description="Send POS_VEL control mode command to motor. Loops continuously until Ctrl+C.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Start GUI on default host and port (http://127.0.0.1:5000)
-  damiao gui
+  # POS_VEL mode
+  damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0
 
-  # Start GUI on custom port
-  damiao gui --port 8080
-
-  # Start GUI on all interfaces
-  damiao gui --host 0.0.0.0
-
-  # Start GUI with production server (requires waitress)
-  damiao gui --production
-
-  # Start GUI with debug mode
-  damiao gui --debug
+  # With custom frequency
+  damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0 --frequency 50.0
         """
     )
-    gui_parser.add_argument(
-        "--host",
-        type=str,
-        default="127.0.0.1",
-        help="Host to bind to (default: 127.0.0.1)",
-    )
-    gui_parser.add_argument(
-        "--port",
+    send_cmd_pos_vel_parser.add_argument(
+        "--id",
         type=int,
-        default=5000,
-        help="Port to bind to (default: 5000)",
+        required=True,
+        dest="motor_id",
+        help="Motor ID",
     )
-    gui_parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Enable debug mode",
+    send_cmd_pos_vel_parser.add_argument(
+        "--position",
+        type=float,
+        required=True,
+        help="Desired position (radians)",
     )
-    gui_parser.add_argument(
-        "--production",
-        action="store_true",
-        help="Use production WSGI server (requires waitress)",
+    send_cmd_pos_vel_parser.add_argument(
+        "--velocity",
+        type=float,
+        required=True,
+        help="Desired velocity (rad/s)",
     )
-    gui_parser.set_defaults(func=cmd_gui)
+    send_cmd_pos_vel_parser.add_argument(
+        "--frequency",
+        type=float,
+        default=100.0,
+        help="Command frequency in Hz (default: 100.0)",
+    )
+    add_global_args(send_cmd_pos_vel_parser)
+    send_cmd_pos_vel_parser.set_defaults(func=cmd_send_cmd_pos_vel)
+    
+    # send-cmd-vel command
+    send_cmd_vel_parser = subparsers.add_parser(
+        "send-cmd-vel",
+        help="Send VEL control mode command to motor",
+        description="Send VEL control mode command to motor. Loops continuously until Ctrl+C.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # VEL mode
+  damiao send-cmd-vel --id 1 --velocity 3.0
+
+  # With custom frequency
+  damiao send-cmd-vel --id 1 --velocity 3.0 --frequency 50.0
+        """
+    )
+    send_cmd_vel_parser.add_argument(
+        "--id",
+        type=int,
+        required=True,
+        dest="motor_id",
+        help="Motor ID",
+    )
+    send_cmd_vel_parser.add_argument(
+        "--velocity",
+        type=float,
+        required=True,
+        help="Desired velocity (rad/s)",
+    )
+    send_cmd_vel_parser.add_argument(
+        "--frequency",
+        type=float,
+        default=100.0,
+        help="Command frequency in Hz (default: 100.0)",
+    )
+    add_global_args(send_cmd_vel_parser)
+    send_cmd_vel_parser.set_defaults(func=cmd_send_cmd_vel)
+    
+    # send-cmd-force-pos command
+    send_cmd_force_pos_parser = subparsers.add_parser(
+        "send-cmd-force-pos",
+        help="Send FORCE_POS control mode command to motor",
+        description="Send FORCE_POS control mode command to motor. Loops continuously until Ctrl+C.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # FORCE_POS mode
+  damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8
+
+  # With custom frequency
+  damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8 --frequency 50.0
+        """
+    )
+    send_cmd_force_pos_parser.add_argument(
+        "--id",
+        type=int,
+        required=True,
+        dest="motor_id",
+        help="Motor ID",
+    )
+    send_cmd_force_pos_parser.add_argument(
+        "--position",
+        type=float,
+        required=True,
+        help="Desired position (radians)",
+    )
+    send_cmd_force_pos_parser.add_argument(
+        "--velocity-limit",
+        type=float,
+        required=True,
+        dest="velocity_limit",
+        help="Velocity limit (rad/s, 0-100)",
+    )
+    send_cmd_force_pos_parser.add_argument(
+        "--current-limit",
+        type=float,
+        required=True,
+        dest="current_limit",
+        help="Torque current limit normalized (0.0-1.0)",
+    )
+    send_cmd_force_pos_parser.add_argument(
+        "--frequency",
+        type=float,
+        default=100.0,
+        help="Command frequency in Hz (default: 100.0)",
+    )
+    add_global_args(send_cmd_force_pos_parser)
+    send_cmd_force_pos_parser.set_defaults(func=cmd_send_cmd_force_pos)
     
     args = parser.parse_args()
     

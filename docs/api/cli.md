@@ -10,7 +10,13 @@ This page documents the Python API for the CLI module. For user-facing CLI docum
 
 ::: damiao_motor.cli.cmd_scan
 
-::: damiao_motor.cli.cmd_send_cmd
+::: damiao_motor.cli.cmd_send_cmd_mit
+
+::: damiao_motor.cli.cmd_send_cmd_pos_vel
+
+::: damiao_motor.cli.cmd_send_cmd_vel
+
+::: damiao_motor.cli.cmd_send_cmd_force_pos
 
 ::: damiao_motor.cli.cmd_set_zero
 
