@@ -424,7 +424,7 @@ class DaMiaoMotor:
     
     def set_zero_command(self) -> None:
         """Send zero command (pos=0, vel=0, torq=0, kp=0, kd=0)."""
-        self.send_cmd(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
+        self.send_cmd_mit(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
 
     def ensure_control_mode(self, control_mode: str) -> None:
         """
@@ -492,6 +492,119 @@ class DaMiaoMotor:
         """Clear motor errors (e.g., overheating)."""
         self.send_raw(self.encode_clear_error_msg())
 
+    def _check_motor_status(self) -> None:
+        """Check motor status and enable/clear errors if necessary."""
+        # Check if motor is disabled and enable it if necessary
+        if self.state and self.state.get("status_code") == DM_MOTOR_DISABLED:
+            self.enable()
+        
+        # Check if motor has lost communication and clear error if necessary
+        if self.state and self.state.get("status_code") == DM_MOTOR_LOST_COMM:
+            self.clear_error()
+
+    def send_cmd_mit(
+        self,
+        target_position: float = 0.0,
+        target_velocity: float = 0.0,
+        stiffness: float = 0.0,
+        damping: float = 0.0,
+        feedforward_torque: float = 0.0,
+    ) -> None:
+        """
+        Send MIT (Position + Velocity + Torque) control command.
+        
+        Args:
+            target_position: Desired position (radians)
+            target_velocity: Desired velocity (rad/s)
+            stiffness: Stiffness (kp) for MIT mode
+            damping: Damping (kd) for MIT mode
+            feedforward_torque: Feedforward torque for MIT mode
+
+        Note:
+            Before using this method, ensure that the motor's control mode register (register 10)
+            is set to MIT mode (value 1). Use `ensure_control_mode("MIT")` or `set_control_mode(1)`.
+        """
+        self._check_motor_status()
+        data = self.encode_cmd_msg(target_position, target_velocity, feedforward_torque, stiffness, damping)
+        self.send_raw(data)
+
+    def send_cmd_pos_vel(
+        self,
+        target_position: float = 0.0,
+        target_velocity: float = 0.0,
+    ) -> None:
+        """
+        Send POS_VEL (Position + Velocity) control command.
+        
+        Args:
+            target_position: Desired position (radians)
+            target_velocity: Desired velocity (rad/s)
+
+        Note:
+            Before using this method, ensure that the motor's control mode register (register 10)
+            is set to POS_VEL mode (value 2). Use `ensure_control_mode("POS_VEL")` or `set_control_mode(2)`.
+        """
+        self._check_motor_status()
+        # POS_VEL Mode: CAN ID 0x100 + motor_id
+        data = struct.pack('<ff', target_position, target_velocity)
+        arbitration_id = 0x100 + self.motor_id
+        self.send_raw(data, arbitration_id=arbitration_id)
+
+    def send_cmd_vel(
+        self,
+        target_velocity: float = 0.0,
+    ) -> None:
+        """
+        Send VEL (Velocity) control command.
+        
+        Args:
+            target_velocity: Desired velocity (rad/s)
+
+        Note:
+            Before using this method, ensure that the motor's control mode register (register 10)
+            is set to VEL mode (value 3). Use `ensure_control_mode("VEL")` or `set_control_mode(3)`.
+        """
+        self._check_motor_status()
+        # VEL Mode: CAN ID 0x200 + motor_id
+        data = struct.pack('<f', target_velocity) + b'\x00' * 4
+        arbitration_id = 0x200 + self.motor_id
+        self.send_raw(data, arbitration_id=arbitration_id)
+
+    def send_cmd_force_pos(
+        self,
+        target_position: float = 0.0,
+        velocity_limit: float = 0.0,
+        current_limit: float = 0.0,
+    ) -> None:
+        """
+        Send FORCE_POS (Force Position) control command.
+        
+        Args:
+            target_position: Desired position (radians)
+            velocity_limit: Velocity limit (rad/s, 0-100) for FORCE_POS mode
+            current_limit: Current limit normalized (0.0-1.0) for FORCE_POS mode
+
+        Note:
+            Before using this method, ensure that the motor's control mode register (register 10)
+            is set to FORCE_POS mode (value 4). Use `ensure_control_mode("FORCE_POS")` or `set_control_mode(4)`.
+        """
+        self._check_motor_status()
+        # FORCE_POS Mode: CAN ID 0x300 + motor_id
+        # Clamp and scale velocity limit (0-100 rad/s -> 0-10000)
+        v_des_clamped = max(0.0, min(100.0, velocity_limit))
+        v_des_scaled = int(v_des_clamped * 100)
+        v_des_scaled = min(10000, v_des_scaled)
+        
+        # Clamp and scale current limit (0.0-1.0 -> 0-10000)
+        i_des_clamped = max(0.0, min(1.0, current_limit))
+        i_des_scaled = int(i_des_clamped * 10000)
+        i_des_scaled = min(10000, i_des_scaled)
+        
+        # Pack: float (4 bytes) + uint16 (2 bytes) + uint16 (2 bytes)
+        data = struct.pack('<fHH', target_position, v_des_scaled, i_des_scaled)
+        arbitration_id = 0x300 + self.motor_id
+        self.send_raw(data, arbitration_id=arbitration_id)
+
     def send_cmd(
         self,
         target_position: float = 0.0,
@@ -504,7 +617,14 @@ class DaMiaoMotor:
         current_limit: float = 0.0,
     ) -> None:
         """
-        Send command to motor with specified control mode.
+        Send command to motor with specified control mode (convenience wrapper).
+        
+        This method is a convenience wrapper that calls the appropriate mode-specific method.
+        For better type safety and clarity, consider using the mode-specific methods directly:
+        - `send_cmd_mit()` for MIT mode
+        - `send_cmd_pos_vel()` for POS_VEL mode
+        - `send_cmd_vel()` for VEL mode
+        - `send_cmd_force_pos()` for FORCE_POS mode
         
         Args:
             target_position: Desired position (radians)
@@ -521,44 +641,14 @@ class DaMiaoMotor:
             is set to match the desired control_mode argument ("MIT", "POS_VEL", "VEL", or "FORCE_POS").
             If the register does not match, the motor will not respond to commands and will not move.
         """
-        # Check if motor is disabled and enable it if necessary
-        if self.state and self.state.get("status_code") == DM_MOTOR_DISABLED:
-            self.enable()
-        
-        # Check if motor has lost communication and clear error if necessary
-        if self.state and self.state.get("status_code") == DM_MOTOR_LOST_COMM:
-            self.clear_error()
-        
         if control_mode == "MIT":
-            # MIT-style control mode (default)
-            data = self.encode_cmd_msg(target_position, target_velocity, feedforward_torque, stiffness, damping)
-            self.send_raw(data)
+            self.send_cmd_mit(target_position, target_velocity, stiffness, damping, feedforward_torque)
         elif control_mode == "POS_VEL":
-            # POS_VEL Mode: CAN ID 0x100 + motor_id
-            data = struct.pack('<ff', target_position, target_velocity)
-            arbitration_id = 0x100 + self.motor_id
-            self.send_raw(data, arbitration_id=arbitration_id)
+            self.send_cmd_pos_vel(target_position, target_velocity)
         elif control_mode == "VEL":
-            # VEL Mode: CAN ID 0x200 + motor_id
-            data = struct.pack('<f', target_velocity) + b'\x00' * 4
-            arbitration_id = 0x200 + self.motor_id
-            self.send_raw(data, arbitration_id=arbitration_id)
+            self.send_cmd_vel(target_velocity)
         elif control_mode == "FORCE_POS":
-            # FORCE_POS Mode: CAN ID 0x300 + motor_id
-            # Clamp and scale velocity limit (0-100 rad/s -> 0-10000)
-            v_des_clamped = max(0.0, min(100.0, velocity_limit))
-            v_des_scaled = int(v_des_clamped * 100)
-            v_des_scaled = min(10000, v_des_scaled)
-            
-            # Clamp and scale current limit (0.0-1.0 -> 0-10000)
-            i_des_clamped = max(0.0, min(1.0, current_limit))
-            i_des_scaled = int(i_des_clamped * 10000)
-            i_des_scaled = min(10000, i_des_scaled)
-            
-            # Pack: float (4 bytes) + uint16 (2 bytes) + uint16 (2 bytes)
-            data = struct.pack('<fHH', target_position, v_des_scaled, i_des_scaled)
-            arbitration_id = 0x300 + self.motor_id
-            self.send_raw(data, arbitration_id=arbitration_id)
+            self.send_cmd_force_pos(target_position, velocity_limit, current_limit)
         else:
             raise ValueError(f"Unknown control_mode: {control_mode}. Must be 'MIT', 'POS_VEL', 'VEL', or 'FORCE_POS'")
 

@@ -350,7 +350,7 @@ def scan_motors(
     print(f"{BOX_VERTICAL}{pad_with_ansi(line_text, 78)}{BOX_VERTICAL}")
     try:
         for motor in motors.values():
-            motor.send_cmd(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
+            motor.send_cmd_mit(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
             if debug:
                 # Print sent command in debug mode
                 cmd_data = motor.encode_cmd_msg(0.0, 0.0, 0.0, 0.0, 0.0)

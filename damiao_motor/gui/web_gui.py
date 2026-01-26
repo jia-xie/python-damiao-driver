@@ -135,7 +135,7 @@ def scan():
         for motor_id in range(0x01, 0x11):
             try:
                 motor = _controller.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type=motor_type)
-                motor.send_cmd(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
+                motor.send_cmd_mit(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
             except ValueError:
                 pass  # Motor already exists
             except Exception as e:
@@ -352,17 +352,32 @@ def send_motor_command(motor_id: int):
         velocity_limit = data.get('velocity_limit', 0.0)
         current_limit = data.get('current_limit', 0.0)
         
-        # Send command
-        motor.send_cmd(
-            target_position=target_position,
-            target_velocity=target_velocity,
-            stiffness=stiffness,
-            damping=damping,
-            feedforward_torque=feedforward_torque,
-            control_mode=control_mode,
-            velocity_limit=velocity_limit,
-            current_limit=current_limit,
-        )
+        # Send command using appropriate method based on control mode
+        if control_mode == "MIT":
+            motor.send_cmd_mit(
+                target_position=target_position,
+                target_velocity=target_velocity,
+                stiffness=stiffness,
+                damping=damping,
+                feedforward_torque=feedforward_torque,
+            )
+        elif control_mode == "POS_VEL":
+            motor.send_cmd_pos_vel(
+                target_position=target_position,
+                target_velocity=target_velocity,
+            )
+        elif control_mode == "VEL":
+            motor.send_cmd_vel(
+                target_velocity=target_velocity,
+            )
+        elif control_mode == "FORCE_POS":
+            motor.send_cmd_force_pos(
+                target_position=target_position,
+                velocity_limit=velocity_limit,
+                current_limit=current_limit,
+            )
+        else:
+            return jsonify({'success': False, 'error': f'Unknown control_mode: {control_mode}'}), 400
         
         # Poll and return state at same rate as control (avoids separate state fetch)
         if _controller:

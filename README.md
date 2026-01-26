@@ -45,9 +45,9 @@ controller = DaMiaoController(channel="can0", bustype="socketcan")
 motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
 
 controller.enable_all()
-motor.ensure_control_mode("MIT")  # required before send_cmd in MIT mode
+motor.ensure_control_mode("MIT")  # required before send_cmd_mit in MIT mode
 
-motor.send_cmd(target_position=1.0, target_velocity=0.0, stiffness=20.0, damping=0.5, feedforward_torque=0.0)
+motor.send_cmd_mit(target_position=1.0, target_velocity=0.0, stiffness=20.0, damping=0.5, feedforward_torque=0.0)
 # ... controller polls feedback in background; use motor.get_states() to read
 
 controller.shutdown()
@@ -97,7 +97,11 @@ The interface provides:
 - **`DaMiaoController(channel, bustype)`** — owns the CAN bus and background feedback polling.  
 - **`controller.add_motor(motor_id, feedback_id, motor_type)`** — add a motor. `motor_type` is required (e.g. `"4340"`).  
 - **`motor.ensure_control_mode(mode)`** — set register 10 to `"MIT"`, `"POS_VEL"`, `"VEL"`, or `"FORCE_POS"` before sending commands in that mode.  
-- **`motor.send_cmd(...)`** — send target position, velocity, stiffness, damping, feedforward (MIT), or mode-specific commands.  
+- **`motor.send_cmd_mit(...)`** — send MIT mode command (position, velocity, stiffness, damping, feedforward torque)
+- **`motor.send_cmd_pos_vel(...)`** — send POS_VEL mode command (position, velocity)
+- **`motor.send_cmd_vel(...)`** — send VEL mode command (velocity)
+- **`motor.send_cmd_force_pos(...)`** — send FORCE_POS mode command (position, velocity_limit, current_limit)
+- **`motor.send_cmd(...)`** — convenience wrapper that calls the appropriate method based on control_mode  
 - **`motor.get_states()`** — last decoded feedback (pos, vel, torq, status, etc.).  
 - **`motor.get_register` / `motor.write_register`** — read/write registers by ID.  
 

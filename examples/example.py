@@ -16,7 +16,7 @@ motor.ensure_control_mode("MIT") # Available modes: MIT, POS_VEL, VEL, FORCE_POS
 
 try:
     while True:
-        motor.send_cmd(
+        motor.send_cmd_mit(
             target_position=math.sin(0.2 * time.time()),
             target_velocity=0.0,
             stiffness=1.0,

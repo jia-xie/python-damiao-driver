@@ -68,7 +68,7 @@ Where:
 
 ```python
 motor.ensure_control_mode("MIT")
-motor.send_cmd(
+motor.send_cmd_mit(
     target_position=1.0,      # 1 radian
     target_velocity=0.0,      # Hold position
     stiffness=20.0,           # Moderate stiffness
@@ -109,7 +109,7 @@ The motor moves toward the target position, limiting velocity to the specified m
 
 ```python
 motor.ensure_control_mode("POS_VEL")
-motor.send_cmd(
+motor.send_cmd_pos_vel(
     target_position=2.0,      # Target: 2 radians
     target_velocity=3.0       # Max velocity: 3 rad/s
 )
@@ -146,7 +146,7 @@ The motor maintains the commanded velocity. Positive values rotate in one direct
 
 ```python
 motor.ensure_control_mode("VEL")
-motor.send_cmd(
+motor.send_cmd_vel(
     target_velocity=2.0       # Rotate at 2 rad/s
 )
 ```
@@ -185,7 +185,7 @@ The motor moves toward the target position while respecting the velocity and cur
 
 ```python
 motor.ensure_control_mode("FORCE_POS")
-motor.send_cmd(
+motor.send_cmd_force_pos(
     target_position=1.5,          # Target: 1.5 radians
     velocity_limit=50.0,          # Max velocity: 50 rad/s
     current_limit=0.8             # Max current: 80% of rated
@@ -229,11 +229,11 @@ The control mode must be set before sending commands:
 ```python
 # Switch to MIT mode
 motor.ensure_control_mode("MIT")
-motor.send_cmd(...)  # MIT commands
+motor.send_cmd_mit(...)  # MIT commands
 
 # Switch to VEL mode
 motor.ensure_control_mode("VEL")
-motor.send_cmd(...)  # VEL commands
+motor.send_cmd_vel(...)  # VEL commands
 ```
 
 The `ensure_control_mode()` method automatically:

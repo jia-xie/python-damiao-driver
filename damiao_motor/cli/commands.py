@@ -461,13 +461,12 @@ def cmd_send_cmd_mit(args) -> None:
         
         try:
             while True:
-                motor.send_cmd(
+                motor.send_cmd_mit(
                     target_position=args.position,
                     target_velocity=args.velocity,
                     stiffness=args.stiffness,
                     damping=args.damping,
                     feedforward_torque=args.feedforward_torque,
-                    control_mode="MIT"
                 )
                 controller.poll_feedback()
                 
@@ -539,10 +538,9 @@ def cmd_send_cmd_pos_vel(args) -> None:
         
         try:
             while True:
-                motor.send_cmd(
+                motor.send_cmd_pos_vel(
                     target_position=args.position,
                     target_velocity=args.velocity,
-                    control_mode="POS_VEL"
                 )
                 controller.poll_feedback()
                 
@@ -612,9 +610,8 @@ def cmd_send_cmd_vel(args) -> None:
         
         try:
             while True:
-                motor.send_cmd(
+                motor.send_cmd_vel(
                     target_velocity=args.velocity,
-                    control_mode="VEL"
                 )
                 controller.poll_feedback()
                 
@@ -688,11 +685,10 @@ def cmd_send_cmd_force_pos(args) -> None:
         
         try:
             while True:
-                motor.send_cmd(
+                motor.send_cmd_force_pos(
                     target_position=args.position,
                     velocity_limit=args.velocity_limit,
                     current_limit=args.current_limit,
-                    control_mode="FORCE_POS"
                 )
                 controller.poll_feedback()
                 

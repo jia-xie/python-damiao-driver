@@ -84,7 +84,8 @@ class DaMiaoController:
         damping: float = 0.0,
         feedforward_torque: float = 0.0,
     ) -> None:
-        self.get_motor(motor_id).send_cmd(
+        """Send MIT mode command to a specific motor (convenience method)."""
+        self.get_motor(motor_id).send_cmd_mit(
             target_position=target_position,
             target_velocity=target_velocity,
             stiffness=stiffness,
@@ -100,8 +101,9 @@ class DaMiaoController:
         damping: float = 0.0,
         feedforward_torque: float = 0.0,
     ) -> None:
+        """Send MIT mode command to all motors (convenience method)."""
         for m in self.all_motors():
-            m.send_cmd(
+            m.send_cmd_mit(
                 target_position=target_position,
                 target_velocity=target_velocity,
                 stiffness=stiffness,
