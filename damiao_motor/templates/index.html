@@ -41,7 +41,7 @@
         }
         .top-bar {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 15px;
             margin-bottom: 15px;
         }
@@ -732,20 +732,19 @@
                     <button class="btn btn-secondary" onclick="disconnect()">Disconnect</button>
                 </div>
             </div>
-            <div class="top-bar-section">
-                <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Motor Selection</div>
-                <div class="motor-selector" style="margin: 0;">
-                    <button class="btn btn-primary" onclick="scanMotors()">Scan Motors</button>
-                    <button class="btn btn-success" onclick="refreshRegisters()" id="refreshBtn" disabled>Refresh Registers</button>
-                    <select id="motorSelect" onchange="loadMotorRegisters()" style="padding: 6px; border-radius: 5px; border: 1px solid #ced4da; min-width: 200px;" disabled>
-                        <option value="">Select a motor...</option>
-                    </select>
-                </div>
-            </div>
         </div>
         
         <div class="main-content">
             <div class="main-content-left">
+                <div class="section">
+                    <div class="section-title">Motor Selection</div>
+                    <div class="motor-selector" style="margin: 0;">
+                        <button class="btn btn-primary" onclick="scanMotors()">Scan Motors</button>
+                        <select id="motorSelect" onchange="loadMotorRegisters()" style="padding: 6px; border-radius: 5px; border: 1px solid #ced4da; min-width: 200px;" disabled>
+                            <option value="">Select a motor...</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="section">
                     <div class="section-title">Motor Control</div>
                     <div id="motorControlContainer">
@@ -993,7 +992,6 @@
                     showStatus('Disconnected', 'info');
                     document.getElementById('motorSelect').innerHTML = '<option value="">Select a motor...</option>';
                     document.getElementById('motorSelect').disabled = true;
-                    document.getElementById('refreshBtn').disabled = true;
                     document.getElementById('registerTableContainer').innerHTML = 
                         '<div class="message"><p>Connect to CAN device and select a motor</p></div>';
                     document.getElementById('motorControlContainer').innerHTML = 
@@ -1040,7 +1038,6 @@
                             select.appendChild(option);
                         });
                         select.disabled = false;
-                        document.getElementById('refreshBtn').disabled = false;
                         
                         // Restore previous selection if motor still exists
                         if (currentMotorId) {
@@ -1360,12 +1357,6 @@
             } catch (error) {
                 console.error('Save register error:', error);
                 showStatus('Error: ' + error.message, 'error');
-            }
-        }
-
-        async function refreshRegisters() {
-            if (currentMotorId) {
-                await loadMotorRegisters();
             }
         }
 
