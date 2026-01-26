@@ -613,23 +613,47 @@ class DaMiaoMotor:
     def get_register(self, rid: int, timeout: float = 1.0) -> float | int:
         """
         Read a register value from the motor.
-        
+
+        If the value is not already cached, sends a read request and waits for the
+        controller's background polling to receive the reply. The motor never
+        reads from the bus; only the controller's poll_feedback does, avoiding
+        multiple consumers.
+
+        Requires the motor to be managed by a DaMiaoController (added via
+        controller.add_motor). Standalone motors can only return cached values.
+
         Args:
             rid: Register ID (0-81)
             timeout: Timeout in seconds to wait for response
-        
+
         Returns:
             Register value as float or int depending on register data type
-        
+
         Raises:
             KeyError: If register ID is not in the register table
-            ValueError: If register is write-only (should not happen for RO registers)
+            RuntimeError: If the motor is not managed by a controller (no background polling)
+            TimeoutError: If the register reply was not received within timeout
         """
+        if rid not in REGISTER_TABLE:
+            raise KeyError(f"Register {rid} not found in register table")
         with self.registers_lock:
             if rid in self.registers:
                 return self.registers[rid]
-            else:
-                raise KeyError(f"Register {rid} not found in register table")
+        if getattr(self, "_controller", None) is None:
+            raise RuntimeError(
+                "get_register requires the motor to be managed by a DaMiaoController "
+                "(added via controller.add_motor). The controller's background polling "
+                "is the only bus reader; standalone motors cannot block-wait for register replies."
+            )
+        self.request_register_reading(rid)
+        deadline = time.time() + timeout
+        while True:
+            with self.registers_lock:
+                if rid in self.registers:
+                    return self.registers[rid]
+            if time.time() >= deadline:
+                raise TimeoutError(f"Register {rid} not received within {timeout}s")
+            time.sleep(0.01)
 
     def write_register(self, rid: int, value: float | int) -> None:
         """
@@ -720,7 +744,7 @@ class DaMiaoMotor:
             if reg_info.access in ["RO", "RW"]:  # Readable registers
                 try:
                     results[rid] = self.get_register(rid, timeout=timeout)
-                except (TimeoutError, KeyError, ValueError) as e:
+                except (TimeoutError, KeyError, ValueError, RuntimeError) as e:
                     # Store error as string for debugging
                     results[rid] = f"ERROR: {e}"
         return results

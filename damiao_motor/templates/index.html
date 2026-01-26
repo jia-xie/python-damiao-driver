@@ -1102,12 +1102,14 @@
             currentMotorId = motorId;
             showStatus('Loading registers...', 'info');
             let motorType = 'DM4340';
+            let ctrlModeCode = undefined;
 
             try {
                 const response = await fetch(`/api/motors/${motorId}/registers`);
                 const data = await response.json();
                 if (data.success) {
                     motorType = data.motor_type || 'DM4340';
+                    ctrlModeCode = data.registers[10];
                     displayRegisters(data.registers);
                     originalValues = {...data.registers};
                     
@@ -1129,6 +1131,12 @@
 
             // Load motor control panel
             displayMotorControl(motorType);
+            // Sync Control Mode dropdown from register 10 (CTRL_MODE)
+            const CODE_TO_MODE = { 1: 'MIT', 2: 'POS_VEL', 3: 'VEL', 4: 'FORCE_POS' };
+            if (ctrlModeCode !== undefined && CODE_TO_MODE[ctrlModeCode]) {
+                const sel = document.getElementById('controlMode');
+                if (sel) { sel.value = CODE_TO_MODE[ctrlModeCode]; updateControlVisibility(); }
+            }
             // Load initial motor state
             await updateMotorState();
         }
@@ -1507,8 +1515,8 @@
             `;
             container.innerHTML = html;
 
-            // Update control visibility based on mode
-            document.getElementById('controlMode').addEventListener('change', updateControlVisibility);
+            // Update control visibility and write register 10 (CTRL_MODE) when mode changes
+            document.getElementById('controlMode').addEventListener('change', onControlModeChange);
             updateControlVisibility();
             
             // Initialize frequency row visibility based on toggle state
@@ -2097,6 +2105,30 @@
             document.getElementById('torqueRow').style.display = mode === 'MIT' ? 'flex' : 'none';
             document.getElementById('velLimitRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
             document.getElementById('curLimitRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
+        }
+
+        const CTRL_MODE_CODE = { MIT: 1, POS_VEL: 2, VEL: 3, FORCE_POS: 4 };
+
+        async function onControlModeChange() {
+            updateControlVisibility();
+            if (!currentMotorId) return;
+            const mode = document.getElementById('controlMode').value;
+            const code = CTRL_MODE_CODE[mode] ?? 1;
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/registers/10`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ value: code })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showStatus('Control mode updated to ' + mode, 'success');
+                } else {
+                    showStatus('Failed to set control mode: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (e) {
+                showStatus('Error: ' + e.message, 'error');
+            }
         }
 
         async function sendMotorCommand() {

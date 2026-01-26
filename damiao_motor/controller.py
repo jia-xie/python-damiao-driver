@@ -47,7 +47,8 @@ class DaMiaoController:
         self.motors[motor_id] = motor
         # Bind by logical motor ID; feedback frames embed this ID in the first byte.
         self._motors_by_feedback[motor_id] = motor
-        
+        motor._controller = self
+
         # Start background polling if not already running
         self._start_polling()
         

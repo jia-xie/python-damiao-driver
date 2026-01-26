@@ -1091,11 +1091,7 @@ def cmd_send_cmd(args) -> None:
         motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
         
         # Ensure control mode (register 10) matches the desired mode
-        try:
-            ensure_control_mode(motor, args.mode)
-        except Exception as e:
-            print(f"⚠ Warning: Could not verify/set control mode: {e}")
-            print(f"  Continuing anyway, but motor may not respond correctly.")
+        ensure_control_mode(motor, args.mode)
         
         # Determine CAN ID based on mode
         can_id_map = {
