@@ -273,6 +273,7 @@ def scan_motors(
     duration_s: float = 3.0,
     bitrate: int = 1000000,
     debug: bool = False,
+    motor_type: str | None = None,
 ) -> Set[int]:
     """
     Scan for connected motors by sending zero commands and listening for feedback.
@@ -282,6 +283,7 @@ def scan_motors(
         bustype: CAN bus type (e.g., "socketcan")
         motor_ids: List of motor IDs to test. If None, tests IDs 0x01-0x10.
         duration_s: How long to listen for responses (seconds)
+        motor_type: Motor type for P/V/T presets (e.g. DM4340, DM4310, DM3507). None uses DM4340.
 
     Returns:
         Set of motor IDs that responded with feedback.
@@ -332,7 +334,7 @@ def scan_motors(
     # Create motor instances for all IDs we want to test
     for motor_id in motor_ids:
         try:
-            motor = controller.add_motor(motor_id=motor_id, feedback_id=0x00)
+            motor = controller.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type=motor_type)
             motors[motor_id] = motor
         except ValueError:
             # Motor already exists, skip
@@ -674,6 +676,7 @@ def cmd_scan(args) -> None:
     config_lines = [
         f" CAN channel: {args.channel}",
         f" Bus type: {args.bustype}",
+        f" Motor type: {args.motor_type or 'DM4340 (default)'}",
         f" Testing motor IDs: {', '.join([hex(i) for i in args.ids]) if args.ids else '0x01-0x10 (default range)'}",
         f" Listen duration: {args.duration}s",
     ]
@@ -694,6 +697,7 @@ def cmd_scan(args) -> None:
             duration_s=args.duration,
             bitrate=args.bitrate,
             debug=args.debug,
+            motor_type=args.motor_type,
         )
 
         # Print final summary
@@ -775,7 +779,7 @@ def cmd_set_zero(args) -> None:
     controller = DaMiaoController(channel=args.channel, bustype=args.bustype)
     
     try:
-        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00)
+        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
         
         # Ensure control mode is set to MIT (register 10 = 1) for zero command
         try:
@@ -857,7 +861,7 @@ def cmd_set_motor_id(args) -> None:
     
     try:
         # Use current ID to connect
-        motor = controller.add_motor(motor_id=args.current, feedback_id=0x00)
+        motor = controller.add_motor(motor_id=args.current, feedback_id=0x00, motor_type=args.motor_type)
         
         print(f"Reading current register values...")
         time.sleep(0.1)
@@ -928,7 +932,7 @@ def cmd_set_zero_position(args) -> None:
     controller = DaMiaoController(channel=args.channel, bustype=args.bustype)
     
     try:
-        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00)
+        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
         
         print(f"Setting current position to zero...")
         motor.set_zero_position()
@@ -990,7 +994,7 @@ def cmd_set_can_timeout(args) -> None:
     controller = DaMiaoController(channel=args.channel, bustype=args.bustype)
     
     try:
-        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00)
+        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
         
         print(f"Setting CAN timeout to {args.timeout_ms} ms (register 9)...")
         motor.set_can_timeout(args.timeout_ms)
@@ -1084,7 +1088,7 @@ def cmd_send_cmd(args) -> None:
     controller = DaMiaoController(channel=args.channel, bustype=args.bustype)
     
     try:
-        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00)
+        motor = controller.add_motor(motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type)
         
         # Ensure control mode (register 10) matches the desired mode
         try:
@@ -1199,7 +1203,7 @@ def cmd_set_feedback_id(args) -> None:
     
     try:
         # Use current motor ID to connect
-        motor = controller.add_motor(motor_id=args.current, feedback_id=0x00)
+        motor = controller.add_motor(motor_id=args.current, feedback_id=0x00, motor_type=args.motor_type)
         
         print(f"Reading current register values...")
         time.sleep(0.1)
@@ -1360,6 +1364,14 @@ For more information about a specific command, use:
             default=1000000,
             help="CAN bitrate in bits per second (default: 1000000). Only used when bringing up interface.",
         )
+        subparser.add_argument(
+            "--motor-type",
+            type=str,
+            default=None,
+            choices=["DM4310", "DM4310_48", "DM4340", "DM4340_48", "DM6006", "DM8006", "DM8009", "DM10010L", "DM10010", "DMH3510", "DMG6215", "DMH6220", "DMJH11", "DM6248P", "DM3507"],
+            dest="motor_type",
+            help="Motor type for P/V/T presets (default: DM4340). Omit to use DM4340.",
+        )
     
     # scan command
     scan_parser = subparsers.add_parser(
@@ -1377,6 +1389,9 @@ Examples:
 
   # Scan with longer listen duration
   damiao scan --duration 2.0
+
+  # Scan with motor type DM4310
+  damiao scan --motor-type DM4310
 
   # Scan with debug output (print all raw CAN messages)
   damiao scan --debug
@@ -1598,14 +1613,14 @@ Examples:
         type=float,
         default=0.0,
         dest="stiffness",
-        help="Stiffness (kp) for MIT mode (default: 0.0)",
+        help="Stiffness (kp) for MIT mode, range 0–500 (default: 0.0)",
     )
     send_cmd_parser.add_argument(
         "--damping",
         type=float,
         default=0.0,
         dest="damping",
-        help="Damping (kd) for MIT mode (default: 0.0)",
+        help="Damping (kd) for MIT mode, range 0–5 (default: 0.0)",
     )
     send_cmd_parser.add_argument(
         "--feedforward-torque",

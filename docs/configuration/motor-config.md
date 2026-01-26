@@ -51,6 +51,50 @@ print(CAN_BAUD_RATE_CODES)
 
 The CAN interface bitrate should match the motor's configured baud rate.
 
+## P/V/T and kp/kd Limits (MIT Mode)
+
+P/V/T min/max are fixed per motor type (PMAX, VMAX, TMAX). The driver uses the selected `motor_type` preset for encoding commands and decoding feedback. **kp_min/kp_max and kd_min/kd_max are fixed** (kp: 0/500, kd: 0/5) for all motors; import `KP_MIN`, `KP_MAX`, `KD_MIN`, `KD_MAX` from `damiao_motor` if needed.
+
+### Motor type and presets
+
+Use the `motor_type` parameter when creating a motor. It selects the P/V/T preset (PMAX, VMAX, TMAX) for the motor model:
+
+- **`motor_type`**: Optional string. When `None` or omitted, `"DM4340"` is used. Use `MOTOR_TYPE_PRESETS` to inspect presets.
+
+| Motor type | PMAX | VMAX | TMAX |
+|------------|------|------|------|
+| DM4310 | 12.5 | 30 | 10 |
+| DM4310_48 | 12.5 | 50 | 10 |
+| DM4340 | 12.5 | 10 | 28 |
+| DM4340_48 | 12.5 | 10 | 28 |
+| DM6006 | 12.5 | 45 | 20 |
+| DM8006 | 12.5 | 45 | 40 |
+| DM8009 | 12.5 | 45 | 54 |
+| DM10010L | 12.5 | 25 | 200 |
+| DM10010 | 12.5 | 20 | 200 |
+| DMH3510 | 12.5 | 280 | 1 |
+| DMG6215 | 12.5 | 45 | 10 |
+| DMH6220 | 12.5 | 45 | 10 |
+| DMJH11 | 12.5 | 10 | 12 |
+| DM6248P | 12.566 | 20 | 120 |
+| DM3507 | 12.566 | 50 | 5 |
+
+```python
+from damiao_motor import DaMiaoController, MOTOR_TYPE_PRESETS
+
+controller = DaMiaoController(channel="can0")
+# DM4340 (default) — motor_type omitted
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00)
+
+# Other motor types
+motor = controller.add_motor(motor_id=0x02, feedback_id=0x01, motor_type="DM4310")
+motor = controller.add_motor(motor_id=0x03, feedback_id=0x02, motor_type="DM3507")
+```
+
+### Overriding Limits
+
+Pass `p_min`, `p_max`, `v_min`, `v_max`, `t_min`, `t_max` to override the preset, or use `set_limits()`, `set_p_limits()`, `set_v_limits()`, `set_t_limits()`. (kp and kd ranges are fixed for all motors: kp 0–500, kd 0–5.)
+
 ## Register Configuration
 
 ### Reading Registers

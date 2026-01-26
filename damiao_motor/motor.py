@@ -1,7 +1,7 @@
 import can
 import struct
 import time
-from typing import Dict, Any, Optional, Literal
+from typing import Dict, Any, List, Optional, Tuple, Literal
 from dataclasses import dataclass
 import threading
 
@@ -143,13 +143,46 @@ def is_register_reply(data: bytes) -> bool:
     return True
 
 # -----------------------
-# Motor parameter limits
+# Motor parameter limits and presets
 # -----------------------
-P_MIN, P_MAX = -12.5, 12.5
-V_MIN, V_MAX = -45.0, 45.0
-KP_MIN, KP_MAX = 0.0, 500.0
-KD_MIN, KD_MAX = 0.0, 5.0
-T_MIN, T_MAX = -18.0, 18.0
+# P/V/T min/max per motor type: [PMAX, VMAX, TMAX] -> p=±PMAX, v=±VMAX, t=±TMAX.
+# kp_min/kp_max and kd_min/kd_max are fixed for all motors (MIT mode stiffness/damping encoding).
+KP_MIN = 0.0
+KP_MAX = 500.0
+KD_MIN = 0.0
+KD_MAX = 5.0
+
+# [PMAX, VMAX, TMAX] per motor type (Limit_Param table)
+_MOTOR_LIMIT_PARAM: List[Tuple[str, List[float]]] = [
+    ("DM4310", [12.5, 30, 10]),
+    ("DM4310_48", [12.5, 50, 10]),
+    ("DM4340", [12.5, 10, 28]),
+    ("DM4340_48", [12.5, 10, 28]),
+    ("DM6006", [12.5, 45, 20]),
+    ("DM8006", [12.5, 45, 40]),
+    ("DM8009", [12.5, 45, 54]),
+    ("DM10010L", [12.5, 25, 200]),
+    ("DM10010", [12.5, 20, 200]),
+    ("DMH3510", [12.5, 280, 1]),
+    ("DMG6215", [12.5, 45, 10]),
+    ("DMH6220", [12.5, 45, 10]),
+    ("DMJH11", [12.5, 10, 12]),
+    ("DM6248P", [12.566, 20, 120]),
+    ("DM3507", [12.566, 50, 5]),
+]
+
+def _build_preset(pmax: float, vmax: float, tmax: float) -> Dict[str, float]:
+    return {
+        "p_min": -pmax, "p_max": pmax,
+        "v_min": -vmax, "v_max": vmax,
+        "t_min": -tmax, "t_max": tmax,
+    }
+
+MOTOR_TYPE_PRESETS: Dict[str, Dict[str, float]] = {
+    name: _build_preset(p, v, t) for name, (p, v, t) in _MOTOR_LIMIT_PARAM
+}
+
+_LIMITS_KEYS = ("p_min", "p_max", "v_min", "v_max", "t_min", "t_max")
 
 # -----------------------
 # Motor state codes
@@ -198,10 +231,40 @@ class DaMiaoMotor:
     Lightweight DaMiao motor wrapper over a CAN bus.
     """
 
-    def __init__(self, motor_id: int, feedback_id: int, bus: can.Bus) -> None:
+    def __init__(
+        self,
+        motor_id: int,
+        feedback_id: int,
+        bus: can.Bus,
+        *,
+        motor_type: Optional[str] = None,
+        p_min: Optional[float] = None,
+        p_max: Optional[float] = None,
+        v_min: Optional[float] = None,
+        v_max: Optional[float] = None,
+        t_min: Optional[float] = None,
+        t_max: Optional[float] = None,
+    ) -> None:
         self.motor_id = motor_id
         self.feedback_id = feedback_id
         self.bus = bus
+
+        # Resolve P/V/T limits from motor_type preset (DM4340 default) + optional overrides. kp and kd use fixed KP_MIN/KP_MAX, KD_MIN/KD_MAX.
+        base = self._resolve_limits(motor_type)
+        overrides = {
+            k: v
+            for k, v in (
+                ("p_min", p_min), ("p_max", p_max),
+                ("v_min", v_min), ("v_max", v_max),
+                ("t_min", t_min), ("t_max", t_max),
+            )
+            if v is not None
+        }
+        base.update(overrides)
+        for k in _LIMITS_KEYS:
+            setattr(self, f"_{k}", base[k])
+
+        self.motor_type = motor_type if motor_type is not None else "DM4340"
 
         # last decoded feedback
         self.state: Dict[str, Any] = {}
@@ -214,6 +277,29 @@ class DaMiaoMotor:
         self.register_request_time_lock = threading.Lock()
         self.register_reply_time: Dict[int, float] = {}
         self.register_reply_time_lock = threading.Lock()
+
+    def _resolve_limits(self, motor_type: Optional[str]) -> Dict[str, float]:
+        """Resolve limits from motor_type preset. Returns a dict of the 6 P/V/T limit values."""
+        if motor_type is None:
+            motor_type = "DM4340"
+        if motor_type not in MOTOR_TYPE_PRESETS:
+            raise ValueError(
+                f"Unknown motor_type: {motor_type!r}. "
+                f"Known: {list(MOTOR_TYPE_PRESETS.keys())}"
+            )
+        return dict(MOTOR_TYPE_PRESETS[motor_type])
+
+    def set_motor_type(self, motor_type: str) -> None:
+        """Update motor type and P/V/T limits from a preset. Validates against MOTOR_TYPE_PRESETS."""
+        if motor_type not in MOTOR_TYPE_PRESETS:
+            raise ValueError(
+                f"Unknown motor_type: {motor_type!r}. "
+                f"Known: {list(MOTOR_TYPE_PRESETS.keys())}"
+            )
+        base = dict(MOTOR_TYPE_PRESETS[motor_type])
+        for k in _LIMITS_KEYS:
+            setattr(self, f"_{k}", base[k])
+        self.motor_type = motor_type
 
     def get_states(self) -> Dict[str, Any]:
         """
@@ -239,13 +325,13 @@ class DaMiaoMotor:
     def encode_cmd_msg(self, pos: float, vel: float, torq: float, kp: float, kd: float) -> bytes:
         """
         Encode a command to CAN frame for sending to the motor.
-        Check 
+        Uses this motor's P/V/T limits (from motor_type preset) and fixed kp (KP_MIN/KP_MAX), kd (KD_MIN/KD_MAX).
         """
-        pos_u = float_to_uint(pos, P_MIN, P_MAX, 16)
-        vel_u = float_to_uint(vel, V_MIN, V_MAX, 12)
+        pos_u = float_to_uint(pos, self._p_min, self._p_max, 16)
+        vel_u = float_to_uint(vel, self._v_min, self._v_max, 12)
         kp_u = float_to_uint(kp, KP_MIN, KP_MAX, 12)
         kd_u = float_to_uint(kd, KD_MIN, KD_MAX, 12)
-        torq_u = float_to_uint(torq, T_MIN, T_MAX, 12)
+        torq_u = float_to_uint(torq, self._t_min, self._t_max, 12)
 
         data = [
             (pos_u >> 8) & 0xFF,
@@ -478,9 +564,9 @@ class DaMiaoMotor:
             "arbitration_id": arbitration_id,
             "status": decode_state_name(status),
             "status_code": status,
-            "pos": uint_to_float(pos_int, P_MIN, P_MAX, 16),
-            "vel": uint_to_float(vel_int, V_MIN, V_MAX, 12),
-            "torq": uint_to_float(torq_int, T_MIN, T_MAX, 12),
+            "pos": uint_to_float(pos_int, self._p_min, self._p_max, 16),
+            "vel": uint_to_float(vel_int, self._v_min, self._v_max, 12),
+            "torq": uint_to_float(torq_int, self._t_min, self._t_max, 12),
             "t_mos": t_mos,
             "t_rotor": t_rotor,
         }
@@ -638,6 +724,45 @@ class DaMiaoMotor:
                     # Store error as string for debugging
                     results[rid] = f"ERROR: {e}"
         return results
+
+    # -----------------------
+    # Limit setters and mapping helpers
+    # -----------------------
+    def set_p_limits(self, p_min: float, p_max: float) -> None:
+        """Set position limits used for encode/decode (MIT mode)."""
+        self._p_min, self._p_max = p_min, p_max
+
+    def set_v_limits(self, v_min: float, v_max: float) -> None:
+        """Set velocity limits used for encode/decode (MIT mode)."""
+        self._v_min, self._v_max = v_min, v_max
+
+    def set_t_limits(self, t_min: float, t_max: float) -> None:
+        """Set torque limits used for encode/decode (MIT mode)."""
+        self._t_min, self._t_max = t_min, t_max
+
+    def set_limits(
+        self,
+        *,
+        p_min: Optional[float] = None,
+        p_max: Optional[float] = None,
+        v_min: Optional[float] = None,
+        v_max: Optional[float] = None,
+        t_min: Optional[float] = None,
+        t_max: Optional[float] = None,
+    ) -> None:
+        """Update only the specified P/V/T limits. Omitted keys are left unchanged. kp and kd are fixed (KP_MIN/KP_MAX, KD_MIN/KD_MAX)."""
+        if p_min is not None:
+            self._p_min = p_min
+        if p_max is not None:
+            self._p_max = p_max
+        if v_min is not None:
+            self._v_min = v_min
+        if v_max is not None:
+            self._v_max = v_max
+        if t_min is not None:
+            self._t_min = t_min
+        if t_max is not None:
+            self._t_max = t_max
 
     # -----------------------
     # Setter methods for all writable registers

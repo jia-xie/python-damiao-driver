@@ -1,4 +1,4 @@
-from .motor import DaMiaoMotor, REGISTER_TABLE, RegisterInfo, CAN_BAUD_RATE_CODES
+from .motor import DaMiaoMotor, REGISTER_TABLE, RegisterInfo, CAN_BAUD_RATE_CODES, MOTOR_TYPE_PRESETS, KP_MIN, KP_MAX, KD_MIN, KD_MAX
 from .controller import DaMiaoController
 
 try:
@@ -14,6 +14,6 @@ except ImportError:
         except Exception:
             __version__ = "unknown"
 
-__all__ = ["DaMiaoMotor", "DaMiaoController", "REGISTER_TABLE", "RegisterInfo", "CAN_BAUD_RATE_CODES", "__version__"]
+__all__ = ["DaMiaoMotor", "DaMiaoController", "REGISTER_TABLE", "RegisterInfo", "CAN_BAUD_RATE_CODES", "MOTOR_TYPE_PRESETS", "KP_MIN", "KP_MAX", "KD_MIN", "KD_MAX", "__version__"]
 
 

@@ -1017,7 +1017,11 @@
             }
             
             try {
-                const response = await fetch('/api/scan', {method: 'POST'});
+                const response = await fetch('/api/scan', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: '{}'
+                });
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`HTTP ${response.status}: ${errorText}`);
@@ -1032,7 +1036,7 @@
                         data.motors.forEach(motor => {
                             const option = document.createElement('option');
                             option.value = motor.id;
-                            option.textContent = `Motor 0x${motor.id.toString(16).toUpperCase().padStart(2, '0')} (${motor.id}) - Arb ID: 0x${motor.arb_id.toString(16).toUpperCase().padStart(3, '0')}`;
+                            option.textContent = `Motor ID: 0x${motor.id.toString(16).toUpperCase().padStart(2, '0')} | Arb ID: 0x${motor.arb_id.toString(16).toUpperCase().padStart(3, '0')}`;
                             select.appendChild(option);
                         });
                         select.disabled = false;
@@ -1100,11 +1104,13 @@
             
             currentMotorId = motorId;
             showStatus('Loading registers...', 'info');
-            
+            let motorType = 'DM4340';
+
             try {
                 const response = await fetch(`/api/motors/${motorId}/registers`);
                 const data = await response.json();
                 if (data.success) {
+                    motorType = data.motor_type || 'DM4340';
                     displayRegisters(data.registers);
                     originalValues = {...data.registers};
                     
@@ -1123,9 +1129,9 @@
             } catch (error) {
                 showStatus('Error: ' + error.message, 'error');
             }
-            
+
             // Load motor control panel
-            displayMotorControl();
+            displayMotorControl(motorType);
             // Load initial motor state
             await updateMotorState();
         }
@@ -1393,7 +1399,7 @@
         let tmaxValue = null;
         let currentExportChartId = null;
 
-        function displayMotorControl() {
+        function displayMotorControl(motorType = 'DM4340') {
             const container = document.getElementById('motorControlContainer');
             const motorId = currentMotorId;
             if (!motorId) {
@@ -1401,10 +1407,17 @@
                 return;
             }
 
+            const types = window.motorTypes || ['DM4340'];
+            const motorTypeOptions = types.map(t => `<option value="${t}" ${t === motorType ? 'selected' : ''}>${t}</option>`).join('');
+
             const html = `
                 <div class="motor-control-panel">
                     <div class="control-group">
                         <h3>Control Parameters</h3>
+                        <div class="control-row">
+                            <label>Motor type:</label>
+                            <select id="motorTypeSelect" onchange="setMotorType()">${motorTypeOptions}</select>
+                        </div>
                         <div class="control-row">
                             <label>Control Mode:</label>
                             <select id="controlMode">
@@ -1424,11 +1437,11 @@
                         </div>
                         <div class="control-row" id="stiffnessRow">
                             <label>Stiffness (Kp):</label>
-                            <input type="number" id="stiffness" step="0.1" value="0.0">
+                            <input type="number" id="stiffness" step="0.1" value="0.0" min="0" max="500" title="Stiffness (kp), range 0–500">
                         </div>
                         <div class="control-row" id="dampingRow">
                             <label>Damping (Kd):</label>
-                            <input type="number" id="damping" step="0.01" value="0.0">
+                            <input type="number" id="damping" step="0.01" value="0.0" min="0" max="5" title="Damping (kd), range 0–5">
                         </div>
                         <div class="control-row" id="torqueRow">
                             <label>Torque (Nm):</label>
@@ -2383,6 +2396,32 @@
             }
         }
 
+        async function setMotorType() {
+            if (!currentMotorId) {
+                showStatus('Please select a motor first', 'error');
+                return;
+            }
+            const el = document.getElementById('motorTypeSelect');
+            if (!el) return;
+            const motorType = el.value;
+            if (!motorType) return;
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/motor-type`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ motor_type: motorType })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showStatus('Motor type updated to ' + motorType, 'success');
+                } else {
+                    showStatus('Failed to set motor type: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+            }
+        }
+
         function applyMotorState(state) {
             if (!state) return;
             const statusBadge = document.getElementById('motorStatus');
@@ -2441,6 +2480,18 @@
             }
         }
 
+        async function loadMotorTypes() {
+            try {
+                const response = await fetch('/api/motor-types');
+                const data = await response.json();
+                const types = data.success && data.types ? data.types : ['DM4340'];
+                window.motorTypes = types;
+            } catch (e) {
+                console.warn('Could not load motor types:', e);
+                window.motorTypes = ['DM4340'];
+            }
+        }
+
         // Load register table and CAN interfaces on page load
         window.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -2454,6 +2505,7 @@
                 console.error('Failed to load register table:', error);
             }
             await loadCanInterfaces();
+            await loadMotorTypes();
         });
 
         // Column resizer functionality

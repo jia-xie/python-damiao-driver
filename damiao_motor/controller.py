@@ -1,6 +1,6 @@
 import threading
 import time
-from typing import Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, Optional
 
 import can
 
@@ -34,7 +34,7 @@ class DaMiaoController:
     # -----------------------
     # Motor management
     # -----------------------
-    def add_motor(self, motor_id: int, feedback_id: int) -> DaMiaoMotor:
+    def add_motor(self, motor_id: int, feedback_id: int, **kwargs: Any) -> DaMiaoMotor:
         if motor_id in self.motors:
             raise ValueError(f"Motor with ID {motor_id} already exists")
 
@@ -42,6 +42,7 @@ class DaMiaoController:
             motor_id=motor_id,
             feedback_id=feedback_id,
             bus=self.bus,
+            **kwargs,
         )
         self.motors[motor_id] = motor
         # Bind by logical motor ID; feedback frames embed this ID in the first byte.

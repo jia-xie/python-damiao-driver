@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional
 from flask import Flask, render_template, jsonify, request
 
 from .controller import DaMiaoController
-from .motor import REGISTER_TABLE, RegisterInfo
+from .motor import REGISTER_TABLE, RegisterInfo, MOTOR_TYPE_PRESETS
 
 import os
 
@@ -76,6 +76,12 @@ def list_can_interfaces():
     return jsonify({'success': True, 'interfaces': interfaces})
 
 
+@app.route('/api/motor-types', methods=['GET'])
+def get_motor_types():
+    """Return list of supported motor type presets (e.g. DM4340, DM4310)."""
+    return jsonify({'success': True, 'types': list(MOTOR_TYPE_PRESETS.keys())})
+
+
 @app.route('/api/connect', methods=['POST'])
 def connect():
     """Connect to CAN bus."""
@@ -109,7 +115,10 @@ def scan():
     try:
         if _controller is None:
             return jsonify({'success': False, 'error': 'Not connected. Please connect first.'}), 400
-        
+
+        data = request.get_json() or {}
+        motor_type = data.get('motor_type')
+
         # Clear existing motors
         _motors = {}
         _controller.motors = {}
@@ -122,7 +131,7 @@ def scan():
         motors_found = []
         for motor_id in range(0x01, 0x11):
             try:
-                motor = _controller.add_motor(motor_id=motor_id, feedback_id=0x00)
+                motor = _controller.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type=motor_type)
                 motor.send_cmd(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
             except ValueError:
                 pass  # Motor already exists
@@ -144,6 +153,7 @@ def scan():
                         motors_found.append({
                             'id': motor_id,
                             'arb_id': arb_id if arb_id is not None else 0,
+                            'motor_type': motor.motor_type,
                         })
                         responded.add(motor_id)
             time.sleep(0.01)
@@ -175,7 +185,7 @@ def get_registers(motor_id: int):
             if not isinstance(value, str) or not value.startswith("ERROR"):
                 clean_registers[rid] = value
         
-        return jsonify({'success': True, 'registers': clean_registers})
+        return jsonify({'success': True, 'registers': clean_registers, 'motor_type': motor.motor_type})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -305,7 +315,7 @@ def get_motor_state(motor_id: int):
         if _controller:
             _controller.poll_feedback()
         
-        state = motor.get_states()
+        state = {**motor.get_states(), "motor_type": motor.motor_type}
         return jsonify({'success': True, 'state': state})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -388,6 +398,28 @@ def clear_motor_error(motor_id: int):
         motor = _motors[motor_id]
         motor.clear_error()
         return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/motors/<int:motor_id>/motor-type', methods=['PUT'])
+def set_motor_type(motor_id: int):
+    """Set motor type (preset for P/V/T limits)."""
+    global _motors
+    try:
+        if motor_id not in _motors:
+            return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
+
+        data = request.get_json() or {}
+        motor_type = data.get('motor_type')
+        if not motor_type:
+            return jsonify({'success': False, 'error': 'motor_type is required'}), 400
+
+        motor = _motors[motor_id]
+        motor.set_motor_type(motor_type)
+        return jsonify({'success': True})
+    except ValueError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
