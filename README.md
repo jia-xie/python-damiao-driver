@@ -4,10 +4,12 @@
 ![Platform](https://img.shields.io/badge/platform-Linux-lightgrey)
 [![PyPI](https://img.shields.io/badge/pypi-damiao--motor-blue)](https://pypi.org/project/damiao-motor/)
 
-Python driver for **DaMiao** brushless motors over CAN. Control one or more motors on a single bus, with a unified CLI, web GUI, and library API.
+<img src="docs/gui-screenshot.png" alt="DaMiao Motor Control GUI" width="1000">
+
+Python driver for **DaMiao** brushless motors over CAN with a unified CLI, web GUI, and library API.
 
 - **Control modes:** MIT, POS_VEL, VEL, FORCE_POS  
-- **Motor types:** DM3507, DM4310, DM4340, DM6006, DM8006, DM8009, DM10010/L, and more  
+- **Motor types:** 3507, 4310, 4340, 6006, 8006, 8009, 10010/L, and more  
 - **Tools:** `damiao` CLI (scan, send-cmd, set-zero-command, set-motor-id, etc.) and `damiao-gui` web interface  
 
 **Docs:** [GitHub Pages](https://jia-xie.github.io/python-damiao-driver/) · **Firmware:** [DaMiao motor firmware (Gitee)](https://gitee.com/kit-miao/motor-firmware)
@@ -40,7 +42,7 @@ Edit `examples/example.py` to set `motor_id`, `feedback_id`, `motor_type`, and `
 from damiao_motor import DaMiaoController
 
 controller = DaMiaoController(channel="can0", bustype="socketcan")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
 
 controller.enable_all()
 motor.ensure_control_mode("MIT")  # required before send_cmd in MIT mode
@@ -55,15 +57,15 @@ controller.shutdown()
 
 ## CLI: `damiao`
 
-All `damiao` subcommands require `--motor-type` (e.g. `DM4340`). Use `damiao <cmd> --help` for options.
+All `damiao` subcommands require `--motor-type` (e.g. `4340`). Use `damiao <cmd> --help` for options.
 
 | Command | Description |
 |---------|-------------|
-| `damiao scan --motor-type DM4340` | Scan for motors on the bus |
-| `damiao send-cmd --motor-type DM4340 --id 1 --mode MIT` | Send position/velocity/stiffness commands (MIT, POS_VEL, VEL, FORCE_POS) |
-| `damiao set-zero-command --motor-type DM4340 --id 1` | Send zero command (hold at zero) |
-| `damiao set-zero-position --motor-type DM4340 --id 1` | Set current position to zero |
-| `damiao set-can-timeout --motor-type DM4340 --id 1 --timeout-ms 1000` | Set CAN timeout (register 9) |
+| `damiao scan --motor-type 4340` | Scan for motors on the bus |
+| `damiao send-cmd --motor-type 4340 --id 1 --mode MIT` | Send position/velocity/stiffness commands (MIT, POS_VEL, VEL, FORCE_POS) |
+| `damiao set-zero-command --motor-type 4340 --id 1` | Send zero command (hold at zero) |
+| `damiao set-zero-position --motor-type 4340 --id 1` | Set current position to zero |
+| `damiao set-can-timeout --motor-type 4340 --id 1 --timeout-ms 1000` | Set CAN timeout (register 9) |
 | `damiao set-motor-id` / `damiao set-feedback-id` | Change motor or feedback ID (registers 8, 7) |
 
 ---
@@ -75,8 +77,6 @@ damiao-gui
 ```
 
 Then open **http://127.0.0.1:5000**.
-
-<img src="docs/gui-screenshot.png" alt="DaMiao Motor Control GUI" width="1000">
 
 The interface provides:
 
@@ -91,7 +91,7 @@ The interface provides:
 ## Library API
 
 - **`DaMiaoController(channel, bustype)`** — owns the CAN bus and background feedback polling.  
-- **`controller.add_motor(motor_id, feedback_id, motor_type)`** — add a motor. `motor_type` is required (e.g. `"DM4340"`).  
+- **`controller.add_motor(motor_id, feedback_id, motor_type)`** — add a motor. `motor_type` is required (e.g. `"4340"`).  
 - **`motor.ensure_control_mode(mode)`** — set register 10 to `"MIT"`, `"POS_VEL"`, `"VEL"`, or `"FORCE_POS"` before sending commands in that mode.  
 - **`motor.send_cmd(...)`** — send target position, velocity, stiffness, damping, feedforward (MIT), or mode-specific commands.  
 - **`motor.get_states()`** — last decoded feedback (pos, vel, torq, status, etc.).  

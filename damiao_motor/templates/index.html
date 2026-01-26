@@ -1018,7 +1018,7 @@
                 const response = await fetch('/api/scan', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ motor_type: 'DM4340' })
+                    body: JSON.stringify({ motor_type: '4310' })
                 });
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -1101,14 +1101,14 @@
             
             currentMotorId = motorId;
             showStatus('Loading registers...', 'info');
-            let motorType = 'DM4340';
+            let motorType = '4310';
             let ctrlModeCode = undefined;
 
             try {
                 const response = await fetch(`/api/motors/${motorId}/registers`);
                 const data = await response.json();
                 if (data.success) {
-                    motorType = data.motor_type || 'DM4340';
+                    motorType = data.motor_type || '4310';
                     ctrlModeCode = data.registers[10];
                     displayRegisters(data.registers);
                     originalValues = {...data.registers};
@@ -1398,7 +1398,7 @@
         let tmaxValue = null;
         let currentExportChartId = null;
 
-        function displayMotorControl(motorType = 'DM4340') {
+        function displayMotorControl(motorType = '4310') {
             const container = document.getElementById('motorControlContainer');
             const motorId = currentMotorId;
             if (!motorId) {
@@ -1406,7 +1406,7 @@
                 return;
             }
 
-            const types = window.motorTypes || ['DM4340'];
+            const types = window.motorTypes || ['4310'];
             const motorTypeOptions = types.map(t => `<option value="${t}" ${t === motorType ? 'selected' : ''}>${t}</option>`).join('');
 
             const html = `
@@ -2518,11 +2518,11 @@
             try {
                 const response = await fetch('/api/motor-types');
                 const data = await response.json();
-                const types = data.success && data.types ? data.types : ['DM4340'];
+                const types = data.success && data.types ? data.types : ['4310'];
                 window.motorTypes = types;
             } catch (e) {
                 console.warn('Could not load motor types:', e);
-                window.motorTypes = ['DM4340'];
+                window.motorTypes = ['4310'];
             }
         }
 

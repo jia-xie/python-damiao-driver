@@ -131,7 +131,7 @@ for code, baud_rate in CAN_BAUD_RATE_CODES.items():
 from damiao_motor import DaMiaoController
 
 controller = DaMiaoController(channel="can0")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
 
 # Read a specific register
 value = motor.get_register(0x00)  # Read UV_Value

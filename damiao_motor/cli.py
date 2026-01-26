@@ -284,7 +284,7 @@ def scan_motors(
         bustype: CAN bus type (e.g., "socketcan")
         motor_ids: List of motor IDs to test. If None, tests IDs 0x01-0x10.
         duration_s: How long to listen for responses (seconds)
-        motor_type: Motor type for P/V/T presets (e.g. DM4340, DM4310, DM3507). Required.
+        motor_type: Motor type for P/V/T presets (e.g. 4340, 4310, 3507). Required.
 
     Returns:
         Set of motor IDs that responded with feedback.
@@ -1305,9 +1305,9 @@ For more information about a specific command, use:
             "--motor-type",
             type=str,
             required=True,
-            choices=["DM4310", "DM4310_48", "DM4340", "DM4340_48", "DM6006", "DM8006", "DM8009", "DM10010L", "DM10010", "DMH3510", "DMG6215", "DMH6220", "DMJH11", "DM6248P", "DM3507"],
+            choices=["4310", "4310P", "4340", "4340P", "6006", "8006", "8009", "10010L", "10010", "H3510", "G6215", "H6220", "JH11", "6248P", "3507"],
             dest="motor_type",
-            help="Motor type for P/V/T presets (e.g. DM4340, DM4310, DM3507)",
+            help="Motor type for P/V/T presets (e.g. 4340, 4310, 3507)",
         )
     
     # scan command
@@ -1319,19 +1319,19 @@ For more information about a specific command, use:
         epilog="""
 Examples:
   # Scan default ID range (0x01-0x10)
-  damiao scan --motor-type DM4340
+  damiao scan --motor-type 4340
 
   # Scan specific motor IDs
-  damiao scan --motor-type DM4340 --ids 1 2 3
+  damiao scan --motor-type 4340 --ids 1 2 3
 
   # Scan with longer listen duration
-  damiao scan --motor-type DM4340 --duration 2.0
+  damiao scan --motor-type 4340 --duration 2.0
 
-  # Scan with motor type DM4310
-  damiao scan --motor-type DM4310
+  # Scan with motor type 4310
+  damiao scan --motor-type 4310
 
   # Scan with debug output (print all raw CAN messages)
-  damiao scan --motor-type DM4340 --debug
+  damiao scan --motor-type 4340 --debug
         """
     )
     scan_parser.add_argument(

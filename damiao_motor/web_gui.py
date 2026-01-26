@@ -78,7 +78,7 @@ def list_can_interfaces():
 
 @app.route('/api/motor-types', methods=['GET'])
 def get_motor_types():
-    """Return list of supported motor type presets (e.g. DM4340, DM4310)."""
+    """Return list of supported motor type presets (e.g. 4340, 4310)."""
     return jsonify({'success': True, 'types': list(MOTOR_TYPE_PRESETS.keys())})
 
 

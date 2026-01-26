@@ -32,7 +32,7 @@ The feedback ID can be set via register writes:
 from damiao_motor import DaMiaoController
 
 controller = DaMiaoController(channel="can0")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
 
 # Write feedback ID register (check register table for correct ID)
 motor.write_register(feedback_id_register, new_feedback_id)
@@ -59,36 +59,36 @@ P/V/T min/max are fixed per motor type (PMAX, VMAX, TMAX). The driver uses the s
 
 Use the `motor_type` parameter when creating a motor. It selects the P/V/T preset (PMAX, VMAX, TMAX) for the motor model:
 
-- **`motor_type`**: Required string. Use `"DM4340"` as a common default. Use `MOTOR_TYPE_PRESETS` to inspect presets.
+- **`motor_type`**: Required string. Use `"4340"` as a common default. Use `MOTOR_TYPE_PRESETS` to inspect presets.
 
 | Motor type | PMAX | VMAX | TMAX |
 |------------|------|------|------|
-| DM4310 | 12.5 | 30 | 10 |
-| DM4310_48 | 12.5 | 50 | 10 |
-| DM4340 | 12.5 | 10 | 28 |
-| DM4340_48 | 12.5 | 10 | 28 |
-| DM6006 | 12.5 | 45 | 20 |
-| DM8006 | 12.5 | 45 | 40 |
-| DM8009 | 12.5 | 45 | 54 |
-| DM10010L | 12.5 | 25 | 200 |
-| DM10010 | 12.5 | 20 | 200 |
-| DMH3510 | 12.5 | 280 | 1 |
-| DMG6215 | 12.5 | 45 | 10 |
-| DMH6220 | 12.5 | 45 | 10 |
-| DMJH11 | 12.5 | 10 | 12 |
-| DM6248P | 12.566 | 20 | 120 |
-| DM3507 | 12.566 | 50 | 5 |
+| 4310 | 12.5 | 30 | 10 |
+| 4310P | 12.5 | 50 | 10 |
+| 4340 | 12.5 | 10 | 28 |
+| 4340P | 12.5 | 10 | 28 |
+| 6006 | 12.5 | 45 | 20 |
+| 8006 | 12.5 | 45 | 40 |
+| 8009 | 12.5 | 45 | 54 |
+| 10010L | 12.5 | 25 | 200 |
+| 10010 | 12.5 | 20 | 200 |
+| H3510 | 12.5 | 280 | 1 |
+| G6215 | 12.5 | 45 | 10 |
+| H6220 | 12.5 | 45 | 10 |
+| JH11 | 12.5 | 10 | 12 |
+| 6248P | 12.566 | 20 | 120 |
+| 3507 | 12.566 | 50 | 5 |
 
 ```python
 from damiao_motor import DaMiaoController, MOTOR_TYPE_PRESETS
 
 controller = DaMiaoController(channel="can0")
-# DM4340 (common default)
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
+# 4340 (common default)
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
 
 # Other motor types
-motor = controller.add_motor(motor_id=0x02, feedback_id=0x01, motor_type="DM4310")
-motor = controller.add_motor(motor_id=0x03, feedback_id=0x02, motor_type="DM3507")
+motor = controller.add_motor(motor_id=0x02, feedback_id=0x01, motor_type="4310")
+motor = controller.add_motor(motor_id=0x03, feedback_id=0x02, motor_type="3507")
 ```
 
 ### Overriding Limits
@@ -119,7 +119,7 @@ The web GUI provides an easy way to view and edit all registers. Use the `damiao
 
 ```python
 controller = DaMiaoController(channel="can0")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
 ```
 
 ### Multiple Motors (Same Feedback ID)
@@ -127,16 +127,16 @@ motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340
 ```python
 controller = DaMiaoController(channel="can0")
 for motor_id in [0x01, 0x02, 0x03]:
-    controller.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type="DM4340")
+    controller.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type="4340")
 ```
 
 ### Multiple Motors (Different Feedback IDs)
 
 ```python
 controller = DaMiaoController(channel="can0")
-controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="DM4340")
-controller.add_motor(motor_id=0x02, feedback_id=0x01, motor_type="DM4340")
-controller.add_motor(motor_id=0x03, feedback_id=0x02, motor_type="DM4340")
+controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
+controller.add_motor(motor_id=0x02, feedback_id=0x01, motor_type="4340")
+controller.add_motor(motor_id=0x03, feedback_id=0x02, motor_type="4340")
 ```
 
 ## Control Gains

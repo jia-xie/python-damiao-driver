@@ -5,9 +5,9 @@ import time
 from damiao_motor import DaMiaoController
 
 controller = DaMiaoController(channel="can0", bustype="socketcan")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x11, motor_type="DM4310") 
-# Available motor types: DM3507, DM4310, DM4340, DM6006, DM8006, DM8009, DM10010L, 
-# DM10010, DMH3510, DMG6215, DMH6220, DMJH11, DM6248P
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x11, motor_type="4310")
+# Available motor types: 3507, 4310, 4340, 6006, 8006, 8009, 10010L,
+# 10010, H3510, G6215, H6220, JH11, 6248P
 
 
 controller.enable_all()
