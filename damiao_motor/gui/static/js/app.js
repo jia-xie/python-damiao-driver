@@ -637,6 +637,7 @@ let currentMotorId = null;
                         <div class="motor-actions-row">
                             <button class="btn btn-secondary" onclick="setZeroPosition()">Set Zero</button>
                             <button class="btn btn-secondary" onclick="clearMotorError()">Clear Error</button>
+                            <button class="btn btn-secondary" id="storeParamsBtn" onclick="storeParameters()">Store Parameters</button>
                         </div>
                         </div>
                         <div class="control-group motor-feedback-group">
@@ -1772,6 +1773,40 @@ let currentMotorId = null;
                 }
             } catch (error) {
                 showStatus('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function storeParameters() {
+            if (!currentMotorId) {
+                showStatus('Please select a motor first', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('storeParamsBtn');
+            const originalText = btn ? btn.textContent : 'Store Parameters';
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Storing...';
+            }
+            showStatus('Storing parameters to flash...', 'info');
+
+            try {
+                const response = await fetch(`/api/motors/${currentMotorId}/store-parameters`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showStatus('Parameters stored to flash', 'success');
+                } else {
+                    showStatus('Failed to store parameters: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
             }
         }
 

@@ -344,6 +344,21 @@ def disable_motor(motor_id: int):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@app.route('/api/motors/<int:motor_id>/store-parameters', methods=['POST'])
+def store_motor_parameters(motor_id: int):
+    """Store all motor parameters to flash."""
+    global _motors
+    try:
+        if motor_id not in _motors:
+            return jsonify({'success': False, 'error': f'Motor {motor_id} not found'}), 404
+
+        motor = _motors[motor_id]
+        motor.store_parameters()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/api/motors/<int:motor_id>/state', methods=['GET'])
 def get_motor_state(motor_id: int):
     """Get current motor state/feedback."""
@@ -534,4 +549,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
