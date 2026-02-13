@@ -25,7 +25,7 @@
   <line x1="72" y1="87" x2="126" y2="87" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
 
   <!-- Sum circle -->
-  <circle cx="150" cy="87" r="22" fill="white" stroke="#2563eb" stroke-width="2" filter="url(#shadowSmall)"/>
+  <circle cx="150" cy="87" r="22" fill="white" stroke="#2563eb" stroke-width="2"/>
   <text x="150" y="95" text-anchor="middle" font-size="24" font-weight="700" fill="#2563eb">Σ</text>
   <text x="136" y="82" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
   <text x="158" y="105" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626">−</text>
@@ -38,20 +38,20 @@
   <line x1="172" y1="87" x2="236" y2="87" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
 
   <!-- PI block -->
-  <rect x="240" y="62" width="120" height="50" rx="8" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="240" y="62" width="120" height="50" rx="8" fill="#2c6fbb" stroke="#1d4ed8" stroke-width="1.5"/>
   <text x="300" y="95" text-anchor="middle" font-size="26" font-weight="400" font-style="italic" fill="white">PI</text>
 
   <!-- iq_ref -->
   <line x1="360" y1="87" x2="470" y2="87" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
-  <rect x="474" y="69" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" filter="url(#shadowSmall)"/>
+  <rect x="474" y="69" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
   <text x="524" y="93" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">q,ref</tspan><tspan dy="-4"></tspan></text>
 
   <!-- ===== id_ref = 0 ===== -->
 
-  <rect x="240" y="210" width="120" height="50" rx="8" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)" opacity="0.5"/>
+  <rect x="240" y="210" width="120" height="50" rx="8" fill="#2c6fbb" stroke="#1d4ed8" stroke-width="1.5" opacity="0.5"/>
   <text x="300" y="242" text-anchor="middle" font-size="26" font-style="italic" fill="white">0</text>
 
   <line x1="360" y1="235" x2="470" y2="235" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
-  <rect x="474" y="217" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" filter="url(#shadowSmall)"/>
+  <rect x="474" y="217" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
   <text x="524" y="241" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">d,ref</tspan><tspan dy="-4"></tspan></text>
 </svg>
