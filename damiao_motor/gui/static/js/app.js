@@ -637,7 +637,16 @@ let currentMotorId = null;
                         <div class="motor-actions-row">
                             <button class="btn btn-secondary" onclick="setZeroPosition()">Set Zero</button>
                             <button class="btn btn-secondary" onclick="clearMotorError()">Clear Error</button>
-                            <button class="btn btn-secondary" id="storeParamsBtn" onclick="storeParameters()">Store Parameters</button>
+                            <div class="store-params-group">
+                                <button class="btn btn-secondary" id="storeParamsBtn" onclick="storeParameters()">Store Parameters</button>
+                                <span class="store-params-info">
+                                    <button type="button" class="store-params-info-btn" aria-label="About Store Parameters">ⓘ</button>
+                                    <span class="store-params-tooltip">
+                                        This stores the register parameters shown in the Register Parameters section below.
+                                        Read <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/registers/#registers-web-gui" target="_blank" rel="noopener noreferrer">register docs</a> for more information.
+                                    </span>
+                                </span>
+                            </div>
                         </div>
                         </div>
                         <div class="control-group motor-feedback-group">

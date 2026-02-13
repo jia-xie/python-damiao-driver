@@ -525,6 +525,69 @@
         .motor-actions-row.full-width {
             width: 100%;
         }
+        .store-params-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+        .store-params-info {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .store-params-info-btn {
+            width: 18px;
+            height: 18px;
+            border: none;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .store-params-info-btn:hover,
+        .store-params-info-btn:focus {
+            background: #0056b3;
+            outline: none;
+        }
+        .store-params-tooltip {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            z-index: 2000;
+            width: 290px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            background: #1f2937;
+            color: #f8f9fa;
+            font-size: 12px;
+            line-height: 1.4;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .store-params-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 0;
+            right: 0;
+            height: 8px;
+        }
+        .store-params-tooltip a {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+        .store-params-info:hover .store-params-tooltip,
+        .store-params-info:focus-within .store-params-tooltip {
+            display: block;
+        }
         .toggle-switch-container {
             display: flex;
             align-items: center;

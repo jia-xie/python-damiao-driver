@@ -34,7 +34,7 @@ motor.write_register(25, 20.0)  # KP_ASR
 motor.store_parameters()
 ```
 
-**Web GUI**
+### Web GUI {#registers-web-gui}
 
 - Editing a register in the Web GUI writes it at runtime first.
 - Click `Store Parameters` to write current parameters to flash.
