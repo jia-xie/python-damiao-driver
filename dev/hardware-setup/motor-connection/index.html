@@ -313,7 +313,7 @@
   
     
   
-  Package Usage
+  Package Tools
 
         </a>
       </li>
@@ -781,28 +781,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#usb-can-adapters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        USB-CAN Adapters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#embedded-boards" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Embedded Boards
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -913,45 +891,6 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multi-motor-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Multi-Motor Setup
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Multi-Motor Setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#bus-topology" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bus Topology
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-three-motors" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example: Three Motors
-      
-    </span>
-  </a>
-  
-</li>
-        
           <li class="md-nav__item">
   <a href="#power-considerations" class="md-nav__link">
     <span class="md-ellipsis">
@@ -978,6 +917,29 @@
   </a>
   
     <nav class="md-nav" aria-label="Testing Connections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-gui-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: GUI (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-cli-if-strictly-headless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: CLI (If strictly headless)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 2: CLI (If strictly headless)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1021,6 +983,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1166,7 +1133,7 @@
   <span class="md-ellipsis">
     
   
-    Package Usage
+    Package Tools
   
 
     
@@ -1182,7 +1149,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Package Usage
+    Package Tools
   
 
           </label>
@@ -1411,38 +1378,26 @@
 <p>This guide covers the physical connection of DaMiao motors to your system.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>DaMiao motors connect to your computer via CAN bus. This requires:</p>
-<ol>
+<ul>
 <li><strong>CAN interface hardware</strong> (USB-CAN adapter, CAN-capable board, etc.)</li>
 <li><strong>CAN bus wiring</strong> (CAN_H, CAN_L, GND)</li>
 <li><strong>Termination resistors</strong> (120Ω at both ends)</li>
 <li><strong>Power supply</strong> for the motors</li>
-</ol>
+</ul>
 <h2 id="can-interface-options">CAN Interface Options<a class="headerlink" href="#can-interface-options" title="Permanent link">&para;</a></h2>
-<h3 id="usb-can-adapters">USB-CAN Adapters<a class="headerlink" href="#usb-can-adapters" title="Permanent link">&para;</a></h3>
-<p>Common USB-CAN adapters that work with SocketCAN:</p>
 <ul>
 <li><strong>CANable/CandleLight</strong>: Open-source USB-CAN adapter</li>
-<li><strong>Peak PCAN-USB</strong>: Commercial adapter with good Linux support</li>
-<li><strong>ZLG USBCAN</strong>: Various models with SocketCAN drivers</li>
-<li><strong>IXXAT USB-to-CAN</strong>: Professional-grade adapters</li>
-</ul>
-<h3 id="embedded-boards">Embedded Boards<a class="headerlink" href="#embedded-boards" title="Permanent link">&para;</a></h3>
-<p>Many embedded boards have built-in CAN interfaces:</p>
-<ul>
 <li><strong>Raspberry Pi</strong>: With CAN HAT (e.g., Waveshare CAN HAT)</li>
-<li><strong>BeagleBone</strong>: Built-in CAN interfaces</li>
 <li><strong>Jetson</strong>: With CAN expansion boards</li>
-<li><strong>STM32/ESP32</strong>: With CAN transceivers</li>
 </ul>
 <h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>SocketCAN support</strong>: Must have Linux kernel driver</li>
 <li><strong>1 Mbps capability</strong>: Should support 1 Mbps bitrate</li>
-<li><strong>Proper drivers</strong>: May need to install kernel modules</li>
 </ul>
 <h2 id="wiring">Wiring<a class="headerlink" href="#wiring" title="Permanent link">&para;</a></h2>
 <h3 id="can-bus-wiring">CAN Bus Wiring<a class="headerlink" href="#can-bus-wiring" title="Permanent link">&para;</a></h3>
-<p>CAN bus uses three wires:</p>
+<p>CAN bus uses two wires:</p>
 <table>
 <thead>
 <tr>
@@ -1459,10 +1414,6 @@
 <td>CAN_L</td>
 <td>CAN Low signal</td>
 </tr>
-<tr>
-<td>GND</td>
-<td>Ground</td>
-</tr>
 </tbody>
 </table>
 <h3 id="connection-diagram">Connection Diagram<a class="headerlink" href="#connection-diagram" title="Permanent link">&para;</a></h3>
@@ -1470,23 +1421,20 @@
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    |
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    | CAN_H ────────────────┐
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    | CAN_L ───────────────┤
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    | GND ─────────────────┤
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    |                      │
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    |                  [Motor 1]
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    |                      │
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    | CAN_H ───────────────┤
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    | CAN_L ───────────────┤
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    | GND ─────────────────┤
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    |                      │
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    |                  [Motor 1]
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    |                      │
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    | CAN_H ───────────────┤
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    | CAN_L ───────────────┤
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    |                      │
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    |                  [Motor 2]
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    |                      │
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    |                  [Motor 2]
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    |                      │
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    | CAN_H ───────────────┤
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    | CAN_L ───────────────┤
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    | GND ─────────────────┤
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    |                      │
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    |                  [Motor 3]
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    |                      │
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    |                  120Ω (Termination)
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    | CAN_H ───────────────┤
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    | CAN_L ───────────────┤
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    |                      │
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    |                  [Motor 3]
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    |                      │
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    |                  120Ω (Termination)
 </span></code></pre></div>
 <h3 id="termination-resistors">Termination Resistors<a class="headerlink" href="#termination-resistors" title="Permanent link">&para;</a></h3>
 <p><strong>Critical</strong>: Termination resistors (120Ω) must be installed at <strong>both ends</strong> of the bus.</p>
@@ -1502,7 +1450,6 @@
 <ul>
 <li><strong>Voltage</strong>: Check motor specifications (typically 24V or 48V)</li>
 <li><strong>Current</strong>: Must supply enough current for all motors</li>
-<li><strong>Ground</strong>: Connect motor power ground to CAN bus ground</li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Power Safety</p>
@@ -1533,27 +1480,13 @@
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>damiao<span class="w"> </span>set-feedback-id<span class="w"> </span>--current<span class="w"> </span><span class="m">1</span><span class="w"> </span>--target<span class="w"> </span><span class="m">3</span><span class="w"> </span>--motor-type<span class="w"> </span><span class="m">4340</span>
 </span></code></pre></div>
 <div class="admonition note">
-<p class="admonition-title">ID Uniqueness</p>
+<p class="admonition-title">ID Selection</p>
 <ul>
-<li>Each motor must have a unique ESC_ID and MST_ID</li>
-<li>IDs can be the same (e.g., both 0x01) but this is not recommended</li>
+<li>Each motor on the same bus must have a unique ESC_ID and MST_ID</li>
 <li>Use sequential IDs for simplicity (0x01, 0x02, 0x03, ...)</li>
+<li>Lower ID number will have higher priority in physical layer.</li>
 </ul>
 </div>
-<h2 id="multi-motor-setup">Multi-Motor Setup<a class="headerlink" href="#multi-motor-setup" title="Permanent link">&para;</a></h2>
-<h3 id="bus-topology">Bus Topology<a class="headerlink" href="#bus-topology" title="Permanent link">&para;</a></h3>
-<p>For multiple motors:</p>
-<ol>
-<li>Connect all motors in parallel on the CAN bus</li>
-<li>Install termination resistors at both ends</li>
-<li>Assign unique IDs to each motor</li>
-<li>Use the same bitrate for all devices</li>
-</ol>
-<h3 id="example-three-motors">Example: Three Motors<a class="headerlink" href="#example-three-motors" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Motor 1: ESC_ID=0x01, MST_ID=0x11
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Motor 2: ESC_ID=0x02, MST_ID=0x12
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>Motor 3: ESC_ID=0x03, MST_ID=0x13
-</span></code></pre></div>
 <h3 id="power-considerations">Power Considerations<a class="headerlink" href="#power-considerations" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Total current</strong>: Sum of all motor currents</li>
@@ -1561,23 +1494,35 @@
 <li><strong>Power distribution</strong>: Consider power distribution if motors are far apart</li>
 </ul>
 <h2 id="testing-connections">Testing Connections<a class="headerlink" href="#testing-connections" title="Permanent link">&para;</a></h2>
-<h3 id="1-verify-can-interface">1. Verify CAN Interface<a class="headerlink" href="#1-verify-can-interface" title="Permanent link">&para;</a></h3>
+<p>Use one of the following options to validate your setup.</p>
+<h3 id="option-1-gui-recommended">Option 1: GUI (Recommended)<a class="headerlink" href="#option-1-gui-recommended" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Start the Web GUI</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>damiao<span class="w"> </span>gui
+</span></code></pre></div>
+<p>In the GUI, follow these steps:</p>
+<ol>
+<li><strong>Connect and scan motors</strong>: Click <strong>Connect</strong>, then <strong>Scan Motors</strong>. See <a href="../../package-usage/web-gui/#connection">GUI Connection</a>.</li>
+<li><strong>Configure the motor</strong>: Select motor type, IDs, and relevant registers. See <a href="../../package-usage/web-gui/#register-parameters">GUI Register Parameters</a>.</li>
+<li><strong>Test motor control</strong>: Select control mode and send test commands while monitoring feedback. See <a href="../../package-usage/web-gui/#motor-control">GUI Motor Control</a>.</li>
+</ol>
+<h3 id="option-2-cli-if-strictly-headless">Option 2: CLI (If strictly headless)<a class="headerlink" href="#option-2-cli-if-strictly-headless" title="Permanent link">&para;</a></h3>
+<h4 id="1-verify-can-interface">1. Verify CAN Interface<a class="headerlink" href="#1-verify-can-interface" title="Permanent link">&para;</a></h4>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Check interface is up</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>ip<span class="w"> </span>link<span class="w"> </span>show<span class="w"> </span>can0
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Should show: state UP</span>
 </span></code></pre></div>
-<h3 id="2-scan-for-motors">2. Scan for Motors<a class="headerlink" href="#2-scan-for-motors" title="Permanent link">&para;</a></h3>
+<h4 id="2-scan-for-motors">2. Scan for Motors<a class="headerlink" href="#2-scan-for-motors" title="Permanent link">&para;</a></h4>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Scan for connected motors (motor-type is optional)</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>damiao<span class="w"> </span>scan
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Should detect all connected motors</span>
 </span></code></pre></div>
-<h3 id="3-test-communication">3. Test Communication<a class="headerlink" href="#3-test-communication" title="Permanent link">&para;</a></h3>
+<h4 id="3-test-communication">3. Test Communication<a class="headerlink" href="#3-test-communication" title="Permanent link">&para;</a></h4>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Send zero command to verify communication</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>damiao<span class="w"> </span>set-zero-command<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--motor-type<span class="w"> </span><span class="m">4340</span>
 </span></code></pre></div>
-<h3 id="4-monitor-can-traffic">4. Monitor CAN Traffic<a class="headerlink" href="#4-monitor-can-traffic" title="Permanent link">&para;</a></h3>
+<h4 id="4-monitor-can-traffic">4. Monitor CAN Traffic<a class="headerlink" href="#4-monitor-can-traffic" title="Permanent link">&para;</a></h4>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Install can-utils if needed</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>can-utils
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
