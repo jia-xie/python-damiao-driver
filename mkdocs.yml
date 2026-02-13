@@ -109,7 +109,7 @@ nav:
   - Hardware Setup:
       - CAN Setup: hardware-setup/can-set-up.md
       - Motor Connection: hardware-setup/motor-connection.md
-  - Package Usage:
+  - Package Tools:
       - CLI Tool: package-usage/cli-tool.md
       - Web GUI: package-usage/web-gui.md
   - API Reference:

@@ -13,48 +13,32 @@ This guide covers the physical connection of DaMiao motors to your system.
 
 DaMiao motors connect to your computer via CAN bus. This requires:
 
-1. **CAN interface hardware** (USB-CAN adapter, CAN-capable board, etc.)
-2. **CAN bus wiring** (CAN_H, CAN_L, GND)
-3. **Termination resistors** (120Ω at both ends)
-4. **Power supply** for the motors
+- **CAN interface hardware** (USB-CAN adapter, CAN-capable board, etc.)
+- **CAN bus wiring** (CAN_H, CAN_L, GND)
+- **Termination resistors** (120Ω at both ends)
+- **Power supply** for the motors
 
 ## CAN Interface Options
 
-### USB-CAN Adapters
-
-Common USB-CAN adapters that work with SocketCAN:
-
 - **CANable/CandleLight**: Open-source USB-CAN adapter
-- **Peak PCAN-USB**: Commercial adapter with good Linux support
-- **ZLG USBCAN**: Various models with SocketCAN drivers
-- **IXXAT USB-to-CAN**: Professional-grade adapters
-
-### Embedded Boards
-
-Many embedded boards have built-in CAN interfaces:
-
 - **Raspberry Pi**: With CAN HAT (e.g., Waveshare CAN HAT)
-- **BeagleBone**: Built-in CAN interfaces
 - **Jetson**: With CAN expansion boards
-- **STM32/ESP32**: With CAN transceivers
 
 ### Requirements
 
 - **SocketCAN support**: Must have Linux kernel driver
 - **1 Mbps capability**: Should support 1 Mbps bitrate
-- **Proper drivers**: May need to install kernel modules
 
 ## Wiring
 
 ### CAN Bus Wiring
 
-CAN bus uses three wires:
+CAN bus uses two wires:
 
 | Wire | Description |
 |------|-------------|
 | CAN_H | CAN High signal |
 | CAN_L | CAN Low signal |
-| GND | Ground |
 
 ### Connection Diagram
 
@@ -63,19 +47,16 @@ CAN bus uses three wires:
     |
     | CAN_H ────────────────┐
     | CAN_L ───────────────┤
-    | GND ─────────────────┤
     |                      │
     |                  [Motor 1]
     |                      │
     | CAN_H ───────────────┤
     | CAN_L ───────────────┤
-    | GND ─────────────────┤
     |                      │
     |                  [Motor 2]
     |                      │
     | CAN_H ───────────────┤
     | CAN_L ───────────────┤
-    | GND ─────────────────┤
     |                      │
     |                  [Motor 3]
     |                      │
@@ -99,7 +80,6 @@ Motors require a separate power supply:
 
 - **Voltage**: Check motor specifications (typically 24V or 48V)
 - **Current**: Must supply enough current for all motors
-- **Ground**: Connect motor power ground to CAN bus ground
 
 !!! warning "Power Safety"
     - Ensure power supply matches motor voltage rating
@@ -135,29 +115,10 @@ damiao set-motor-id --current 1 --target 2 --motor-type 4340
 damiao set-feedback-id --current 1 --target 3 --motor-type 4340
 ```
 
-!!! note "ID Uniqueness"
-    - Each motor must have a unique ESC_ID and MST_ID
-    - IDs can be the same (e.g., both 0x01) but this is not recommended
+!!! note "ID Selection"
+    - Each motor on the same bus must have a unique ESC_ID and MST_ID
     - Use sequential IDs for simplicity (0x01, 0x02, 0x03, ...)
-
-## Multi-Motor Setup
-
-### Bus Topology
-
-For multiple motors:
-
-1. Connect all motors in parallel on the CAN bus
-2. Install termination resistors at both ends
-3. Assign unique IDs to each motor
-4. Use the same bitrate for all devices
-
-### Example: Three Motors
-
-```
-Motor 1: ESC_ID=0x01, MST_ID=0x11
-Motor 2: ESC_ID=0x02, MST_ID=0x12
-Motor 3: ESC_ID=0x03, MST_ID=0x13
-```
+    - Lower ID number will have higher priority in physical layer.
 
 ### Power Considerations
 
@@ -167,7 +128,24 @@ Motor 3: ESC_ID=0x03, MST_ID=0x13
 
 ## Testing Connections
 
-### 1. Verify CAN Interface
+Use one of the following options to validate your setup.
+
+### Option 1: GUI (Recommended)
+
+```bash
+# Start the Web GUI
+damiao gui
+```
+
+In the GUI, follow these steps:
+
+1. **Connect and scan motors**: Click **Connect**, then **Scan Motors**. See [GUI Connection](../package-usage/web-gui.md#connection).
+2. **Configure the motor**: Select motor type, IDs, and relevant registers. See [GUI Register Parameters](../package-usage/web-gui.md#register-parameters).
+3. **Test motor control**: Select control mode and send test commands while monitoring feedback. See [GUI Motor Control](../package-usage/web-gui.md#motor-control).
+
+### Option 2: CLI (If strictly headless)
+
+#### 1. Verify CAN Interface
 
 ```bash
 # Check interface is up
@@ -176,7 +154,7 @@ ip link show can0
 # Should show: state UP
 ```
 
-### 2. Scan for Motors
+#### 2. Scan for Motors
 
 ```bash
 # Scan for connected motors (motor-type is optional)
@@ -185,14 +163,14 @@ damiao scan
 # Should detect all connected motors
 ```
 
-### 3. Test Communication
+#### 3. Test Communication
 
 ```bash
 # Send zero command to verify communication
 damiao set-zero-command --id 1 --motor-type 4340
 ```
 
-### 4. Monitor CAN Traffic
+#### 4. Monitor CAN Traffic
 
 ```bash
 # Install can-utils if needed

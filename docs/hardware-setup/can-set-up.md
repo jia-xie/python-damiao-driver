@@ -43,6 +43,48 @@ ip link show can0
 
 You should see the interface is `UP`.
 
+## Persistent Interface Name (Fixed Device Name)
+
+If you use multiple CAN adapters, Linux may swap `can0`/`can1` order across reboots.  
+Use a udev rule to assign a fixed name to a specific adapter.
+
+### 1. Find a Unique Identifier
+
+```bash
+# Replace can0 with your current interface
+udevadm info -a -p /sys/class/net/can0 | grep -E "ATTRS\\{serial\\}|ATTRS\\{idVendor\\}|ATTRS\\{idProduct\\}"
+```
+
+Pick a stable value such as `ATTRS{serial}`.
+
+### 2. Create a udev Rule
+
+```bash
+sudo tee /etc/udev/rules.d/70-can-persistent.rules >/dev/null <<'EOF'
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="can*", ATTRS{serial}=="YOUR_SERIAL_HERE", NAME="can_damiao"
+EOF
+```
+
+Notes:
+
+- Replace `YOUR_SERIAL_HERE` with your adapter serial.
+- `can_damiao` is an example; interface names must be 15 characters or fewer.
+
+### 3. Reload Rules and Reconnect Adapter
+
+```bash
+sudo udevadm control --reload-rules
+```
+
+Then unplug/replug the adapter (or reboot).
+
+### 4. Use the Fixed Name
+
+```bash
+sudo ip link set can_damiao up type can bitrate 1000000
+damiao scan --channel can_damiao
+```
+
 ## Testing CAN Interface
 
 ### Using candump
@@ -57,7 +99,6 @@ This will show all CAN messages on the bus.
 ### Using damiao scan
 
 ```bash
-# Motor type is optional (defaults to 4310)
 damiao scan --channel can0
 ```
 

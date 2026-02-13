@@ -89,4 +89,4 @@ damiao --help
 ## Next steps
 
 - [Hardware Setup](hardware-setup/can-set-up.md) - CAN interface setup
-- [Package Usage](package-usage/cli-tool.md) - Using the CLI tools
+- [Package Tools](package-usage/cli-tool.md) - Using the CLI tools
