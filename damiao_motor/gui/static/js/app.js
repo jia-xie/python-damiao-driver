@@ -572,23 +572,13 @@ let currentMotorId = null;
                             <select id="motorTypeSelect" onchange="setMotorType()">${motorTypeOptions}</select>
                         </div>
                         <div class="control-row">
-                            <label>Control Mode: <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/" target="_blank" class="docs-link" title="View control modes documentation">ⓘ</a></label>
+                            <label>Control Mode: <a id="controlModeDocsLink" href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#mit-mode" target="_blank" class="docs-link" title="View MIT mode documentation">ⓘ</a></label>
                             <select id="controlMode">
                                 <option value="MIT">MIT</option>
                                 <option value="POS_VEL">POS_VEL</option>
                                 <option value="VEL">VEL</option>
                                 <option value="FORCE_POS">FORCE_POS</option>
                             </select>
-                        </div>
-                        <div class="control-row" style="margin-top: -4px; margin-bottom: 4px;">
-                            <label></label>
-                            <div style="font-size: 12px; color: #64748b;">
-                                Mode docs:
-                                <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#mit-mode" target="_blank" class="docs-link">MIT</a> |
-                                <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#pos-vel-mode" target="_blank" class="docs-link">POS_VEL</a> |
-                                <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#vel-mode" target="_blank" class="docs-link">VEL</a> |
-                                <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#force-pos-mode" target="_blank" class="docs-link">FORCE_POS</a>
-                            </div>
                         </div>
                         <div class="control-row" id="posRow">
                             <label>Position (rad):</label>
@@ -1465,9 +1455,26 @@ let currentMotorId = null;
             document.getElementById('torqueRow').style.display = mode === 'MIT' ? 'flex' : 'none';
             document.getElementById('velLimitRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
             document.getElementById('curLimitRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
+            updateControlModeDocsLink();
         }
 
         const CTRL_MODE_CODE = { MIT: 1, POS_VEL: 2, VEL: 3, FORCE_POS: 4 };
+        const CTRL_MODE_DOCS_URL = {
+            MIT: 'https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#mit-mode',
+            POS_VEL: 'https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#pos-vel-mode',
+            VEL: 'https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#vel-mode',
+            FORCE_POS: 'https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#force-pos-mode'
+        };
+
+        function updateControlModeDocsLink() {
+            const modeSelect = document.getElementById('controlMode');
+            const docsLink = document.getElementById('controlModeDocsLink');
+            if (!modeSelect || !docsLink) return;
+
+            const mode = modeSelect.value;
+            docsLink.href = CTRL_MODE_DOCS_URL[mode] || CTRL_MODE_DOCS_URL.MIT;
+            docsLink.title = `View ${mode} mode documentation`;
+        }
 
         async function onControlModeChange() {
             updateControlVisibility();
