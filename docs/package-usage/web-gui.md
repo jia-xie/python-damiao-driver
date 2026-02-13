@@ -29,9 +29,6 @@ damiao gui
 
 Open **http://127.0.0.1:5000** in your browser.
 
-!!! note "Backward Compatibility"
-    Use `damiao gui` to launch the GUI.
-
 !!! tip "Recommended for control modes"
     To better understand [control modes](../concept/motor-control-modes.md), use `damiao gui` to switch between MIT/POS_VEL/VEL/FORCE_POS and observe parameter visibility and live charts.
 
