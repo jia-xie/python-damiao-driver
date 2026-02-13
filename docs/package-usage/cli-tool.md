@@ -23,6 +23,20 @@ To get help for a specific command:
 damiao <command> --help
 ```
 
+## Register Persistence (RAM vs Flash)
+
+Register writes are applied immediately at runtime. To keep them after power cycle, they must be stored to flash.
+
+Based on current CLI code behavior:
+
+| Command | Register write | Persistence behavior |
+|--------|----------------|----------------------|
+| `damiao set-motor-id` | Writes register `8` (`ESC_ID`) | Also calls `store_parameters()` -> persisted to flash |
+| `damiao set-feedback-id` | Writes register `7` (`MST_ID`) | Also calls `store_parameters()` -> persisted to flash |
+| `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`) | Also calls `store_parameters()` -> persisted to flash |
+
+All other CLI commands are control/status operations and do not store register parameters to flash.
+
 ## Commands
 
 ### scan

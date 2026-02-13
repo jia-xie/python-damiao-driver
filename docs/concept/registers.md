@@ -9,9 +9,114 @@ tags:
 
 This page documents all motor registers available in the DaMiao motor.
 
-## RegisterInfo
+## How it works?
+**Register Persistence (RAM vs Flash)**
 
-::: damiao_motor.core.motor.RegisterInfo
+When you write a register, it is applied immediately, but by default it is a runtime value (RAM).
+
+- RAM write: takes effect now, but is lost after power cycle.
+- Flash write: survives power cycle.
+
+**Python API (`damiao_motor/core/motor.py`)**
+
+Use these methods on `DaMiaoMotor`:
+
+- `write_register(rid, value)` to write one register.
+- Most `set_*` helper methods (for example `set_control_mode`, `set_speed_loop_kp`, `set_can_timeout`) internally call `write_register`.
+- `store_parameters()` to save current parameters to flash.
+- `set_can_baud_rate(...)` writes register `35` and then stores to flash automatically.
+
+```python
+# Write to register (RAM, immediate but NOT persistent)
+motor.write_register(25, 20.0)  # KP_ASR
+
+# Persist current parameters to flash
+motor.store_parameters()
+```
+
+**Web GUI**
+
+- Editing a register in the Web GUI writes it at runtime first.
+- Click `Store Parameters` to write current parameters to flash.
+- In current implementation, changing register `7` (`MST_ID`) or `8` (`ESC_ID`) also triggers a flash store automatically.
+
+![Register Parameters – Description, Value, Type, Action; Edit with Save/Cancel for RW registers](../package-usage/screenshots/registers.png)
+
+**CLI**
+
+From current CLI implementation:
+
+| Command | Register write | Flash persistence |
+|---------|----------------|-------------------|
+| `damiao set-motor-id` | Writes register `8` (`ESC_ID`) | Yes (calls `store_parameters()`) |
+| `damiao set-feedback-id` | Writes register `7` (`MST_ID`) | Yes (calls `store_parameters()`) |
+| `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`) | Yes (calls `store_parameters()`) |
+
+Other CLI control commands (`send-cmd-*`, `set-zero-command`, `set-zero-position`) do not store parameters to flash.
+
+**CAN Baud Rate Codes**
+
+The `CAN_BAUD_RATE_CODES` dictionary maps baud rate codes to actual baud rates:
+
+| Code | Baud Rate |
+|------|-----------|
+| 0 | 125,000 (125K) |
+| 1 | 200,000 (200K) |
+| 2 | 250,000 (250K) |
+| 3 | 500,000 (500K) |
+| 4 | 1,000,000 (1M) |
+
+```python
+from damiao_motor import CAN_BAUD_RATE_CODES
+
+# Access baud rate codes
+for code, baud_rate in CAN_BAUD_RATE_CODES.items():
+    print(f"Code {code}: {baud_rate} bps")
+```
+
+**Usage Examples**
+
+```python
+from damiao_motor import DaMiaoController
+
+controller = DaMiaoController(channel="can0")
+motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
+
+# Read a specific register
+value = motor.get_register(0x00)  # Read UV_Value
+
+# Check if read was successful
+if value is not None:
+    print(f"Value: {value}")
+```
+
+```python
+# Write to a register (only RW registers can be written)
+motor.write_register(7, 0x01)  # Set MST_ID to 1 (RAM)
+
+# Keep the change after power cycle
+motor.store_parameters()
+```
+
+```python
+from damiao_motor import REGISTER_TABLE
+
+# Access register information
+for register_id, info in REGISTER_TABLE.items():
+    print(f"Register {register_id:2d} (0x{register_id:02X}): "
+          f"{info.variable:12s} - {info.description} "
+          f"[{info.access}]")
+```
+
+**Safety Notes**
+
+!!! warning "Register Safety"
+    - Some registers affect motor behavior immediately
+    - Always verify register values before writing
+    - Read-only (RO) registers cannot be written
+    - Refer to motor firmware documentation for detailed register behavior
+    - Test register changes in a safe environment
+
 
 ## Register Table
 
@@ -89,68 +194,3 @@ This page documents all motor registers available in the DaMiao motor.
 |----|----------|-------------|--------|-------|------|
 | 80 | `p_m` | Motor position | RO | - | float |
 | 81 | `xout` | Output shaft position | RO | - | float |
-
-## CAN Baud Rate Codes
-
-The `CAN_BAUD_RATE_CODES` dictionary maps baud rate codes to actual baud rates:
-
-| Code | Baud Rate |
-|------|-----------|
-| 0 | 125,000 (125K) |
-| 1 | 200,000 (200K) |
-| 2 | 250,000 (250K) |
-| 3 | 500,000 (500K) |
-| 4 | 1,000,000 (1M) |
-
-```python
-from damiao_motor import CAN_BAUD_RATE_CODES
-
-# Access baud rate codes
-for code, baud_rate in CAN_BAUD_RATE_CODES.items():
-    print(f"Code {code}: {baud_rate} bps")
-```
-
-## Usage Examples
-
-```python
-from damiao_motor import DaMiaoController
-
-controller = DaMiaoController(channel="can0")
-motor = controller.add_motor(motor_id=0x01, feedback_id=0x00, motor_type="4340")
-
-# Read a specific register
-value = motor.get_register(0x00)  # Read UV_Value
-
-# Check if read was successful
-if value is not None:
-    print(f"Value: {value}")
-```
-
-```python
-# Write to a register (only RW registers can be written)
-success = motor.write_register(7, 0x01)  # Set MST_ID to 1
-
-if success:
-    print("Write successful")
-else:
-    print("Write failed")
-```
-
-```python
-from damiao_motor import REGISTER_TABLE
-
-# Access register information
-for register_id, info in REGISTER_TABLE.items():
-    print(f"Register {register_id:2d} (0x{register_id:02X}): "
-          f"{info.variable:12s} - {info.description} "
-          f"[{info.access}]")
-```
-
-## Safety Notes
-
-!!! warning "Register Safety"
-    - Some registers affect motor behavior immediately
-    - Always verify register values before writing
-    - Read-only (RO) registers cannot be written
-    - Refer to motor firmware documentation for detailed register behavior
-    - Test register changes in a safe environment

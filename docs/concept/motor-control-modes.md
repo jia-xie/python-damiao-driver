@@ -13,38 +13,46 @@ DaMiao motors support four different control modes, each optimized for different
 
 Control modes determine how the motor interprets command messages. The control mode is set via [register 10 (CTRL_MODE)](registers.md) and must match the command format being sent.
 
-| Mode | Register Value | CAN ID Format | Use Case |
-|------|---------------|---------------|----------|
-| MIT | 1 | `motor_id` | Impedance control with stiffness/damping |
-| POS_VEL | 2 | `0x100 + motor_id` | Trapezoidal motion profiles |
-| VEL | 3 | `0x200 + motor_id` | Velocity control |
-| FORCE_POS | 4 | `0x300 + motor_id` | Position control with limits |
-
-## Mode Selection Guide
-
-- **MIT**: Compliant/impedance control, force control, research applications
-- **POS_VEL**: Smooth point-to-point motion, trapezoidal profiles, position accuracy
-- **VEL**: Pure velocity control, constant-speed operation
-- **FORCE_POS**: Safe positioning with force limits, human-robot interaction
-
-## Switching Between Modes
-
-The control mode must be set before sending commands.
-
 API method: [`DaMiaoMotor.ensure_control_mode()`](../api/motor.md)
 
 The `ensure_control_mode()` method automatically:
+
 1. Reads the current mode from register 10
+
 2. Writes the new mode if different
+
 3. Verifies the write was successful
 
-## Mode Compatibility
 
-- **Commands must match mode**: Sending MIT commands while in VEL mode will not work correctly
-- **CAN IDs differ**: Each mode uses a different arbitration ID
-- **Register must match**: Register 10 must match the command format
+**Low Level Torque Control (Current-based)**
 
-## MIT Mode {#mit-mode}
+All four modes eventually do the same low-level job: they run a **current feedback loop** inside the motor controller.
+
+In simple terms:
+
+- The selected mode (MIT/POS_VEL/VEL/FORCE_POS) decides what current the motor should produce.
+
+- That target current is sent to a fast inner controller.
+
+- The inner controller continuously compares target current vs measured current and corrects PWM voltage to reduce the error.
+
+- **$i_{q,\mathrm{ref}}$**: the target for the torque-producing current.
+  Larger magnitude means stronger torque. Sign decides rotation direction.
+
+- **$i_{d,\mathrm{ref}}$**: the target for the flux-axis current.
+  In these modes it is set to `0`, meaning "do not add extra d-axis current."
+
+!!! note "Note"
+    The motor tracks the calculated $i_{q,\mathrm{ref}}$ to produce the desired torque, while keeping the d-axis current at $i_{d,\mathrm{ref}} = 0$.
+
+| Mode | Easy interpretation of $i_{q,\mathrm{ref}}$ | $i_{d,\mathrm{ref}}$ |
+|------|-------------------------------------|-------------|
+| MIT | Calculated from position/velocity error + feedforward torque, then converted to current | `0` |
+| POS_VEL | Position loop outputs a speed target, speed loop converts that speed error to current | `0` |
+| VEL | Speed loop directly converts velocity error to current | `0` |
+| FORCE_POS | Position loop and speed loop compute current, then it is clipped by current/force limit | `0` |
+
+## MIT Mode (Impedance Control) {#mit-mode}
 
 **MIT mode** (named after MIT's Cheetah robot) provides impedance control with position, velocity, stiffness, damping, and feedforward torque.
 
@@ -68,7 +76,7 @@ $$
 i_{q,\text{ref}} = \frac{T_{\text{ref}}}{K_T}, \quad i_{d,\text{ref}} = 0
 $$
 
-## POS_VEL Mode {#pos-vel-mode}
+## POS_VEL Mode (Position + Velocity-Limit) {#pos-vel-mode}
 
 **POS_VEL mode** provides position-velocity control with trapezoidal motion profiles. The motor moves toward the target position, limiting velocity to the specified maximum, with automatic acceleration and deceleration.
 
@@ -85,13 +93,15 @@ $$
 v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
 $$
 
+In the control-law diagram, `velocity_limit` directly sets the clip bounds \(\pm v_{\text{target}}\).
+
 $$
 i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt, \quad i_{d,\text{ref}} = 0
 $$
 
 where \(v_{\text{target}}\) is the commanded `velocity_limit`, [KP_APR](registers.md) (reg 27), [KI_APR](registers.md) (reg 28) are position loop gains, and [KP_ASR](registers.md) (reg 25), [KI_ASR](registers.md) (reg 26) are speed loop gains.
 
-## VEL Mode {#vel-mode}
+## VEL Mode (Velocity) {#vel-mode}
 
 **VEL mode** provides pure velocity control. The motor maintains the commanded velocity. Positive values rotate in one direction, negative values in the opposite direction.
 
@@ -109,7 +119,7 @@ $$
 
 where [KP_ASR](registers.md) (reg 25) and [KI_ASR](registers.md) (reg 26) are speed loop gains.
 
-## FORCE_POS Mode {#force-pos-mode}
+## FORCE_POS Mode (Force-Limited Position) {#force-pos-mode}
 
 **FORCE_POS mode** (Force-Position Hybrid) provides position control with velocity and current limits. The motor moves toward the target position while respecting the velocity and current limits, providing safe position control with force limiting.
 
@@ -124,11 +134,11 @@ API method: [`DaMiaoMotor.send_cmd_force_pos()`](../api/motor.md)
 ![FORCE_POS mode control law](control_law_force_pos.svg)
 
 $$
-v_{\text{des}} = K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt
+v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
 $$
 
 $$
 i_{q,\text{ref}} = \text{clip}\!\left(K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt,\; -\tau_{\text{lim}},\; \tau_{\text{lim}}\right), \quad i_{d,\text{ref}} = 0
 $$
 
-where [KP_APR](registers.md) (reg 27), [KI_APR](registers.md) (reg 28) are position loop gains, and [KP_ASR](registers.md) (reg 25), [KI_ASR](registers.md) (reg 26) are speed loop gains.
+where \(v_{\text{target}}\) is the commanded `velocity_limit`, [KP_APR](registers.md) (reg 27), [KI_APR](registers.md) (reg 28) are position loop gains, and [KP_ASR](registers.md) (reg 25), [KI_ASR](registers.md) (reg 26) are speed loop gains.
