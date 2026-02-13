@@ -117,15 +117,14 @@ for register_id, info in REGISTER_TABLE.items():
     - Refer to motor firmware documentation for detailed register behavior
     - Test register changes in a safe environment
 
-
 ## Register Table
 
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
-| 0 | `UV_Value` | Under-voltage protection value | RW | (10.0, 3.4E38] | float |
-| 1 | `KT_Value` | Torque coefficient | RW | [0.0, 3.4E38] | float |
-| 2 | `OT_Value` | Over-temperature protection value | RW | [80.0, 200) | float |
-| 3 | `OC_Value` | Over-current protection value | RW | (0.0, 1.0) | float |
+| 0 | <span id="reg-0-uv-value"></span>`UV_Value` | Under-voltage protection value (see [UNDER_VOLTAGE `0x9`](communication-protocol.md#status-under-voltage)) | RW | (10.0, 3.4E38] | float |
+| 1 | <span id="reg-1-kt-value"></span>`KT_Value` | Torque coefficient \(K_T\) used in [MIT mode](motor-control-modes.md#mit-mode) | RW | [0.0, 3.4E38] | float |
+| 2 | <span id="reg-2-ot-value"></span>`OT_Value` | Over-temperature protection value (see [MOS/ROTOR over-temp](communication-protocol.md#status-over-temp)) | RW | [80.0, 200) | float |
+| 3 | <span id="reg-3-oc-value"></span>`OC_Value` | Over-current protection value (see [OVER_CURRENT `0xA`](communication-protocol.md#status-over-current)) | RW | (0.0, 1.0) | float |
 | 4 | `ACC` | Acceleration | RW | (0.0, 3.4E38) | float |
 | 5 | `DEC` | Deceleration | RW | [-3.4E38, 0.0) | float |
 | 6 | `MAX_SPD` | Maximum speed | RW | (0.0, 3.4E38] | float |
@@ -134,7 +133,7 @@ for register_id, info in REGISTER_TABLE.items():
 |----|----------|-------------|--------|-------|------|
 | 7 | `MST_ID` | Feedback ID | RW | [0, 0x7FF] | uint32 |
 | 8 | `ESC_ID` | Receive ID | RW | [0, 0x7FF] | uint32 |
-| 9 | `TIMEOUT` | Timeout alarm time | RW | [0, 2^32-1] | uint32 |
+| 9 | <span id="reg-9-timeout"></span>`TIMEOUT` | Timeout alarm time (see [LOST_COMM `0xD`](communication-protocol.md#status-lost-comm)) | RW | [0, 2^32-1] | uint32 |
 | 10 | `CTRL_MODE` | Control mode | RW | [1, 4] | uint32 |
 
 | ID | Variable | Description | Access | Range | Type |
@@ -156,17 +155,45 @@ for register_id, info in REGISTER_TABLE.items():
 | 22 | `VMAX` | Speed mapping range | RW | (0.0, 3.4E38] | float |
 | 23 | `TMAX` | Torque mapping range | RW | (0.0, 3.4E38] | float |
 
-| ID | Variable | Description | Access | Range | Type |
-|----|----------|-------------|--------|-------|------|
-| 24 | `I_BW` | Current loop control bandwidth | RW | [100.0, 10000.0] | float |
-| 25 | `KP_ASR` | Speed loop Kp | RW | [0.0, 3.4E38] | float |
-| 26 | `KI_ASR` | Speed loop Ki | RW | [0.0, 3.4E38] | float |
-| 27 | `KP_APR` | Position loop Kp | RW | [0.0, 3.4E38] | float |
-| 28 | `KI_APR` | Position loop Ki | RW | [0.0, 3.4E38] | float |
+!!! note "PMAX / VMAX / TMAX Defaults"
+    Registers `21` (`PMAX`), `22` (`VMAX`), and `23` (`TMAX`) are writable and can be changed with register writes (API/CLI/GUI).
+
+!!! warning "Recommended Practice"
+    These mapping limits should normally stay at their default motor-type values.
+    The SDK uses motor-type presets in `damiao_motor/core/motor.py` (`MOTOR_TYPE_PRESETS`, built from `_MOTOR_LIMIT_PARAM`) for command encoding and feedback decoding.
+    If motor register mapping limits are changed without keeping SDK limits consistent, command/feedback scaling can become inconsistent.
+
+**Default values in code (`_MOTOR_LIMIT_PARAM`):** 
+
+| Motor type | PMAX | VMAX | TMAX |
+|------------|------|------|------|
+| `3507` | 12.566 | 50 | 5 |
+| `4310` | 12.5 | 30 | 10 |
+| `4310P` | 12.5 | 50 | 10 |
+| `4340` | 12.5 | 10 | 28 |
+| `4340P` | 12.5 | 10 | 28 |
+| `6006` | 12.5 | 45 | 20 |
+| `8006` | 12.5 | 45 | 40 |
+| `8009` | 12.5 | 45 | 54 |
+| `10010L` | 12.5 | 25 | 200 |
+| `10010` | 12.5 | 20 | 200 |
+| `H3510` | 12.5 | 280 | 1 |
+| `G6215` | 12.5 | 45 | 10 |
+| `H6220` | 12.5 | 45 | 10 |
+| `JH11` | 12.5 | 10 | 12 |
+| `6248P` | 12.566 | 20 | 120 |
 
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
-| 29 | `OV_Value` | Overvoltage protection value | RW | TBD | float |
+| 24 | `I_BW` | Current loop control bandwidth | RW | [100.0, 10000.0] | float |
+| 25 | <span id="reg-25-kp-asr"></span>`KP_ASR` | Speed loop Kp (used in [POS_VEL](motor-control-modes.md#pos-vel-mode), [VEL](motor-control-modes.md#vel-mode), [FORCE_POS](motor-control-modes.md#force-pos-mode)) | RW | [0.0, 3.4E38] | float |
+| 26 | <span id="reg-26-ki-asr"></span>`KI_ASR` | Speed loop Ki (used in [POS_VEL](motor-control-modes.md#pos-vel-mode), [VEL](motor-control-modes.md#vel-mode), [FORCE_POS](motor-control-modes.md#force-pos-mode)) | RW | [0.0, 3.4E38] | float |
+| 27 | <span id="reg-27-kp-apr"></span>`KP_APR` | Position loop Kp (used in [POS_VEL](motor-control-modes.md#pos-vel-mode), [FORCE_POS](motor-control-modes.md#force-pos-mode)) | RW | [0.0, 3.4E38] | float |
+| 28 | <span id="reg-28-ki-apr"></span>`KI_APR` | Position loop Ki (used in [POS_VEL](motor-control-modes.md#pos-vel-mode), [FORCE_POS](motor-control-modes.md#force-pos-mode)) | RW | [0.0, 3.4E38] | float |
+
+| ID | Variable | Description | Access | Range | Type |
+|----|----------|-------------|--------|-------|------|
+| 29 | <span id="reg-29-ov-value"></span>`OV_Value` | Overvoltage protection value (see [OVER_VOLTAGE `0x8`](communication-protocol.md#status-over-voltage)) | RW | TBD | float |
 | 30 | `GREF` | Gear torque efficiency | RW | (0.0, 1.0] | float |
 | 31 | `Deta` | Speed loop damping coefficient | RW | [1.0, 30.0] | float |
 | 32 | `V_BW` | Speed loop filter bandwidth | RW | (0.0, 500.0) | float |

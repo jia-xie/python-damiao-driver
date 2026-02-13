@@ -72,12 +72,12 @@ Motors continuously send 8-byte state frames with `arbitration_id = feedback_id`
 |------|------|-------------|
 | `0x0` | DISABLED | Motor is disabled |
 | `0x1` | ENABLED | Motor is enabled and ready |
-| `0x8` | OVER_VOLTAGE | Over-voltage protection triggered |
-| `0x9` | UNDER_VOLTAGE | Under-voltage protection triggered |
-| `0xA` | OVER_CURRENT | Over-current protection triggered |
-| `0xB` | MOS_OVER_TEMP | MOSFET over-temperature protection triggered |
-| `0xC` | ROTOR_OVER_TEMP | Rotor over-temperature protection triggered |
-| `0xD` | LOST_COMM | Communication timeout/loss detected |
+| `0x8` | <span id="status-over-voltage"></span>OVER_VOLTAGE | Over-voltage protection triggered (threshold: [OV_Value reg 29](registers.md#reg-29-ov-value)) |
+| `0x9` | <span id="status-under-voltage"></span>UNDER_VOLTAGE | Under-voltage protection triggered (threshold: [UV_Value reg 0](registers.md#reg-0-uv-value)) |
+| `0xA` | <span id="status-over-current"></span>OVER_CURRENT | Over-current protection triggered (threshold: [OC_Value reg 3](registers.md#reg-3-oc-value)) |
+| `0xB` | <span id="status-over-temp"></span>MOS_OVER_TEMP | MOSFET over-temperature protection triggered (threshold: [OT_Value reg 2](registers.md#reg-2-ot-value)) |
+| `0xC` | ROTOR_OVER_TEMP | Rotor over-temperature protection triggered (threshold: [OT_Value reg 2](registers.md#reg-2-ot-value)) |
+| `0xD` | <span id="status-lost-comm"></span>LOST_COMM | Communication timeout/loss detected (related: [TIMEOUT reg 9](registers.md#reg-9-timeout)) |
 | `0xE` | OVERLOAD | Motor overload detected |
 
 **5. Register Reply Messages**
@@ -101,7 +101,7 @@ uint_value = (float_value - min) / (max - min) * (2^bits - 1)
 ```
 
 Where:
-- `min` and `max` are motor-specific limits (from motor type presets)
+- `min` and `max` are motor-specific limits (from motor type presets; see [PMAX / VMAX / TMAX defaults](registers.md#pmax-vmax-tmax-defaults))
 - `bits` is the bit width (16 for position, 12 for velocity/torque)
 
 Decoding reverses this process:
@@ -170,7 +170,8 @@ Feedback:
 
 - Register operations have timeout protection
 - If no reply received within timeout, operation fails
-- Motor has CAN timeout alarm (register 9) - motor disables if no commands received
+- Motor has CAN timeout alarm ([TIMEOUT register 9](registers.md#reg-9-timeout)); motor disables if no commands are received
+- Timeout-related status is reported as [LOST_COMM (`0xD`)](#status-lost-comm)
 
 **Error States**
 
