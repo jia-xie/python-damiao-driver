@@ -108,7 +108,7 @@ damiao send-cmd-pos-vel [OPTIONS]
 |--------|------|-------------|
 | `--id` | `INT` | Motor ID (required) |
 | `--position` | `FLOAT` | Desired position (radians) (required) |
-| `--velocity` | `FLOAT` | Desired velocity (rad/s) (required) |
+| `--velocity-limit` | `FLOAT` | Maximum velocity during motion (rad/s) (required) |
 | `--frequency` | `FLOAT` | Command frequency in Hz (default: 100.0) |
 | `--channel` | `STR` | CAN channel (default: can0) |
 | `--bustype` | `STR` | CAN bus type (default: socketcan) |
@@ -117,10 +117,10 @@ damiao send-cmd-pos-vel [OPTIONS]
 **Examples:**
 ```bash
 # POS_VEL mode
-damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0
+damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity-limit 2.0
 
 # With custom frequency
-damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0 --frequency 50.0
+damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity-limit 2.0 --frequency 50.0
 ```
 
 ### send-cmd-vel
@@ -385,4 +385,3 @@ The state information includes:
     - Monitor motor temperatures during operation
     - Use Ctrl+C to stop looping commands immediately
     - Test in a safe environment before production use
-

@@ -25,14 +25,14 @@ CAN bus is ideal for motor control because:
 
 ## CAN Bus Basics
 
-### Physical Layer
+**Physical Layer**
 
 - **Differential signaling**: Two wires (CAN_H and CAN_L) carry complementary signals
 - **Termination**: 120Ω resistors required at both ends of the bus
 - **Bitrate**: Configurable (typically 1 Mbps for DaMiao motors)
 - **Topology**: Linear bus (all devices connected in parallel)
 
-### Message Format
+**Message Format**
 
 CAN messages consist of:
 
@@ -40,7 +40,7 @@ CAN messages consist of:
 - **Data**: Up to 8 bytes of payload
 - **Control bits**: DLC (Data Length Code), RTR (Remote Transmission Request), etc.
 
-### Arbitration
+**Arbitration**
 
 When multiple devices transmit simultaneously:
 
@@ -51,11 +51,11 @@ When multiple devices transmit simultaneously:
 
 ## DaMiao Motor CAN Configuration
 
-### Bitrate
+**Bitrate**
 
 DaMiao motors typically use **1 Mbps** (1,000,000 bits per second). The bitrate must match between all devices on the bus.
 
-### Arbitration IDs
+**Arbitration IDs**
 
 DaMiao motors use different arbitration IDs for different purposes:
 
@@ -68,7 +68,7 @@ DaMiao motors use different arbitration IDs for different purposes:
 | Register Operations | `0x7FF` | 0x7FF |
 | Feedback | `feedback_id` (MST_ID) | Variable |
 
-### Message Length
+**Message Length**
 
 All DaMiao motor messages are **8 bytes** (standard CAN frame length).
 
@@ -80,7 +80,7 @@ The driver uses SocketCAN, the Linux CAN subsystem:
 - **Configuration**: Standard Linux network tools (`ip link`)
 - **Access**: Standard socket API
 
-### Basic Setup
+**Basic Setup**
 
 ```bash
 # Bring up CAN interface
@@ -101,7 +101,7 @@ candump can0
                                               [Motor 3]
 ```
 
-### Requirements
+**Requirements**
 
 - **Termination resistors**: 120Ω at both ends of the bus
 - **Bitrate matching**: All devices must use the same bitrate
@@ -126,21 +126,21 @@ CAN bus includes built-in error detection:
 
 ## Troubleshooting
 
-### No Communication
+**No Communication**
 
 - Check CAN interface is up: `ip link show can0`
 - Verify bitrate matches motor configuration
 - Check termination resistors are present
 - Verify motor is powered on
 
-### Intermittent Communication
+**Intermittent Communication**
 
 - Check for loose connections
 - Verify cable quality and length
 - Check for electrical interference
 - Verify termination resistors
 
-### Error Messages
+**Error Messages**
 
 - **Error Code 105**: No buffer space - motor not responding or not powered
 - **Timeout errors**: Motor not receiving commands or not responding

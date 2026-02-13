@@ -32,21 +32,6 @@ def cmd_scan(args) -> None:
             - duration: Duration to listen for responses in seconds (default: 0.5)
             - bitrate: CAN bitrate in bits per second (default: 1000000)
             - debug: Print all raw CAN messages for debugging (default: False)
-    
-    Examples:
-        ```bash
-        # Scan default ID range (0x01-0x10)
-        damiao scan
-        
-        # Scan specific motor IDs
-        damiao scan --ids 1 2 3
-        
-        # Scan with longer listen duration
-        damiao scan --duration 2.0
-        
-        # Scan with debug output
-        damiao scan --debug
-        ```
     """
     # Print header and configuration in a single box
     print()
@@ -138,15 +123,6 @@ def cmd_set_zero(args) -> None:
             - channel: CAN channel (default: can0)
             - bustype: CAN bus type (default: socketcan)
             - bitrate: CAN bitrate in bits per second (default: 1000000)
-    
-    Examples:
-        ```bash
-        # Send zero command continuously
-        damiao set-zero-command --id 1
-        
-        # With custom frequency
-        damiao set-zero-command --id 1 --frequency 50.0
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Set Zero Command")
@@ -217,12 +193,6 @@ def cmd_set_motor_id(args) -> None:
     Note:
         After changing the motor ID, you will need to use the new ID to communicate with the motor.
         The value is stored to flash memory after setting.
-    
-    Examples:
-        ```bash
-        # Change motor ID from 1 to 2
-        damiao set-motor-id --current 1 --target 2
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Set Motor ID (Receive ID)")
@@ -294,12 +264,6 @@ def cmd_set_zero_position(args) -> None:
             - channel: CAN channel (default: can0)
             - bustype: CAN bus type (default: socketcan)
             - bitrate: CAN bitrate in bits per second (default: 1000000)
-    
-    Examples:
-        ```bash
-        # Set current position to zero
-        damiao set-zero-position --id 1
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Set Zero Position")
@@ -349,18 +313,8 @@ def cmd_set_can_timeout(args) -> None:
         
         The timeout is internally converted from milliseconds to register units using:
         register_value = timeout_ms × 20
-        
-        Examples:
-        - 1000 ms = 20,000 register units
-        - 50 ms = 1,000 register units
-        
+
         The value is stored to flash memory after setting.
-    
-    Examples:
-        ```bash
-        # Set CAN timeout to 1000 ms
-        damiao set-can-timeout --id 1 --timeout 1000
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Set CAN Timeout")
@@ -420,11 +374,6 @@ def cmd_send_cmd_mit(args) -> None:
             - channel: CAN channel (default: can0)
             - bustype: CAN bus type (default: socketcan)
             - bitrate: CAN bitrate in bits per second (default: 1000000)
-    
-    Examples:
-        ```bash
-        damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Send MIT Command")
@@ -495,16 +444,11 @@ def cmd_send_cmd_pos_vel(args) -> None:
         args: Parsed command-line arguments containing:
             - motor_id: Motor ID (required)
             - position: Desired position (radians) (required)
-            - velocity: Desired velocity (rad/s) (required)
+            - velocity_limit: Maximum velocity during motion (rad/s) (required)
             - frequency: Command frequency in Hz (default: 100.0)
             - channel: CAN channel (default: can0)
             - bustype: CAN bus type (default: socketcan)
             - bitrate: CAN bitrate in bits per second (default: 1000000)
-    
-    Examples:
-        ```bash
-        damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Send POS_VEL Command")
@@ -513,7 +457,7 @@ def cmd_send_cmd_pos_vel(args) -> None:
     print(f"Motor ID: 0x{args.motor_id:02X} ({args.motor_id})")
     print(f"Control Mode: POS_VEL")
     print(f"  Position: {args.position:.6f} rad")
-    print(f"  Velocity: {args.velocity:.6f} rad/s")
+    print(f"  Velocity Limit: {args.velocity_limit:.6f} rad/s")
     print(f"Frequency: {args.frequency} Hz")
     print("=" * 60)
     print()
@@ -540,7 +484,7 @@ def cmd_send_cmd_pos_vel(args) -> None:
             while True:
                 motor.send_cmd_pos_vel(
                     target_position=args.position,
-                    target_velocity=args.velocity,
+                    velocity_limit=args.velocity_limit,
                 )
                 controller.poll_feedback()
                 
@@ -573,11 +517,6 @@ def cmd_send_cmd_vel(args) -> None:
             - channel: CAN channel (default: can0)
             - bustype: CAN bus type (default: socketcan)
             - bitrate: CAN bitrate in bits per second (default: 1000000)
-    
-    Examples:
-        ```bash
-        damiao send-cmd-vel --id 1 --velocity 3.0
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Send VEL Command")
@@ -646,11 +585,6 @@ def cmd_send_cmd_force_pos(args) -> None:
             - channel: CAN channel (default: can0)
             - bustype: CAN bus type (default: socketcan)
             - bitrate: CAN bitrate in bits per second (default: 1000000)
-    
-    Examples:
-        ```bash
-        damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Send FORCE_POS Command")
@@ -719,21 +653,6 @@ def cmd_gui(args) -> None:
             - port: Port to bind to (default: 5000)
             - debug: Enable debug mode (default: False)
             - production: Use production WSGI server (default: False)
-    
-    Examples:
-        ```bash
-        # Start GUI on default host and port
-        damiao gui
-        
-        # Start GUI on custom port
-        damiao gui --port 8080
-        
-        # Start GUI on all interfaces
-        damiao gui --host 0.0.0.0
-        
-        # Start GUI with production server
-        damiao gui --production
-        ```
     """
     web_gui.run_server(
         host=args.host,
@@ -760,12 +679,6 @@ def cmd_set_feedback_id(args) -> None:
     Note:
         The motor will now respond with feedback using the new feedback ID.
         The value is stored to flash memory after setting.
-    
-    Examples:
-        ```bash
-        # Change feedback ID to 3 (using motor ID 1 to connect)
-        damiao set-feedback-id --current 1 --target 3
-        ```
     """
     print("=" * 60)
     print("DaMiao Motor - Set Feedback ID (MST_ID)")
@@ -819,4 +732,3 @@ def cmd_set_feedback_id(args) -> None:
         raise
     finally:
         controller.shutdown()
-

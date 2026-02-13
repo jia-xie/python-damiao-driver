@@ -404,6 +404,7 @@ def send_motor_command(motor_id: int):
         damping = data.get('damping', 0.0)
         feedforward_torque = data.get('feedforward_torque', 0.0)
         velocity_limit = data.get('velocity_limit', 0.0)
+        pos_vel_velocity_limit = data.get('velocity_limit', data.get('target_velocity', 0.0))
         current_limit = data.get('current_limit', 0.0)
         
         # Send command using appropriate method based on control mode
@@ -418,7 +419,7 @@ def send_motor_command(motor_id: int):
         elif control_mode == "POS_VEL":
             motor.send_cmd_pos_vel(
                 target_position=target_position,
-                target_velocity=target_velocity,
+                velocity_limit=pos_vel_velocity_limit,
             )
         elif control_mode == "VEL":
             motor.send_cmd_vel(

@@ -580,12 +580,22 @@ let currentMotorId = null;
                                 <option value="FORCE_POS">FORCE_POS</option>
                             </select>
                         </div>
+                        <div class="control-row" style="margin-top: -4px; margin-bottom: 4px;">
+                            <label></label>
+                            <div style="font-size: 12px; color: #64748b;">
+                                Mode docs:
+                                <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#mit-mode" target="_blank" class="docs-link">MIT</a> |
+                                <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#pos-vel-mode" target="_blank" class="docs-link">POS_VEL</a> |
+                                <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#vel-mode" target="_blank" class="docs-link">VEL</a> |
+                                <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#force-pos-mode" target="_blank" class="docs-link">FORCE_POS</a>
+                            </div>
+                        </div>
                         <div class="control-row" id="posRow">
                             <label>Position (rad):</label>
                             <input type="number" id="targetPosition" step="0.001" value="0.0">
                         </div>
                         <div class="control-row" id="velRow">
-                            <label>Velocity (rad/s):</label>
+                            <label id="velLabel">Velocity (rad/s):</label>
                             <input type="number" id="targetVelocity" step="0.001" value="0.0">
                         </div>
                         <div class="control-row" id="stiffnessRow">
@@ -1446,6 +1456,10 @@ let currentMotorId = null;
             const mode = document.getElementById('controlMode').value;
             document.getElementById('posRow').style.display = mode === 'VEL' ? 'none' : 'flex';
             document.getElementById('velRow').style.display = 'flex';
+            const velLabel = document.getElementById('velLabel');
+            if (velLabel) {
+                velLabel.textContent = mode === 'POS_VEL' ? 'Velocity Limit (rad/s):' : 'Velocity (rad/s):';
+            }
             document.getElementById('stiffnessRow').style.display = mode === 'MIT' ? 'flex' : 'none';
             document.getElementById('dampingRow').style.display = mode === 'MIT' ? 'flex' : 'none';
             document.getElementById('torqueRow').style.display = mode === 'MIT' ? 'flex' : 'none';
@@ -1532,6 +1546,7 @@ let currentMotorId = null;
                 const feedforwardTorque = parseFloat(document.getElementById('feedforwardTorque').value) || 0.0;
                 const velocityLimit = parseFloat(document.getElementById('velocityLimit').value) || 0.0;
                 const currentLimit = parseFloat(document.getElementById('currentLimit').value) || 0.0;
+                const posVelVelocityLimit = controlMode === 'POS_VEL' ? targetVelocity : velocityLimit;
 
                 const response = await fetch(`/api/motors/${currentMotorId}/command`, {
                     method: 'POST',
@@ -1543,7 +1558,7 @@ let currentMotorId = null;
                         stiffness: stiffness,
                         damping: damping,
                         feedforward_torque: feedforwardTorque,
-                        velocity_limit: velocityLimit,
+                        velocity_limit: posVelVelocityLimit,
                         current_limit: currentLimit,
                     })
                 });

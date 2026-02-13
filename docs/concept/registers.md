@@ -1,6 +1,6 @@
 ---
 tags:
-  - api
+  - concept
   - reference
   - registers
 ---
@@ -15,8 +15,6 @@ This page documents all motor registers available in the DaMiao motor.
 
 ## Register Table
 
-### Protection and Basic Parameters
-
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
 | 0 | `UV_Value` | Under-voltage protection value | RW | (10.0, 3.4E38] | float |
@@ -27,16 +25,12 @@ This page documents all motor registers available in the DaMiao motor.
 | 5 | `DEC` | Deceleration | RW | [-3.4E38, 0.0) | float |
 | 6 | `MAX_SPD` | Maximum speed | RW | (0.0, 3.4E38] | float |
 
-### System Identification and Configuration
-
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
 | 7 | `MST_ID` | Feedback ID | RW | [0, 0x7FF] | uint32 |
 | 8 | `ESC_ID` | Receive ID | RW | [0, 0x7FF] | uint32 |
 | 9 | `TIMEOUT` | Timeout alarm time | RW | [0, 2^32-1] | uint32 |
 | 10 | `CTRL_MODE` | Control mode | RW | [1, 4] | uint32 |
-
-### Motor Physical Parameters (Read Only)
 
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
@@ -51,15 +45,11 @@ This page documents all motor registers available in the DaMiao motor.
 | 19 | `Flux` | Motor flux linkage value | RO | / | float |
 | 20 | `Gr` | Gear reduction ratio | RO | / | float |
 
-### Mapping Ranges
-
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
 | 21 | `PMAX` | Position mapping range | RW | (0.0, 3.4E38] | float |
 | 22 | `VMAX` | Speed mapping range | RW | (0.0, 3.4E38] | float |
 | 23 | `TMAX` | Torque mapping range | RW | (0.0, 3.4E38] | float |
-
-### Control Loop Parameters
 
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
@@ -69,8 +59,6 @@ This page documents all motor registers available in the DaMiao motor.
 | 27 | `KP_APR` | Position loop Kp | RW | [0.0, 3.4E38] | float |
 | 28 | `KI_APR` | Position loop Ki | RW | [0.0, 3.4E38] | float |
 
-### Protection and Efficiency
-
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
 | 29 | `OV_Value` | Overvoltage protection value | RW | TBD | float |
@@ -78,21 +66,15 @@ This page documents all motor registers available in the DaMiao motor.
 | 31 | `Deta` | Speed loop damping coefficient | RW | [1.0, 30.0] | float |
 | 32 | `V_BW` | Speed loop filter bandwidth | RW | (0.0, 500.0) | float |
 
-### Enhancement Coefficients
-
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
 | 33 | `IQ_c1` | Current loop enhancement coefficient | RW | [100.0, 10000.0] | float |
 | 34 | `VL_c1` | Speed loop enhancement coefficient | RW | (0.0, 10000.0] | float |
 
-### CAN and Version
-
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
 | 35 | `can_br` | CAN baud rate code | RW | [0, 4] | uint32 |
 | 36 | `sub_ver` | Sub-version number | RO | / | uint32 |
-
-### Calibration Parameters (Read Only)
 
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
@@ -102,8 +84,6 @@ This page documents all motor registers available in the DaMiao motor.
 | 53 | `k2` | Compensation factor 2 | RO | - | float |
 | 54 | `m_off` | Angle offset | RO | - | float |
 | 55 | `dir` | Direction | RO | - | float |
-
-### Position Feedback (Read Only)
 
 | ID | Variable | Description | Access | Range | Type |
 |----|----------|-------------|--------|-------|------|
@@ -132,8 +112,6 @@ for code, baud_rate in CAN_BAUD_RATE_CODES.items():
 
 ## Usage Examples
 
-### Reading Registers
-
 ```python
 from damiao_motor import DaMiaoController
 
@@ -148,8 +126,6 @@ if value is not None:
     print(f"Value: {value}")
 ```
 
-### Writing Registers
-
 ```python
 # Write to a register (only RW registers can be written)
 success = motor.write_register(7, 0x01)  # Set MST_ID to 1
@@ -159,8 +135,6 @@ if success:
 else:
     print("Write failed")
 ```
-
-### Accessing Register Information
 
 ```python
 from damiao_motor import REGISTER_TABLE

@@ -210,9 +210,9 @@ _STATE_NAME_MAP = {
 }
 
 
-def decode_state_name(state_code: int) -> str:
-    """Return human-readable name for a motor state code."""
-    return _STATE_NAME_MAP.get(state_code, f"UNKNOWN({state_code})")
+def _decode_status_name(status_code: int) -> str:
+    """Return human-readable name for a motor status code."""
+    return _STATE_NAME_MAP.get(status_code, f"UNKNOWN({status_code})")
 
 
 def float_to_uint(x: float, x_min: float, x_max: float, bits: int) -> int:
@@ -478,10 +478,6 @@ class DaMiaoMotor:
             Register 9 stores timeout in units of 50 microseconds: **1 register unit = 50 microseconds**.
             
             Conversion formula: register_value = timeout_ms × 20
-            
-            Examples:
-            - 1000 ms = 1,000,000 microseconds = 20,000 register units
-            - 50 ms = 50,000 microseconds = 1,000 register units
         """
         # Convert milliseconds to register units: 1 register unit = 50 microseconds
         # timeout_ms * 1000 us/ms / 50 us/unit = timeout_ms * 20
@@ -531,14 +527,14 @@ class DaMiaoMotor:
     def send_cmd_pos_vel(
         self,
         target_position: float = 0.0,
-        target_velocity: float = 0.0,
+        velocity_limit: float = 0.0,
     ) -> None:
         """
         Send POS_VEL (Position + Velocity) control command.
         
         Args:
             target_position: Desired position (radians)
-            target_velocity: Desired velocity (rad/s)
+            velocity_limit: Maximum velocity during motion (rad/s)
 
         Note:
             Before using this method, ensure that the motor's control mode register (register 10)
@@ -546,7 +542,7 @@ class DaMiaoMotor:
         """
         self._check_motor_status()
         # POS_VEL Mode: CAN ID 0x100 + motor_id
-        data = struct.pack('<ff', target_position, target_velocity)
+        data = struct.pack('<ff', target_position, velocity_limit)
         arbitration_id = 0x100 + self.motor_id
         self.send_raw(data, arbitration_id=arbitration_id)
 
@@ -628,12 +624,12 @@ class DaMiaoMotor:
         
         Args:
             target_position: Desired position (radians)
-            target_velocity: Desired velocity (rad/s)
+            target_velocity: Desired velocity (rad/s) for MIT and VEL modes
             stiffness: Stiffness (kp) for MIT mode
             damping: Damping (kd) for MIT mode
             feedforward_torque: Feedforward torque for MIT mode
             control_mode: Control mode - "MIT" (default), "POS_VEL", "VEL", or "FORCE_POS"
-            velocity_limit: Velocity limit (rad/s, 0-100) for FORCE_POS mode
+            velocity_limit: Velocity limit. Used as max speed for POS_VEL and as clipped limit (0-100 rad/s) for FORCE_POS
             current_limit: Current limit normalized (0.0-1.0) for FORCE_POS mode
 
         Note:
@@ -644,7 +640,7 @@ class DaMiaoMotor:
         if control_mode == "MIT":
             self.send_cmd_mit(target_position, target_velocity, stiffness, damping, feedforward_torque)
         elif control_mode == "POS_VEL":
-            self.send_cmd_pos_vel(target_position, target_velocity)
+            self.send_cmd_pos_vel(target_position, velocity_limit)
         elif control_mode == "VEL":
             self.send_cmd_vel(target_velocity)
         elif control_mode == "FORCE_POS":
@@ -691,7 +687,7 @@ class DaMiaoMotor:
         decoded = {
             "can_id": can_id,
             "arbitration_id": arbitration_id,
-            "status": decode_state_name(status),
+            "status": _decode_status_name(status),
             "status_code": status,
             "pos": uint_to_float(pos_int, self._p_min, self._p_max, 16),
             "vel": uint_to_float(vel_int, self._v_min, self._v_max, 12),
@@ -1047,5 +1043,3 @@ class DaMiaoMotor:
         
         self.write_register(35, baud_rate_code)  # Register 35 is can_br
         self.store_parameters()  # Store to flash so it persists
-
-

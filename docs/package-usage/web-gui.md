@@ -89,7 +89,7 @@ When a motor is selected, the left column shows **Control Parameters** and **Mot
 ### Control Parameters
 
 - **Motor type**: Choose the motor model (e.g. 4310, 4340, 6006, 8006, 8009, 10010/L, H3510, G6215, H6220, JH11, 6248P, 3507).
-- **Control Mode**: MIT, POS_VEL, VEL, FORCE_POS. Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Vel Limit and Current Limit for FORCE_POS.
+- **Control Mode**: MIT, POS_VEL, VEL, FORCE_POS. Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Position + Velocity Limit for POS_VEL; Velocity for VEL; Vel Limit and Current Limit for FORCE_POS.
 - **Enable / Disable**: Enable or disable the motor.
 - **Send Command**: Applies the current control parameters. **Single**: once. **Continuous**: at the set Command Frequency (1–1000 Hz).
 - **Stop Command**: Stops Continuous mode and disables the motor.

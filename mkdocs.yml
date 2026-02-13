@@ -66,6 +66,8 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
   - attr_list
   - md_in_html
   - toc:
@@ -100,9 +102,10 @@ plugins:
 nav:
   - Home: index.md
   - Concept:
-      - CAN Bus Fundamentals: concept/can.md
-      - Communication Protocol: concept/communication-protocol.md
+      - Registers: concept/registers.md
       - Motor Control Modes: concept/motor-control-modes.md
+      - Communication Protocol: concept/communication-protocol.md
+      - CAN Bus Fundamentals: concept/can.md
   - Hardware Setup:
       - CAN Setup: hardware-setup/can-set-up.md
       - Motor Connection: hardware-setup/motor-connection.md
@@ -112,8 +115,7 @@ nav:
   - API Reference:
       - DaMiaoController: api/controller.md
       - DaMiaoMotor: api/motor.md
-      - Registers: api/registers.md
-      - CLI Module: api/cli.md
+
 
 extra:
   social:
@@ -126,8 +128,11 @@ extra:
   version:
     provider: mike
 
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
 extra_css:
   - assets/extra.css
 
 copyright: Copyright &copy; 2025-Present jia-xie
-

@@ -466,10 +466,10 @@ Examples:
         epilog="""
 Examples:
   # POS_VEL mode
-  damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0
+  damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity-limit 2.0
 
   # With custom frequency
-  damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity 2.0 --frequency 50.0
+  damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity-limit 2.0 --frequency 50.0
         """
     )
     send_cmd_pos_vel_parser.add_argument(
@@ -486,10 +486,11 @@ Examples:
         help="Desired position (radians)",
     )
     send_cmd_pos_vel_parser.add_argument(
-        "--velocity",
+        "--velocity-limit",
         type=float,
         required=True,
-        help="Desired velocity (rad/s)",
+        dest="velocity_limit",
+        help="Maximum velocity during motion (rad/s)",
     )
     send_cmd_pos_vel_parser.add_argument(
         "--frequency",
@@ -603,4 +604,3 @@ Examples:
 
 if __name__ == "__main__":
     unified_main()
-

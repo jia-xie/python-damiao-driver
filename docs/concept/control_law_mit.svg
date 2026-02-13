@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 400" font-family="'Times New Roman', 'STIX Two Math', Georgia, serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#334155"/>
+    </marker>
+    <linearGradient id="blockGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90d9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2c6fbb;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000030"/>
+    </filter>
+    <filter id="shadowSmall" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" flood-color="#00000025"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1050" height="400" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- ===== POSITION PATH (top) ===== -->
+
+  <!-- p_des label -->
+  <text x="30" y="90" font-size="22" font-style="italic" fill="#1e293b">p<tspan font-size="16" dy="4">des</tspan><tspan dy="-4"></tspan></text>
+  <line x1="78" y1="87" x2="176" y2="87" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- Sum circle 1 -->
+  <circle cx="200" cy="87" r="22" fill="white" stroke="#2563eb" stroke-width="2" filter="url(#shadowSmall)"/>
+  <text x="200" y="94" text-anchor="middle" font-size="24" font-weight="700" fill="#2563eb">Σ</text>
+  <text x="186" y="82" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
+  <text x="208" y="106" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626">−</text>
+
+  <!-- θ_m feedback -->
+  <line x1="200" y1="160" x2="200" y2="111" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <text x="212" y="178" font-size="22" fill="#64748b" font-style="italic">θ<tspan font-size="16" dy="4">m</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- Arrow to Kp -->
+  <line x1="222" y1="87" x2="276" y2="87" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- Kp block -->
+  <rect x="280" y="62" width="120" height="50" rx="8" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="340" y="93" text-anchor="middle" font-size="26" font-weight="400" font-style="italic" fill="white">K<tspan font-size="19" dy="4">p</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- Arrow: Kp to main sum -->
+  <line x1="400" y1="87" x2="510" y2="87" stroke="#334155" stroke-width="1.8"/>
+  <line x1="510" y1="87" x2="510" y2="202" stroke="#334155" stroke-width="1.8"/>
+  <line x1="510" y1="202" x2="540" y2="202" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== VELOCITY PATH (bottom) ===== -->
+
+  <!-- v_des label -->
+  <text x="30" y="310" font-size="22" font-style="italic" fill="#1e293b">v<tspan font-size="16" dy="4">des</tspan><tspan dy="-4"></tspan></text>
+  <line x1="72" y1="307" x2="176" y2="307" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- Sum circle 2 -->
+  <circle cx="200" cy="307" r="22" fill="white" stroke="#2563eb" stroke-width="2" filter="url(#shadowSmall)"/>
+  <text x="200" y="314" text-anchor="middle" font-size="24" font-weight="700" fill="#2563eb">Σ</text>
+  <text x="186" y="302" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
+  <text x="208" y="326" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626">−</text>
+
+  <!-- dθ_m feedback -->
+  <line x1="200" y1="380" x2="200" y2="331" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <text x="212" y="398" font-size="22" fill="#64748b" font-style="italic">θ̇<tspan font-size="16" dy="4">m</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- Arrow to Kd -->
+  <line x1="222" y1="307" x2="276" y2="307" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- Kd block -->
+  <rect x="280" y="282" width="120" height="50" rx="8" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="340" y="313" text-anchor="middle" font-size="26" font-weight="400" font-style="italic" fill="white">K<tspan font-size="19" dy="4">d</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- Arrow: Kd to main sum -->
+  <line x1="400" y1="307" x2="510" y2="307" stroke="#334155" stroke-width="1.8"/>
+  <line x1="510" y1="307" x2="510" y2="222" stroke="#334155" stroke-width="1.8"/>
+  <line x1="510" y1="222" x2="540" y2="222" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== FEEDFORWARD PATH ===== -->
+
+  <text x="563" y="62" text-anchor="middle" font-size="22" font-style="italic" fill="#1e293b">τ<tspan font-size="16" dy="4">ff</tspan><tspan dy="-4"></tspan></text>
+  <line x1="563" y1="68" x2="563" y2="187" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== MAIN SUMMING JUNCTION ===== -->
+
+  <circle cx="563" cy="212" r="26" fill="white" stroke="#2563eb" stroke-width="2" filter="url(#shadowSmall)"/>
+  <text x="563" y="220" text-anchor="middle" font-size="24" font-weight="700" fill="#2563eb">Σ</text>
+  <text x="575" y="199" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
+  <text x="545" y="207" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
+  <text x="545" y="228" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
+
+  <!-- T_ref -->
+  <line x1="589" y1="212" x2="680" y2="212" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <text x="634" y="204" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">T<tspan font-size="16" dy="4">ref</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- 1/KT block -->
+  <rect x="684" y="188" width="130" height="48" rx="8" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="749" y="218" text-anchor="middle" font-size="26" font-weight="400" font-style="italic" fill="white">1 / K<tspan font-size="19" dy="4">T</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- iq_ref -->
+  <line x1="814" y1="212" x2="910" y2="212" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <rect x="914" y="194" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" filter="url(#shadowSmall)"/>
+  <text x="964" y="218" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">q,ref</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- ===== id_ref = 0 ===== -->
+
+  <rect x="684" y="308" width="130" height="48" rx="8" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)" opacity="0.5"/>
+  <text x="749" y="338" text-anchor="middle" font-size="26" font-style="italic" fill="white">0</text>
+
+  <line x1="814" y1="332" x2="910" y2="332" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <rect x="914" y="314" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" filter="url(#shadowSmall)"/>
+  <text x="964" y="338" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">d,ref</tspan><tspan dy="-4"></tspan></text>
+</svg>

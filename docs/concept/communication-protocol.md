@@ -19,150 +19,80 @@ DaMiao motors communicate over CAN bus using a custom protocol. The protocol sup
 
 ## Message Types
 
-### 1. Control Commands
+**1. Control Commands**
 
-Control commands send motion commands to motors. Each control mode uses a different arbitration ID.
+Control commands send motion commands to motors. Each control mode uses a different arbitration ID and fixed 8-byte payload.
 
-#### MIT Mode Command
+| Mode | Arbitration ID | Payload |
+|------|----------------|---------|
+| MIT | `motor_id` | Packed position/velocity/stiffness/damping/feedforward torque |
+| POS_VEL | `0x100 + motor_id` | `Byte 0-3`: position (`float`), `Byte 4-7`: velocity limit (`float`) |
+| VEL | `0x200 + motor_id` | `Byte 0-3`: target velocity (`float`), `Byte 4-7`: padding (`0x00`) |
+| FORCE_POS | `0x300 + motor_id` | `Byte 0-3`: position (`float`), `Byte 4-5`: velocity limit (`uint16`), `Byte 6-7`: current limit (`uint16`) |
 
-- **Arbitration ID**: `motor_id` (e.g., 0x001 for motor ID 1)
-- **Data Format**: 8 bytes encoding position, velocity, stiffness, damping, and feedforward torque
+**2. System Commands**
 
-```
-Byte 0-1: Position (16-bit, mapped to motor's position range)
-Byte 2-3: Velocity (12-bit, mapped to motor's velocity range)
-Byte 4-5: Stiffness (kp) (12-bit, 0-500)
-Byte 6-7: Damping (kd) (12-bit, 0-5)
-Byte 7:   Feedforward torque (12-bit, mapped to motor's torque range)
-```
+System commands use `arbitration_id = motor_id` and fixed 8-byte payloads:
 
-#### POS_VEL Mode Command
+| Command | Data |
+|---------|------|
+| Enable motor | `[FF, FF, FF, FF, FF, FF, FF, FC]` |
+| Disable motor | `[FF, FF, FF, FF, FF, FF, FF, FD]` |
+| Set zero position | `[FF, FF, FF, FF, FF, FF, FF, FE]` |
+| Clear error | `[FF, FF, FF, FF, FF, FF, FF, FB]` |
 
-- **Arbitration ID**: `0x100 + motor_id`
-- **Data Format**: 8 bytes (two 32-bit floats)
-
-```
-Byte 0-3: Target position (float, radians)
-Byte 4-7: Target velocity (float, rad/s)
-```
-
-#### VEL Mode Command
-
-- **Arbitration ID**: `0x200 + motor_id`
-- **Data Format**: 8 bytes (one 32-bit float + padding)
-
-```
-Byte 0-3: Target velocity (float, rad/s)
-Byte 4-7: Padding (0x00)
-```
-
-#### FORCE_POS Mode Command
-
-- **Arbitration ID**: `0x300 + motor_id`
-- **Data Format**: 8 bytes (float + two uint16)
-
-```
-Byte 0-3: Target position (float, radians)
-Byte 4-5: Velocity limit (uint16, 0-10000, represents 0-100 rad/s)
-Byte 6-7: Current limit (uint16, 0-10000, represents 0.0-1.0 normalized)
-```
-
-### 2. System Commands
-
-System commands use special message formats:
-
-#### Enable Motor
-
-- **Arbitration ID**: `motor_id`
-- **Data**: `[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFC]`
-
-#### Disable Motor
-
-- **Arbitration ID**: `motor_id`
-- **Data**: `[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFD]`
-
-#### Set Zero Position
-
-- **Arbitration ID**: `motor_id`
-- **Data**: `[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE]`
-
-#### Clear Error
-
-- **Arbitration ID**: `motor_id`
-- **Data**: `[0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFB]`
-
-### 3. Register Operations
+**3. Register Operations**
 
 Register operations use a unified format with arbitration ID `0x7FF`:
 
-#### Register Read Request
+| Operation | Byte 2 | Byte 3 | Byte 4-7 |
+|-----------|--------|--------|----------|
+| Read | `0x33` | Register ID (`RID`) | Don't care (`0x00`) |
+| Write | `0x55` | Register ID (`RID`) | Register value (4 bytes) |
+| Store | `0xAA` | Register ID (`RID`, usually `0x00`) | Don't care (`0x00`) |
 
-```
-Byte 0-1: CAN ID (low byte, high byte)
-Byte 2:   0x33 (read command)
-Byte 3:   Register ID (RID)
-Byte 4-7: Don't care (0x00)
-```
+Common prefix: `Byte 0-1 = CAN ID` (low byte, high byte).
 
-#### Register Write
+**4. Feedback Messages**
 
-```
-Byte 0-1: CAN ID (low byte, high byte)
-Byte 2:   0x55 (write command)
-Byte 3:   Register ID (RID)
-Byte 4-7: Register value (4 bytes, format depends on register type)
-```
+Motors continuously send 8-byte state frames with `arbitration_id = feedback_id` (MST_ID, register 7):
 
-#### Store Parameters
-
-```
-Byte 0-1: CAN ID (low byte, high byte)
-Byte 2:   0xAA (store command)
-Byte 3:   Register ID (RID) - typically 0x00 for all registers
-Byte 4-7: Don't care (0x00)
-```
-
-### 4. Feedback Messages
-
-Motors continuously send feedback messages with their current state:
-
-- **Arbitration ID**: `feedback_id` (MST_ID, register 7)
-- **Data Format**: 8 bytes encoding motor state
-
-```
-Byte 0:   Status (4 bits) | Motor ID (4 bits)
-Byte 1-2: Position (16-bit, mapped to motor's position range)
-Byte 3-4: Velocity (12-bit, mapped to motor's velocity range)
-Byte 5:   Torque (12-bit, mapped to motor's torque range)
-Byte 6:   MOSFET temperature (°C)
-Byte 7:   Rotor temperature (°C)
-```
+| Bytes | Meaning |
+|-------|---------|
+| `0` | Status (high 4 bits) + Motor ID (low 4 bits) |
+| `1-2` | Position (16-bit mapped) |
+| `3-4` | Velocity (12-bit mapped) |
+| `5` | Torque (12-bit mapped, split across bytes 4/5) |
+| `6` | MOSFET temperature (°C) |
+| `7` | Rotor temperature (°C) |
 
 #### Status Codes
 
 | Code | Name | Description |
 |------|------|-------------|
-| 0 | DISABLED | Motor is disabled |
-| 1 | ENABLED | Motor is enabled and ready |
-| 2 | ERROR | Motor error state |
-| 3 | RESERVED | Reserved |
+| `0x0` | DISABLED | Motor is disabled |
+| `0x1` | ENABLED | Motor is enabled and ready |
+| `0x8` | OVER_VOLTAGE | Over-voltage protection triggered |
+| `0x9` | UNDER_VOLTAGE | Under-voltage protection triggered |
+| `0xA` | OVER_CURRENT | Over-current protection triggered |
+| `0xB` | MOS_OVER_TEMP | MOSFET over-temperature protection triggered |
+| `0xC` | ROTOR_OVER_TEMP | Rotor over-temperature protection triggered |
+| `0xD` | LOST_COMM | Communication timeout/loss detected |
+| `0xE` | OVERLOAD | Motor overload detected |
 
-### 5. Register Reply Messages
+**5. Register Reply Messages**
 
-When a register is read, the motor responds with:
+Register read replies use `arbitration_id = feedback_id` (MST_ID), 8-byte payload:
 
-- **Arbitration ID**: `feedback_id` (MST_ID)
-- **Data Format**: 8 bytes
-
-```
-Byte 0-2: CAN ID encoding
-Byte 3:   Register ID (RID)
-Byte 4-7: Register value (4 bytes, format depends on register type)
-```
+| Bytes | Meaning |
+|-------|---------|
+| `0-2` | CAN ID encoding |
+| `3` | Register ID (`RID`) |
+| `4-7` | Register value (4 bytes) |
 
 ## Data Encoding
 
-### Position/Velocity/Torque Encoding
+**Position/Velocity/Torque Encoding**
 
 Position, velocity, and torque values are encoded using a mapping function:
 
@@ -180,7 +110,7 @@ Decoding reverses this process:
 float_value = min + (uint_value / (2^bits - 1)) * (max - min)
 ```
 
-### Stiffness/Damping Encoding
+**Stiffness/Damping Encoding**
 
 Stiffness (kp) and damping (kd) use fixed ranges:
 
@@ -189,19 +119,19 @@ Stiffness (kp) and damping (kd) use fixed ranges:
 
 ## Message Timing
 
-### Command Frequency
+**Command Frequency**
 
 - **Recommended**: 100-1000 Hz
 - **Minimum**: ~10 Hz (for basic control)
 - **Maximum**: Limited by CAN bus bandwidth
 
-### Feedback Frequency
+**Feedback Frequency**
 
 - Motors send feedback automatically
 - Typical frequency: 100-1000 Hz (depends on motor firmware)
 - Feedback is asynchronous (not tied to command timing)
 
-### Register Operations
+**Register Operations**
 
 - Register reads/writes are request-reply operations
 - Typical timeout: 100-500 ms
@@ -216,7 +146,7 @@ Multiple motors can share the same CAN bus:
 3. Commands are addressed to specific `motor_id`
 4. Feedback is identified by `feedback_id`
 
-### Example: Three Motors
+**Example: Three Motors**
 
 ```
 Motor 1: motor_id=0x01, feedback_id=0x11
@@ -236,13 +166,13 @@ Feedback:
 
 ## Error Handling
 
-### Timeout Protection
+**Timeout Protection**
 
 - Register operations have timeout protection
 - If no reply received within timeout, operation fails
 - Motor has CAN timeout alarm (register 9) - motor disables if no commands received
 
-### Error States
+**Error States**
 
 - Motor enters error state on various conditions (overcurrent, overtemperature, etc.)
 - Error state is reported in feedback status byte
