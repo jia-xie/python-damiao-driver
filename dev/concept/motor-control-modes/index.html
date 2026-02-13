@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/">
       
       
-        <link rel="prev" href="../communication-protocol/">
+        <link rel="prev" href="../registers/">
       
       
-        <link rel="next" href="../../hardware-setup/can-set-up/">
+        <link rel="next" href="../communication-protocol/">
       
       
         
@@ -263,7 +263,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../can/" class="md-tabs__link">
+        <a href="../registers/" class="md-tabs__link">
           
   
   
@@ -434,6 +434,8 @@
       
         
       
+        
+      
     
     
     
@@ -489,42 +491,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../can/" class="md-nav__link">
+      <a href="../registers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    CAN Bus Fundamentals
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../communication-protocol/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Communication Protocol
+    Registers
   
 
     
@@ -616,294 +590,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mit-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        MIT Mode
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="MIT Mode">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#characteristics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Characteristics
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#command-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Command Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#control-law" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Control Law
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-cases" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Use Cases
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pos_vel-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POS_VEL Mode
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="POS_VEL Mode">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#characteristics_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Characteristics
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#command-parameters_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Command Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#behavior" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Behavior
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-cases_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Use Cases
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#vel-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        VEL Mode
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="VEL Mode">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#characteristics_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Characteristics
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#command-parameters_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Command Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#behavior_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Behavior
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-cases_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Use Cases
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#force_pos-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        FORCE_POS Mode
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="FORCE_POS Mode">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#characteristics_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Characteristics
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#command-parameters_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Command Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#behavior_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Behavior
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-cases_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Use Cases
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#mode-selection-guide" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -911,56 +597,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Mode Selection Guide">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#choose-mit-mode-when" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choose MIT Mode When:
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#choose-pos_vel-mode-when" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choose POS_VEL Mode When:
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#choose-vel-mode-when" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choose VEL Mode When:
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#choose-force_pos-mode-when" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choose FORCE_POS Mode When:
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -986,10 +622,110 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#mit-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MIT Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pos-vel-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POS_VEL Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vel-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VEL Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#force-pos-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FORCE_POS Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../communication-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Communication Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../can/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAN Bus Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1261,10 +997,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -1368,62 +1100,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api/registers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Registers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api/cli/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CLI Module
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1467,7 +1143,7 @@
 <h1 id="motor-control-modes">Motor Control Modes<a class="headerlink" href="#motor-control-modes" title="Permanent link">&para;</a></h1>
 <p>DaMiao motors support four different control modes, each optimized for different use cases.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>Control modes determine how the motor interprets command messages. The control mode is set via register 10 (CTRL_MODE) and must match the command format being sent.</p>
+<p>Control modes determine how the motor interprets command messages. The control mode is set via <a href="../registers/">register 10 (CTRL_MODE)</a> and must match the command format being sent.</p>
 <table>
 <thead>
 <tr>
@@ -1504,16 +1180,29 @@
 </tr>
 </tbody>
 </table>
+<h2 id="mode-selection-guide">Mode Selection Guide<a class="headerlink" href="#mode-selection-guide" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>MIT</strong>: Compliant/impedance control, force control, research applications</li>
+<li><strong>POS_VEL</strong>: Smooth point-to-point motion, trapezoidal profiles, position accuracy</li>
+<li><strong>VEL</strong>: Pure velocity control, constant-speed operation</li>
+<li><strong>FORCE_POS</strong>: Safe positioning with force limits, human-robot interaction</li>
+</ul>
+<h2 id="switching-between-modes">Switching Between Modes<a class="headerlink" href="#switching-between-modes" title="Permanent link">&para;</a></h2>
+<p>The control mode must be set before sending commands.</p>
+<p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.ensure_control_mode()</code></a></p>
+<p>The <code>ensure_control_mode()</code> method automatically:
+1. Reads the current mode from register 10
+2. Writes the new mode if different
+3. Verifies the write was successful</p>
+<h2 id="mode-compatibility">Mode Compatibility<a class="headerlink" href="#mode-compatibility" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Commands must match mode</strong>: Sending MIT commands while in VEL mode will not work correctly</li>
+<li><strong>CAN IDs differ</strong>: Each mode uses a different arbitration ID</li>
+<li><strong>Register must match</strong>: Register 10 must match the command format</li>
+</ul>
 <h2 id="mit-mode">MIT Mode<a class="headerlink" href="#mit-mode" title="Permanent link">&para;</a></h2>
 <p><strong>MIT mode</strong> (named after MIT's Cheetah robot) provides impedance control with position, velocity, stiffness, damping, and feedforward torque.</p>
-<h3 id="characteristics">Characteristics<a class="headerlink" href="#characteristics" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Full impedance control</strong>: Adjustable stiffness and damping</li>
-<li><strong>Feedforward torque</strong>: Direct torque control for compensation</li>
-<li><strong>Flexible</strong>: Suitable for compliant manipulation and force control</li>
-<li><strong>Most parameters</strong>: Requires tuning of kp (stiffness) and kd (damping)</li>
-</ul>
-<h3 id="command-parameters">Command Parameters<a class="headerlink" href="#command-parameters" title="Permanent link">&para;</a></h3>
+<p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_mit()</code></a></p>
 <table>
 <thead>
 <tr>
@@ -1550,44 +1239,16 @@
 </tr>
 </tbody>
 </table>
-<h3 id="control-law">Control Law<a class="headerlink" href="#control-law" title="Permanent link">&para;</a></h3>
-<p>The motor implements an impedance controller:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>τ = kp * (θ_target - θ_actual) + kd * (ω_target - ω_actual) + τ_ff
-</span></code></pre></div>
-<p>Where:
-- <code>τ</code> is the output torque
-- <code>kp</code> is stiffness (position gain)
-- <code>kd</code> is damping (velocity gain)
-- <code>θ</code> is position
-- <code>ω</code> is velocity
-- <code>τ_ff</code> is feedforward torque</p>
-<h3 id="use-cases">Use Cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Compliant manipulation</strong>: Soft interactions with environment</li>
-<li><strong>Force control</strong>: Precise force application</li>
-<li><strong>Impedance matching</strong>: Match desired mechanical impedance</li>
-<li><strong>Research applications</strong>: Flexible control for experiments</li>
-</ul>
-<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">motor</span><span class="o">.</span><span class="n">ensure_control_mode</span><span class="p">(</span><span class="s2">&quot;MIT&quot;</span><span class="p">)</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">motor</span><span class="o">.</span><span class="n">send_cmd_mit</span><span class="p">(</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">target_position</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>      <span class="c1"># 1 radian</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">target_velocity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>      <span class="c1"># Hold position</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">stiffness</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>           <span class="c1"># Moderate stiffness</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">damping</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>              <span class="c1"># Moderate damping</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">feedforward_torque</span><span class="o">=</span><span class="mf">0.0</span>    <span class="c1"># No feedforward</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">)</span>
-</span></code></pre></div>
-<h2 id="pos_vel-mode">POS_VEL Mode<a class="headerlink" href="#pos_vel-mode" title="Permanent link">&para;</a></h2>
-<p><strong>POS_VEL mode</strong> provides position-velocity control for trapezoidal motion profiles.</p>
-<h3 id="characteristics_1">Characteristics<a class="headerlink" href="#characteristics_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Trapezoidal profiles</strong>: Built-in acceleration/deceleration</li>
-<li><strong>Position + velocity</strong>: Target position with maximum velocity</li>
-<li><strong>Simpler</strong>: Fewer parameters than MIT mode</li>
-<li><strong>Smooth motion</strong>: Automatic trajectory generation</li>
-</ul>
-<h3 id="command-parameters_1">Command Parameters<a class="headerlink" href="#command-parameters_1" title="Permanent link">&para;</a></h3>
+<p><img alt="MIT mode control law" src="../control_law_mit.svg" /></p>
+<div class="arithmatex">\[
+T_{\text{ref}} = K_p \cdot (p_{\text{des}} - \theta_m) + K_d \cdot (v_{\text{des}} - \dot{\theta}_m) + \tau_{ff}
+\]</div>
+<div class="arithmatex">\[
+i_{q,\text{ref}} = \frac{T_{\text{ref}}}{K_T}, \quad i_{d,\text{ref}} = 0
+\]</div>
+<h2 id="pos-vel-mode">POS_VEL Mode<a class="headerlink" href="#pos-vel-mode" title="Permanent link">&para;</a></h2>
+<p><strong>POS_VEL mode</strong> provides position-velocity control with trapezoidal motion profiles. The motor moves toward the target position, limiting velocity to the specified maximum, with automatic acceleration and deceleration.</p>
+<p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_pos_vel()</code></a></p>
 <table>
 <thead>
 <tr>
@@ -1603,37 +1264,23 @@
 <td>Desired position (radians)</td>
 </tr>
 <tr>
-<td><code>target_velocity</code></td>
+<td><code>velocity_limit</code></td>
 <td>Motor-specific</td>
 <td>Maximum velocity during motion (rad/s)</td>
 </tr>
 </tbody>
 </table>
-<h3 id="behavior">Behavior<a class="headerlink" href="#behavior" title="Permanent link">&para;</a></h3>
-<p>The motor moves toward the target position, limiting velocity to the specified maximum. The motor firmware handles acceleration and deceleration automatically.</p>
-<h3 id="use-cases_1">Use Cases<a class="headerlink" href="#use-cases_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Point-to-point motion</strong>: Moving to specific positions</li>
-<li><strong>Trajectory following</strong>: Following predefined paths</li>
-<li><strong>Simple control</strong>: When impedance control is not needed</li>
-</ul>
-<h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">motor</span><span class="o">.</span><span class="n">ensure_control_mode</span><span class="p">(</span><span class="s2">&quot;POS_VEL&quot;</span><span class="p">)</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">motor</span><span class="o">.</span><span class="n">send_cmd_pos_vel</span><span class="p">(</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">target_position</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>      <span class="c1"># Target: 2 radians</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">target_velocity</span><span class="o">=</span><span class="mf">3.0</span>       <span class="c1"># Max velocity: 3 rad/s</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">)</span>
-</span></code></pre></div>
+<p><img alt="POS_VEL mode control law" src="../control_law_pos_vel.svg" /></p>
+<div class="arithmatex">\[
+v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
+\]</div>
+<div class="arithmatex">\[
+i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt, \quad i_{d,\text{ref}} = 0
+\]</div>
+<p>where <span class="arithmatex">\(v_{\text{target}}\)</span> is the commanded <code>velocity_limit</code>, <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
 <h2 id="vel-mode">VEL Mode<a class="headerlink" href="#vel-mode" title="Permanent link">&para;</a></h2>
-<p><strong>VEL mode</strong> provides pure velocity control.</p>
-<h3 id="characteristics_2">Characteristics<a class="headerlink" href="#characteristics_2" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Velocity control</strong>: Direct velocity command</li>
-<li><strong>Simplest</strong>: Single parameter</li>
-<li><strong>Continuous motion</strong>: For constant-speed applications</li>
-<li><strong>No position target</strong>: Motor maintains commanded velocity</li>
-</ul>
-<h3 id="command-parameters_2">Command Parameters<a class="headerlink" href="#command-parameters_2" title="Permanent link">&para;</a></h3>
+<p><strong>VEL mode</strong> provides pure velocity control. The motor maintains the commanded velocity. Positive values rotate in one direction, negative values in the opposite direction.</p>
+<p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_vel()</code></a></p>
 <table>
 <thead>
 <tr>
@@ -1650,30 +1297,14 @@
 </tr>
 </tbody>
 </table>
-<h3 id="behavior_1">Behavior<a class="headerlink" href="#behavior_1" title="Permanent link">&para;</a></h3>
-<p>The motor maintains the commanded velocity. Positive values rotate in one direction, negative values in the opposite direction.</p>
-<h3 id="use-cases_2">Use Cases<a class="headerlink" href="#use-cases_2" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Constant speed</strong>: Maintaining steady rotation</li>
-<li><strong>Velocity following</strong>: Following velocity profiles</li>
-<li><strong>Simple applications</strong>: When position control is not needed</li>
-</ul>
-<h3 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">motor</span><span class="o">.</span><span class="n">ensure_control_mode</span><span class="p">(</span><span class="s2">&quot;VEL&quot;</span><span class="p">)</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">motor</span><span class="o">.</span><span class="n">send_cmd_vel</span><span class="p">(</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">target_velocity</span><span class="o">=</span><span class="mf">2.0</span>       <span class="c1"># Rotate at 2 rad/s</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">)</span>
-</span></code></pre></div>
-<h2 id="force_pos-mode">FORCE_POS Mode<a class="headerlink" href="#force_pos-mode" title="Permanent link">&para;</a></h2>
-<p><strong>FORCE_POS mode</strong> (Force-Position Hybrid) provides position control with velocity and current limits.</p>
-<h3 id="characteristics_3">Characteristics<a class="headerlink" href="#characteristics_3" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Position control</strong>: Moves to target position</li>
-<li><strong>Safety limits</strong>: Velocity and current limits for safety</li>
-<li><strong>Hybrid approach</strong>: Combines position and force control</li>
-<li><strong>Safe operation</strong>: Limits prevent excessive forces</li>
-</ul>
-<h3 id="command-parameters_3">Command Parameters<a class="headerlink" href="#command-parameters_3" title="Permanent link">&para;</a></h3>
+<p><img alt="VEL mode control law" src="../control_law_vel.svg" /></p>
+<div class="arithmatex">\[
+i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt, \quad i_{d,\text{ref}} = 0
+\]</div>
+<p>where <a href="../registers/">KP_ASR</a> (reg 25) and <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
+<h2 id="force-pos-mode">FORCE_POS Mode<a class="headerlink" href="#force-pos-mode" title="Permanent link">&para;</a></h2>
+<p><strong>FORCE_POS mode</strong> (Force-Position Hybrid) provides position control with velocity and current limits. The motor moves toward the target position while respecting the velocity and current limits, providing safe position control with force limiting.</p>
+<p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_force_pos()</code></a></p>
 <table>
 <thead>
 <tr>
@@ -1700,72 +1331,14 @@
 </tr>
 </tbody>
 </table>
-<h3 id="behavior_2">Behavior<a class="headerlink" href="#behavior_2" title="Permanent link">&para;</a></h3>
-<p>The motor moves toward the target position while respecting the velocity and current limits. This provides safe position control with force limiting.</p>
-<h3 id="use-cases_3">Use Cases<a class="headerlink" href="#use-cases_3" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Safe positioning</strong>: When force limits are critical</li>
-<li><strong>Obstacle avoidance</strong>: Limiting force when encountering obstacles</li>
-<li><strong>Human-robot interaction</strong>: Safe operation near humans</li>
-<li><strong>Constrained environments</strong>: Operating in tight spaces</li>
-</ul>
-<h3 id="example_3">Example<a class="headerlink" href="#example_3" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">motor</span><span class="o">.</span><span class="n">ensure_control_mode</span><span class="p">(</span><span class="s2">&quot;FORCE_POS&quot;</span><span class="p">)</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">motor</span><span class="o">.</span><span class="n">send_cmd_force_pos</span><span class="p">(</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">target_position</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>          <span class="c1"># Target: 1.5 radians</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">velocity_limit</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>          <span class="c1"># Max velocity: 50 rad/s</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">current_limit</span><span class="o">=</span><span class="mf">0.8</span>             <span class="c1"># Max current: 80% of rated</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="p">)</span>
-</span></code></pre></div>
-<h2 id="mode-selection-guide">Mode Selection Guide<a class="headerlink" href="#mode-selection-guide" title="Permanent link">&para;</a></h2>
-<h3 id="choose-mit-mode-when">Choose MIT Mode When:<a class="headerlink" href="#choose-mit-mode-when" title="Permanent link">&para;</a></h3>
-<ul>
-<li>You need compliant/impedance control</li>
-<li>Force control is required</li>
-<li>Research or experimental applications</li>
-<li>You want full control over stiffness/damping</li>
-</ul>
-<h3 id="choose-pos_vel-mode-when">Choose POS_VEL Mode When:<a class="headerlink" href="#choose-pos_vel-mode-when" title="Permanent link">&para;</a></h3>
-<ul>
-<li>You need smooth point-to-point motion</li>
-<li>Trapezoidal profiles are sufficient</li>
-<li>Simpler control is acceptable</li>
-<li>Position accuracy is important</li>
-</ul>
-<h3 id="choose-vel-mode-when">Choose VEL Mode When:<a class="headerlink" href="#choose-vel-mode-when" title="Permanent link">&para;</a></h3>
-<ul>
-<li>You only need velocity control</li>
-<li>Position is not important</li>
-<li>Constant-speed operation</li>
-<li>Simplest possible control</li>
-</ul>
-<h3 id="choose-force_pos-mode-when">Choose FORCE_POS Mode When:<a class="headerlink" href="#choose-force_pos-mode-when" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Safety is critical</li>
-<li>Force limits are required</li>
-<li>Operating in constrained environments</li>
-<li>Human-robot interaction</li>
-</ul>
-<h2 id="switching-between-modes">Switching Between Modes<a class="headerlink" href="#switching-between-modes" title="Permanent link">&para;</a></h2>
-<p>The control mode must be set before sending commands:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Switch to MIT mode</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">motor</span><span class="o">.</span><span class="n">ensure_control_mode</span><span class="p">(</span><span class="s2">&quot;MIT&quot;</span><span class="p">)</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">motor</span><span class="o">.</span><span class="n">send_cmd_mit</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># MIT commands</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1"># Switch to VEL mode</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">motor</span><span class="o">.</span><span class="n">ensure_control_mode</span><span class="p">(</span><span class="s2">&quot;VEL&quot;</span><span class="p">)</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">motor</span><span class="o">.</span><span class="n">send_cmd_vel</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># VEL commands</span>
-</span></code></pre></div>
-<p>The <code>ensure_control_mode()</code> method automatically:
-1. Reads the current mode from register 10
-2. Writes the new mode if different
-3. Verifies the write was successful</p>
-<h2 id="mode-compatibility">Mode Compatibility<a class="headerlink" href="#mode-compatibility" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Commands must match mode</strong>: Sending MIT commands while in VEL mode will not work correctly</li>
-<li><strong>CAN IDs differ</strong>: Each mode uses a different arbitration ID</li>
-<li><strong>Register must match</strong>: Register 10 must match the command format</li>
-</ul>
+<p><img alt="FORCE_POS mode control law" src="../control_law_force_pos.svg" /></p>
+<div class="arithmatex">\[
+v_{\text{des}} = K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt
+\]</div>
+<div class="arithmatex">\[
+i_{q,\text{ref}} = \text{clip}\!\left(K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt,\; -\tau_{\text{lim}},\; \tau_{\text{lim}}\right), \quad i_{d,\text{ref}} = 0
+\]</div>
+<p>where <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
 
 
 
@@ -1855,6 +1428,10 @@
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>

@@ -12,13 +12,13 @@
         <meta name="author" content="jia-xie">
       
       
-        <link rel="canonical" href="https://jia-xie.github.io/python-damiao-driver/dev/api/registers/">
+        <link rel="canonical" href="https://jia-xie.github.io/python-damiao-driver/dev/concept/registers/">
       
       
-        <link rel="prev" href="../motor/">
+        <link rel="prev" href="../..">
       
       
-        <link rel="next" href="../cli/">
+        <link rel="next" href="../motor-control-modes/">
       
       
         
@@ -257,11 +257,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../concept/can/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -323,13 +325,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../controller/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../api/controller/" class="md-tabs__link">
           
   
   
@@ -421,8 +421,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -432,25 +434,28 @@
       
         
       
+        
+      
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -468,7 +473,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -483,17 +488,158 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../concept/can/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registers
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    CAN Bus Fundamentals
+    Registers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#registerinfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegisterInfo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#damiao_motor.core.motor.RegisterInfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegisterInfo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#register-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#can-baud-rate-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CAN Baud Rate Codes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#safety-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../motor-control-modes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motor Control Modes
   
 
     
@@ -514,7 +660,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concept/communication-protocol/" class="md-nav__link">
+      <a href="../communication-protocol/" class="md-nav__link">
         
   
   
@@ -542,14 +688,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concept/motor-control-modes/" class="md-nav__link">
+      <a href="../can/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Motor Control Modes
+    CAN Bus Fundamentals
   
 
     
@@ -820,16 +966,10 @@
       
   
   
-    
   
   
-  
     
     
-      
-        
-      
-        
       
         
       
@@ -839,22 +979,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -872,7 +1011,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -890,7 +1029,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../controller/" class="md-nav__link">
+      <a href="../../api/controller/" class="md-nav__link">
         
   
   
@@ -918,7 +1057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../motor/" class="md-nav__link">
+      <a href="../../api/motor/" class="md-nav__link">
         
   
   
@@ -926,330 +1065,6 @@
     
   
     DaMiaoMotor
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Registers
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Registers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#registerinfo" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        RegisterInfo
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#damiao_motor.core.motor.RegisterInfo" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        RegisterInfo
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#register-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Register Table
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Register Table">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#protection-and-basic-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Protection and Basic Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#system-identification-and-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        System Identification and Configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#motor-physical-parameters-read-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Motor Physical Parameters (Read Only)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#mapping-ranges" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mapping Ranges
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#control-loop-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Control Loop Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#protection-and-efficiency" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Protection and Efficiency
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#enhancement-coefficients" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Enhancement Coefficients
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#can-and-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CAN and Version
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#calibration-parameters-read-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Calibration Parameters (Read Only)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#position-feedback-read-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Position Feedback (Read Only)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#can-baud-rate-codes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CAN Baud Rate Codes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage-examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Usage Examples
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Usage Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reading-registers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reading Registers
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#writing-registers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Writing Registers
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#accessing-register-information" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Accessing Register Information
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#safety-notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Safety Notes
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CLI Module
   
 
     
@@ -1287,7 +1102,7 @@
 
 
   
-    <a href="https://github.com/jia-xie/python-damiao-driver/edit/main/docs/api/registers.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/jia-xie/python-damiao-driver/edit/main/docs/concept/registers.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -1296,7 +1111,7 @@
     
       
     
-    <a href="https://github.com/jia-xie/python-damiao-driver/raw/main/docs/api/registers.md" title="View source of this page" class="md-content__button md-icon">
+    <a href="https://github.com/jia-xie/python-damiao-driver/raw/main/docs/concept/registers.md" title="View source of this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
     </a>
@@ -1349,7 +1164,6 @@
     </div>
 
 </div><h2 id="register-table">Register Table<a class="headerlink" href="#register-table" title="Permanent link">&para;</a></h2>
-<h3 id="protection-and-basic-parameters">Protection and Basic Parameters<a class="headerlink" href="#protection-and-basic-parameters" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1420,7 +1234,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="system-identification-and-configuration">System Identification and Configuration<a class="headerlink" href="#system-identification-and-configuration" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1467,7 +1280,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="motor-physical-parameters-read-only">Motor Physical Parameters (Read Only)<a class="headerlink" href="#motor-physical-parameters-read-only" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1562,7 +1374,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="mapping-ranges">Mapping Ranges<a class="headerlink" href="#mapping-ranges" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1601,7 +1412,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="control-loop-parameters">Control Loop Parameters<a class="headerlink" href="#control-loop-parameters" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1656,7 +1466,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="protection-and-efficiency">Protection and Efficiency<a class="headerlink" href="#protection-and-efficiency" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1703,7 +1512,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="enhancement-coefficients">Enhancement Coefficients<a class="headerlink" href="#enhancement-coefficients" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1734,7 +1542,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="can-and-version">CAN and Version<a class="headerlink" href="#can-and-version" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1765,7 +1572,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="calibration-parameters-read-only">Calibration Parameters (Read Only)<a class="headerlink" href="#calibration-parameters-read-only" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1828,7 +1634,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="position-feedback-read-only">Position Feedback (Read Only)<a class="headerlink" href="#position-feedback-read-only" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1898,7 +1703,6 @@
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Code </span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">baud_rate</span><span class="si">}</span><span class="s2"> bps&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="usage-examples">Usage Examples<a class="headerlink" href="#usage-examples" title="Permanent link">&para;</a></h2>
-<h3 id="reading-registers">Reading Registers<a class="headerlink" href="#reading-registers" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">damiao_motor</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaMiaoController</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">controller</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;can0&quot;</span><span class="p">)</span>
@@ -1911,7 +1715,6 @@
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<h3 id="writing-registers">Writing Registers<a class="headerlink" href="#writing-registers" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Write to a register (only RW registers can be written)</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">success</span> <span class="o">=</span> <span class="n">motor</span><span class="o">.</span><span class="n">write_register</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">)</span>  <span class="c1"># Set MST_ID to 1</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
@@ -1920,7 +1723,6 @@
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">else</span><span class="p">:</span>
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Write failed&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<h3 id="accessing-register-information">Accessing Register Information<a class="headerlink" href="#accessing-register-information" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">damiao_motor</span><span class="w"> </span><span class="kn">import</span> <span class="n">REGISTER_TABLE</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Access register information</span>
@@ -2029,6 +1831,10 @@
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>

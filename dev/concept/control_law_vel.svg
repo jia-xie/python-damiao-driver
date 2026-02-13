@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300" font-family="'Times New Roman', 'STIX Two Math', Georgia, serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#334155"/>
+    </marker>
+    <linearGradient id="blockGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90d9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2c6fbb;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000030"/>
+    </filter>
+    <filter id="shadowSmall" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" flood-color="#00000025"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="700" height="300" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- ===== VELOCITY LOOP ===== -->
+
+  <!-- v_des label -->
+  <text x="30" y="90" font-size="22" font-style="italic" fill="#1e293b">v<tspan font-size="16" dy="4">des</tspan><tspan dy="-4"></tspan></text>
+  <line x1="72" y1="87" x2="126" y2="87" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- Sum circle -->
+  <circle cx="150" cy="87" r="22" fill="white" stroke="#2563eb" stroke-width="2" filter="url(#shadowSmall)"/>
+  <text x="150" y="95" text-anchor="middle" font-size="24" font-weight="700" fill="#2563eb">Σ</text>
+  <text x="136" y="82" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
+  <text x="158" y="105" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626">−</text>
+
+  <!-- dθ_m feedback -->
+  <line x1="150" y1="160" x2="150" y2="111" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <text x="162" y="178" font-size="22" fill="#64748b" font-style="italic">θ̇<tspan font-size="16" dy="4">m</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- Arrow to PI -->
+  <line x1="172" y1="87" x2="236" y2="87" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- PI block -->
+  <rect x="240" y="62" width="120" height="50" rx="8" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="300" y="95" text-anchor="middle" font-size="26" font-weight="400" font-style="italic" fill="white">PI</text>
+
+  <!-- iq_ref -->
+  <line x1="360" y1="87" x2="470" y2="87" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <rect x="474" y="69" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" filter="url(#shadowSmall)"/>
+  <text x="524" y="93" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">q,ref</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- ===== id_ref = 0 ===== -->
+
+  <rect x="240" y="210" width="120" height="50" rx="8" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="1.5" filter="url(#shadow)" opacity="0.5"/>
+  <text x="300" y="242" text-anchor="middle" font-size="26" font-style="italic" fill="white">0</text>
+
+  <line x1="360" y1="235" x2="470" y2="235" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <rect x="474" y="217" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" filter="url(#shadowSmall)"/>
+  <text x="524" y="241" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">d,ref</tspan><tspan dy="-4"></tspan></text>
+</svg>

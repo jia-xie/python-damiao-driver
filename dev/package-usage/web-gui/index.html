@@ -261,7 +261,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../concept/can/" class="md-tabs__link">
+        <a href="../../concept/registers/" class="md-tabs__link">
           
   
   
@@ -432,6 +432,8 @@
       
         
       
+        
+      
     
     
     
@@ -486,14 +488,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concept/can/" class="md-nav__link">
+      <a href="../../concept/registers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    CAN Bus Fundamentals
+    Registers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concept/motor-control-modes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motor Control Modes
   
 
     
@@ -542,14 +572,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concept/motor-control-modes/" class="md-nav__link">
+      <a href="../../concept/can/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Motor Control Modes
+    CAN Bus Fundamentals
   
 
     
@@ -1045,10 +1075,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -1139,62 +1165,6 @@
     
   
     DaMiaoMotor
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api/registers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Registers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api/cli/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CLI Module
   
 
     
@@ -1326,7 +1296,7 @@
 <h3 id="control-parameters">Control Parameters<a class="headerlink" href="#control-parameters" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Motor type</strong>: Choose the motor model (e.g. 4310, 4340, 6006, 8006, 8009, 10010/L, H3510, G6215, H6220, JH11, 6248P, 3507).</li>
-<li><strong>Control Mode</strong>: MIT, POS_VEL, VEL, FORCE_POS. Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Vel Limit and Current Limit for FORCE_POS.</li>
+<li><strong>Control Mode</strong>: MIT, POS_VEL, VEL, FORCE_POS. Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Position + Velocity Limit for POS_VEL; Velocity for VEL; Vel Limit and Current Limit for FORCE_POS.</li>
 <li><strong>Enable / Disable</strong>: Enable or disable the motor.</li>
 <li><strong>Send Command</strong>: Applies the current control parameters. <strong>Single</strong>: once. <strong>Continuous</strong>: at the set Command Frequency (1–1000 Hz).</li>
 <li><strong>Stop Command</strong>: Stops Continuous mode and disables the motor.</li>
@@ -1471,6 +1441,10 @@
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>
