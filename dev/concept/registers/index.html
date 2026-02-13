@@ -1224,32 +1224,32 @@
 <tbody>
 <tr>
 <td>0</td>
-<td><code>UV_Value</code></td>
-<td>Under-voltage protection value</td>
+<td><span id="reg-0-uv-value"></span><code>UV_Value</code></td>
+<td>Under-voltage protection value (see <a href="../communication-protocol/#status-under-voltage">UNDER_VOLTAGE <code>0x9</code></a>)</td>
 <td>RW</td>
 <td>(10.0, 3.4E38]</td>
 <td>float</td>
 </tr>
 <tr>
 <td>1</td>
-<td><code>KT_Value</code></td>
-<td>Torque coefficient</td>
+<td><span id="reg-1-kt-value"></span><code>KT_Value</code></td>
+<td>Torque coefficient <span class="arithmatex">\(K_T\)</span> used in <a href="../motor-control-modes/#mit-mode">MIT mode</a></td>
 <td>RW</td>
 <td>[0.0, 3.4E38]</td>
 <td>float</td>
 </tr>
 <tr>
 <td>2</td>
-<td><code>OT_Value</code></td>
-<td>Over-temperature protection value</td>
+<td><span id="reg-2-ot-value"></span><code>OT_Value</code></td>
+<td>Over-temperature protection value (see <a href="../communication-protocol/#status-over-temp">MOS/ROTOR over-temp</a>)</td>
 <td>RW</td>
 <td>[80.0, 200)</td>
 <td>float</td>
 </tr>
 <tr>
 <td>3</td>
-<td><code>OC_Value</code></td>
-<td>Over-current protection value</td>
+<td><span id="reg-3-oc-value"></span><code>OC_Value</code></td>
+<td>Over-current protection value (see <a href="../communication-protocol/#status-over-current">OVER_CURRENT <code>0xA</code></a>)</td>
 <td>RW</td>
 <td>(0.0, 1.0)</td>
 <td>float</td>
@@ -1310,8 +1310,8 @@
 </tr>
 <tr>
 <td>9</td>
-<td><code>TIMEOUT</code></td>
-<td>Timeout alarm time</td>
+<td><span id="reg-9-timeout"></span><code>TIMEOUT</code></td>
+<td>Timeout alarm time (see <a href="../communication-protocol/#status-lost-comm">LOST_COMM <code>0xD</code></a>)</td>
 <td>RW</td>
 <td>[0, 2^32-1]</td>
 <td>uint32</td>
@@ -1458,6 +1458,119 @@
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">PMAX / VMAX / TMAX Defaults</p>
+<p>Registers <code>21</code> (<code>PMAX</code>), <code>22</code> (<code>VMAX</code>), and <code>23</code> (<code>TMAX</code>) are writable and can be changed with register writes (API/CLI/GUI).</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Recommended Practice</p>
+<p>These mapping limits should normally stay at their default motor-type values.
+The SDK uses motor-type presets in <code>damiao_motor/core/motor.py</code> (<code>MOTOR_TYPE_PRESETS</code>, built from <code>_MOTOR_LIMIT_PARAM</code>) for command encoding and feedback decoding.
+If motor register mapping limits are changed without keeping SDK limits consistent, command/feedback scaling can become inconsistent.</p>
+</div>
+<p><strong>Default values in code (<code>_MOTOR_LIMIT_PARAM</code>):</strong> </p>
+<table>
+<thead>
+<tr>
+<th>Motor type</th>
+<th>PMAX</th>
+<th>VMAX</th>
+<th>TMAX</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>3507</code></td>
+<td>12.566</td>
+<td>50</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>4310</code></td>
+<td>12.5</td>
+<td>30</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>4310P</code></td>
+<td>12.5</td>
+<td>50</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>4340</code></td>
+<td>12.5</td>
+<td>10</td>
+<td>28</td>
+</tr>
+<tr>
+<td><code>4340P</code></td>
+<td>12.5</td>
+<td>10</td>
+<td>28</td>
+</tr>
+<tr>
+<td><code>6006</code></td>
+<td>12.5</td>
+<td>45</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>8006</code></td>
+<td>12.5</td>
+<td>45</td>
+<td>40</td>
+</tr>
+<tr>
+<td><code>8009</code></td>
+<td>12.5</td>
+<td>45</td>
+<td>54</td>
+</tr>
+<tr>
+<td><code>10010L</code></td>
+<td>12.5</td>
+<td>25</td>
+<td>200</td>
+</tr>
+<tr>
+<td><code>10010</code></td>
+<td>12.5</td>
+<td>20</td>
+<td>200</td>
+</tr>
+<tr>
+<td><code>H3510</code></td>
+<td>12.5</td>
+<td>280</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>G6215</code></td>
+<td>12.5</td>
+<td>45</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>H6220</code></td>
+<td>12.5</td>
+<td>45</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>JH11</code></td>
+<td>12.5</td>
+<td>10</td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>6248P</code></td>
+<td>12.566</td>
+<td>20</td>
+<td>120</td>
+</tr>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -1480,32 +1593,32 @@
 </tr>
 <tr>
 <td>25</td>
-<td><code>KP_ASR</code></td>
-<td>Speed loop Kp</td>
+<td><span id="reg-25-kp-asr"></span><code>KP_ASR</code></td>
+<td>Speed loop Kp (used in <a href="../motor-control-modes/#pos-vel-mode">POS_VEL</a>, <a href="../motor-control-modes/#vel-mode">VEL</a>, <a href="../motor-control-modes/#force-pos-mode">FORCE_POS</a>)</td>
 <td>RW</td>
 <td>[0.0, 3.4E38]</td>
 <td>float</td>
 </tr>
 <tr>
 <td>26</td>
-<td><code>KI_ASR</code></td>
-<td>Speed loop Ki</td>
+<td><span id="reg-26-ki-asr"></span><code>KI_ASR</code></td>
+<td>Speed loop Ki (used in <a href="../motor-control-modes/#pos-vel-mode">POS_VEL</a>, <a href="../motor-control-modes/#vel-mode">VEL</a>, <a href="../motor-control-modes/#force-pos-mode">FORCE_POS</a>)</td>
 <td>RW</td>
 <td>[0.0, 3.4E38]</td>
 <td>float</td>
 </tr>
 <tr>
 <td>27</td>
-<td><code>KP_APR</code></td>
-<td>Position loop Kp</td>
+<td><span id="reg-27-kp-apr"></span><code>KP_APR</code></td>
+<td>Position loop Kp (used in <a href="../motor-control-modes/#pos-vel-mode">POS_VEL</a>, <a href="../motor-control-modes/#force-pos-mode">FORCE_POS</a>)</td>
 <td>RW</td>
 <td>[0.0, 3.4E38]</td>
 <td>float</td>
 </tr>
 <tr>
 <td>28</td>
-<td><code>KI_APR</code></td>
-<td>Position loop Ki</td>
+<td><span id="reg-28-ki-apr"></span><code>KI_APR</code></td>
+<td>Position loop Ki (used in <a href="../motor-control-modes/#pos-vel-mode">POS_VEL</a>, <a href="../motor-control-modes/#force-pos-mode">FORCE_POS</a>)</td>
 <td>RW</td>
 <td>[0.0, 3.4E38]</td>
 <td>float</td>
@@ -1526,8 +1639,8 @@
 <tbody>
 <tr>
 <td>29</td>
-<td><code>OV_Value</code></td>
-<td>Overvoltage protection value</td>
+<td><span id="reg-29-ov-value"></span><code>OV_Value</code></td>
+<td>Overvoltage protection value (see <a href="../communication-protocol/#status-over-voltage">OVER_VOLTAGE <code>0x8</code></a>)</td>
 <td>RW</td>
 <td>TBD</td>
 <td>float</td>
@@ -1750,7 +1863,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025-Present jia-xie
+      Copyright &copy; <span id="copyright-year-range">2025-Present</span> jia-xie
     </div>
   
   
@@ -1803,6 +1916,8 @@
         <script src="../../javascripts/mathjax.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../../javascripts/copyright-year.js"></script>
       
     
   </body>

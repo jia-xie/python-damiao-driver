@@ -1319,33 +1319,33 @@
 </tr>
 <tr>
 <td><code>0x8</code></td>
-<td>OVER_VOLTAGE</td>
-<td>Over-voltage protection triggered</td>
+<td><span id="status-over-voltage"></span>OVER_VOLTAGE</td>
+<td>Over-voltage protection triggered (threshold: <a href="../registers/#reg-29-ov-value">OV_Value reg 29</a>)</td>
 </tr>
 <tr>
 <td><code>0x9</code></td>
-<td>UNDER_VOLTAGE</td>
-<td>Under-voltage protection triggered</td>
+<td><span id="status-under-voltage"></span>UNDER_VOLTAGE</td>
+<td>Under-voltage protection triggered (threshold: <a href="../registers/#reg-0-uv-value">UV_Value reg 0</a>)</td>
 </tr>
 <tr>
 <td><code>0xA</code></td>
-<td>OVER_CURRENT</td>
-<td>Over-current protection triggered</td>
+<td><span id="status-over-current"></span>OVER_CURRENT</td>
+<td>Over-current protection triggered (threshold: <a href="../registers/#reg-3-oc-value">OC_Value reg 3</a>)</td>
 </tr>
 <tr>
 <td><code>0xB</code></td>
-<td>MOS_OVER_TEMP</td>
-<td>MOSFET over-temperature protection triggered</td>
+<td><span id="status-over-temp"></span>MOS_OVER_TEMP</td>
+<td>MOSFET over-temperature protection triggered (threshold: <a href="../registers/#reg-2-ot-value">OT_Value reg 2</a>)</td>
 </tr>
 <tr>
 <td><code>0xC</code></td>
 <td>ROTOR_OVER_TEMP</td>
-<td>Rotor over-temperature protection triggered</td>
+<td>Rotor over-temperature protection triggered (threshold: <a href="../registers/#reg-2-ot-value">OT_Value reg 2</a>)</td>
 </tr>
 <tr>
 <td><code>0xD</code></td>
-<td>LOST_COMM</td>
-<td>Communication timeout/loss detected</td>
+<td><span id="status-lost-comm"></span>LOST_COMM</td>
+<td>Communication timeout/loss detected (related: <a href="../registers/#reg-9-timeout">TIMEOUT reg 9</a>)</td>
 </tr>
 <tr>
 <td><code>0xE</code></td>
@@ -1384,7 +1384,7 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uint_value = (float_value - min) / (max - min) * (2^bits - 1)
 </span></code></pre></div>
 <p>Where:
-- <code>min</code> and <code>max</code> are motor-specific limits (from motor type presets)
+- <code>min</code> and <code>max</code> are motor-specific limits (from motor type presets; see <a href="../registers/#pmax-vmax-tmax-defaults">PMAX / VMAX / TMAX defaults</a>)
 - <code>bits</code> is the bit width (16 for position, 12 for velocity/torque)</p>
 <p>Decoding reverses this process:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>float_value = min + (uint_value / (2^bits - 1)) * (max - min)
@@ -1442,7 +1442,8 @@
 <ul>
 <li>Register operations have timeout protection</li>
 <li>If no reply received within timeout, operation fails</li>
-<li>Motor has CAN timeout alarm (register 9) - motor disables if no commands received</li>
+<li>Motor has CAN timeout alarm (<a href="../registers/#reg-9-timeout">TIMEOUT register 9</a>); motor disables if no commands are received</li>
+<li>Timeout-related status is reported as <a href="#status-lost-comm">LOST_COMM (<code>0xD</code>)</a></li>
 </ul>
 <p><strong>Error States</strong></p>
 <ul>
@@ -1504,7 +1505,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025-Present jia-xie
+      Copyright &copy; <span id="copyright-year-range">2025-Present</span> jia-xie
     </div>
   
   
@@ -1557,6 +1558,8 @@
         <script src="../../javascripts/mathjax.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="../../javascripts/copyright-year.js"></script>
       
     
   </body>
