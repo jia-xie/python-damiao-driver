@@ -1234,6 +1234,10 @@
 <p class="admonition-title">Backward Compatibility</p>
 <p>Use <code>damiao gui</code> to launch the GUI.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Recommended for control modes</p>
+<p>To better understand <a href="../../concept/motor-control-modes/">control modes</a>, use <code>damiao gui</code> to switch between MIT/POS_VEL/VEL/FORCE_POS and observe parameter visibility and live charts.</p>
+</div>
 <h3 id="command-options">Command options<a class="headerlink" href="#command-options" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -1282,40 +1286,41 @@
 <li><strong>Disconnect</strong>: Disconnects and clears detected motors.</li>
 </ul>
 <p>A status log shows connection and scan progress (e.g. <em>Connecting…</em>, <em>Connected to CAN bus: can0</em>, <em>Scanning for motors…</em>, <em>Found N motor(s)</em>, <em>Registers loaded</em>).</p>
-<p><img alt="Connection bar – CAN channel, Connect, Disconnect, and status log" src="../screenshots/connection.png" /></p>
+<p><img alt="Connection bar – CAN channel, Connect, Disconnect, and status log" class="doc-screenshot" src="../screenshots/connection.png" /></p>
 <hr />
 <h2 id="motor-selection">Motor Selection<a class="headerlink" href="#motor-selection" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Scan Motors</strong>: Scans for motors and lists those that respond.</li>
 <li><strong>Motor dropdown</strong>: <em>Select a motor…</em> when none is chosen; otherwise <em>Motor ID: 0xXX | Arb ID: 0xYY</em> for each detected motor. Selecting a motor updates the Control panel, Register Parameters, and charts.</li>
 </ul>
-<p><img alt="Motor Selection – Scan Motors and motor dropdown (Motor ID | Arb ID)" src="../screenshots/motor-selection.png" /></p>
+<p><img alt="Motor Selection – Scan Motors and motor dropdown (Motor ID | Arb ID)" class="doc-screenshot" src="../screenshots/motor-selection.png" /></p>
 <hr />
 <h2 id="motor-control">Motor Control<a class="headerlink" href="#motor-control" title="Permanent link">&para;</a></h2>
 <p>When a motor is selected, the left column shows <strong>Control Parameters</strong> and <strong>Motor Feedback</strong>.</p>
 <h3 id="control-parameters">Control Parameters<a class="headerlink" href="#control-parameters" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Motor type</strong>: Choose the motor model (e.g. 4310, 4340, 6006, 8006, 8009, 10010/L, H3510, G6215, H6220, JH11, 6248P, 3507).</li>
-<li><strong>Control Mode</strong>: MIT, POS_VEL, VEL, FORCE_POS. Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Position + Velocity Limit for POS_VEL; Velocity for VEL; Vel Limit and Current Limit for FORCE_POS.</li>
+<li><strong><a href="../../concept/motor-control-modes/">Control Mode</a></strong>: <a href="../../concept/motor-control-modes/#mit-mode">MIT</a>, <a href="../../concept/motor-control-modes/#pos-vel-mode">POS_VEL</a>, <a href="../../concept/motor-control-modes/#vel-mode">VEL</a>, <a href="../../concept/motor-control-modes/#force-pos-mode">FORCE_POS</a>. Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Position + Velocity Limit for POS_VEL; Velocity for VEL; Vel Limit and Torque Limit Ratio for FORCE_POS.</li>
+<li><strong>FORCE_POS Torque Limit Ratio meaning</strong>: <code>torque_limit_ratio</code> is normalized (0.0-1.0). The effective torque clip is <code>tau_lim = torque_limit_ratio * T_max(motor_type)</code>.</li>
 <li><strong>Enable / Disable</strong>: Enable or disable the motor.</li>
 <li><strong>Send Command</strong>: Applies the current control parameters. <strong>Single</strong>: once. <strong>Continuous</strong>: at the set Command Frequency (1–1000 Hz).</li>
 <li><strong>Stop Command</strong>: Stops Continuous mode and disables the motor.</li>
 <li><strong>Set Zero</strong>: Saves the current position as zero.</li>
 <li><strong>Clear Error</strong>: Clears the motor error.</li>
 </ul>
-<p><img alt="Motor type dropdown – supported motor models (4310, 4340, 6006, …)" src="../screenshots/motor-type-selection.png" /></p>
+<p><img alt="Motor type dropdown – supported motor models (4310, 4340, 6006, …)" class="doc-screenshot" src="../screenshots/motor-type-selection.png" /></p>
 <h3 id="motor-feedback">Motor Feedback<a class="headerlink" href="#motor-feedback" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Status</strong> (e.g. ENABLED, DISABLED) and live <strong>Position</strong>, <strong>Velocity</strong>, <strong>Torque</strong>, <strong>MOS Temp</strong>, <strong>Rotor Temp</strong> for the selected motor.</li>
 </ul>
-<p><img alt="Motor Control – Control Parameters (mode, position, velocity, Kp/Kd, torque, Enable/Disable, Send Command, Single/Continuous, Set Zero, Clear Error) and Motor Feedback" src="../screenshots/motor-control.png" /></p>
+<p><img alt="Motor Control – Control Parameters (mode, position, velocity, Kp/Kd, torque, Enable/Disable, Send Command, Single/Continuous, Set Zero, Clear Error) and Motor Feedback" class="doc-screenshot" src="../screenshots/motor-control.png" /></p>
 <hr />
 <h2 id="register-parameters">Register Parameters<a class="headerlink" href="#register-parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Table</strong>: <strong>Description</strong>, <strong>Value</strong>, <strong>Type</strong>, <strong>Action</strong>. <strong>Read-only (RO)</strong> registers have no Edit. <strong>Writable (RW)</strong> registers: click <strong>Edit</strong>, change the value, then <strong>Save</strong> or <strong>Cancel</strong>.</li>
-<li><strong>Special UIs</strong>: Feedback ID and Motor ID use hex input; Control mode and CAN baud rate use dropdowns. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.</li>
+<li><strong>Special UIs</strong>: Feedback ID and Motor ID use hex input; <a href="../../concept/motor-control-modes/">Control mode</a> and CAN baud rate use dropdowns. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.</li>
 </ul>
-<p><img alt="Register Parameters – Description, Value, Type, Action; Edit with Save/Cancel for RW registers" src="../screenshots/registers.png" /></p>
+<p><img alt="Register Parameters – Description, Value, Type, Action; Edit with Save/Cancel for RW registers" class="doc-screenshot" src="../screenshots/registers.png" /></p>
 <hr />
 <h2 id="chart-visualizations">Chart Visualizations<a class="headerlink" href="#chart-visualizations" title="Permanent link">&para;</a></h2>
 <p>Three line charts: <strong>Position (rad)</strong>, <strong>Velocity (rad/s)</strong>, <strong>Torque (Nm)</strong>. Live data when a motor is selected (and when sending commands in Continuous mode).</p>
@@ -1338,7 +1343,7 @@
 <h2 id="register-editing-details">Register editing (details)<a class="headerlink" href="#register-editing-details" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>RO</strong>: Shown in gray; no Edit button.</li>
-<li><strong>RW</strong>: Click <strong>Edit</strong>, change the value (or choose from the dropdown for Control mode and CAN baud rate), then <strong>Save</strong> or <strong>Cancel</strong>. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.</li>
+<li><strong>RW</strong>: Click <strong>Edit</strong>, change the value (or choose from the dropdown for <a href="../../concept/motor-control-modes/">Control mode</a> and CAN baud rate), then <strong>Save</strong> or <strong>Cancel</strong>. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.</li>
 </ul>
 <hr />
 <h2 id="safety-notes">Safety notes<a class="headerlink" href="#safety-notes" title="Permanent link">&para;</a></h2>

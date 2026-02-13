@@ -1254,6 +1254,10 @@
 <p>To get help for a specific command:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>damiao<span class="w"> </span>&lt;command&gt;<span class="w"> </span>--help
 </span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Understand modes faster</p>
+<p>To better understand control mode behavior, use <a href="../web-gui/"><code>damiao gui</code></a> for interactive switching and live feedback, then use CLI commands for repeatable workflows.</p>
+</div>
 <h2 id="register-persistence-ram-vs-flash">Register Persistence (RAM vs Flash)<a class="headerlink" href="#register-persistence-ram-vs-flash" title="Permanent link">&para;</a></h2>
 <p>Register writes are applied immediately at runtime. To keep them after power cycle, they must be stored to flash.</p>
 <p>Based on current CLI code behavior:</p>
@@ -1348,7 +1352,7 @@
 </span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--debug
 </span></code></pre></div></p>
 <h3 id="send-cmd-mit">send-cmd-mit<a class="headerlink" href="#send-cmd-mit" title="Permanent link">&para;</a></h3>
-<p>Send MIT control mode command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for details on MIT mode.</p>
+<p>Send <a href="../../concept/motor-control-modes/#mit-mode">MIT mode</a> command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for control mode details.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>damiao<span class="w"> </span>send-cmd-mit<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
@@ -1421,7 +1425,7 @@
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>damiao<span class="w"> </span>send-cmd-mit<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span>--stiffness<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>--damping<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
 <h3 id="send-cmd-pos-vel">send-cmd-pos-vel<a class="headerlink" href="#send-cmd-pos-vel" title="Permanent link">&para;</a></h3>
-<p>Send POS_VEL control mode command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for details on POS_VEL mode.</p>
+<p>Send <a href="../../concept/motor-control-modes/#pos-vel-mode">POS_VEL mode</a> command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for control mode details.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>damiao<span class="w"> </span>send-cmd-pos-vel<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
@@ -1479,7 +1483,7 @@
 </span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>damiao<span class="w"> </span>send-cmd-pos-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">2</span>.0<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
 <h3 id="send-cmd-vel">send-cmd-vel<a class="headerlink" href="#send-cmd-vel" title="Permanent link">&para;</a></h3>
-<p>Send VEL control mode command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for details on VEL mode.</p>
+<p>Send <a href="../../concept/motor-control-modes/#vel-mode">VEL mode</a> command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for control mode details.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>damiao<span class="w"> </span>send-cmd-vel<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
@@ -1532,7 +1536,7 @@
 </span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>damiao<span class="w"> </span>send-cmd-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--velocity<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
 <h3 id="send-cmd-force-pos">send-cmd-force-pos<a class="headerlink" href="#send-cmd-force-pos" title="Permanent link">&para;</a></h3>
-<p>Send FORCE_POS control mode command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for details on FORCE_POS mode.</p>
+<p>Send <a href="../../concept/motor-control-modes/#force-pos-mode">FORCE_POS mode</a> command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for control mode details.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
@@ -1561,9 +1565,9 @@
 <td>Velocity limit (rad/s, 0-100) (required)</td>
 </tr>
 <tr>
-<td><code>--current-limit</code></td>
+<td><code>--torque-limit-ratio</code></td>
 <td><code>FLOAT</code></td>
-<td>Torque current limit normalized (0.0-1.0) (required)</td>
+<td>Normalized torque-limit coefficient (0.0-1.0), where <code>tau_lim = torque_limit_ratio * T_max(motor_type)</code> (required)</td>
 </tr>
 <tr>
 <td><code>--frequency</code></td>
@@ -1589,10 +1593,10 @@
 </table>
 <p><strong>Examples:</strong>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># FORCE_POS mode</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">50</span>.0<span class="w"> </span>--current-limit<span class="w"> </span><span class="m">0</span>.8
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">50</span>.0<span class="w"> </span>--torque-limit-ratio<span class="w"> </span><span class="m">0</span>.8
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
 </span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># With custom frequency</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">50</span>.0<span class="w"> </span>--current-limit<span class="w"> </span><span class="m">0</span>.8<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">50</span>.0<span class="w"> </span>--torque-limit-ratio<span class="w"> </span><span class="m">0</span>.8<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
 <h3 id="set-zero-command">set-zero-command<a class="headerlink" href="#set-zero-command" title="Permanent link">&para;</a></h3>
 <p>Send zero command to a motor (pos=0, vel=0, torq=0, kp=0, kd=0). Loops continuously until Ctrl+C.</p>

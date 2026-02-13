@@ -1109,6 +1109,11 @@
 
 <h1 id="motor-control-modes">Motor Control Modes<a class="headerlink" href="#motor-control-modes" title="Permanent link">&para;</a></h1>
 <p>DaMiao motors support four different control modes, each optimized for different use cases.</p>
+<p>Quick links: <a href="#mit-mode">MIT mode</a> | <a href="#pos-vel-mode">POS_VEL mode</a> | <a href="#vel-mode">VEL mode</a> | <a href="#force-pos-mode">FORCE_POS mode</a></p>
+<div class="admonition tip">
+<p class="admonition-title">Recommended learning path</p>
+<p>To better understand the control modes in practice, use <a href="../../package-usage/web-gui/"><code>damiao gui</code></a> and switch between modes while observing live feedback and charts.</p>
+</div>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Control modes determine how the motor interprets command messages. The control mode is set via <a href="../registers/">register 10 (CTRL_MODE)</a> and must match the command format being sent.</p>
 <p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.ensure_control_mode()</code></a></p>
@@ -1253,13 +1258,13 @@ i_{q,\text{ref}} = \frac{T_{\text{ref}}}{K_T}, \quad i_{d,\text{ref}} = 0
 </table>
 <p><img alt="POS_VEL mode control law" src="../control_law_pos_vel.svg" /></p>
 <div class="arithmatex">\[
-v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
+v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{limit}},\; v_{\text{limit}}\right)
 \]</div>
-<p>In the control-law diagram, <code>velocity_limit</code> directly sets the clip bounds <span class="arithmatex">\(\pm v_{\text{target}}\)</span>.</p>
+<p>In the control-law diagram, <code>velocity_limit</code> directly sets the clip bounds <span class="arithmatex">\(\pm v_{\text{limit}}\)</span>.</p>
 <div class="arithmatex">\[
 i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt, \quad i_{d,\text{ref}} = 0
 \]</div>
-<p>where <span class="arithmatex">\(v_{\text{target}}\)</span> is the commanded <code>velocity_limit</code>, <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
+<p>where <span class="arithmatex">\(v_{\text{limit}}\)</span> is the commanded <code>velocity_limit</code>, <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
 <h2 id="vel-mode">VEL Mode (Velocity)<a class="headerlink" href="#vel-mode" title="Permanent link">&para;</a></h2>
 <p><strong>VEL mode</strong> provides pure velocity control. The motor maintains the commanded velocity. Positive values rotate in one direction, negative values in the opposite direction.</p>
 <p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_vel()</code></a></p>
@@ -1285,7 +1290,7 @@ i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\te
 \]</div>
 <p>where <a href="../registers/">KP_ASR</a> (reg 25) and <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
 <h2 id="force-pos-mode">FORCE_POS Mode (Force-Limited Position)<a class="headerlink" href="#force-pos-mode" title="Permanent link">&para;</a></h2>
-<p><strong>FORCE_POS mode</strong> (Force-Position Hybrid) provides position control with velocity and current limits. The motor moves toward the target position while respecting the velocity and current limits, providing safe position control with force limiting.</p>
+<p><strong>FORCE_POS mode</strong> (Force-Position Hybrid) provides position control with velocity and torque-limit-ratio constraints. The motor moves toward the target position while respecting these limits, providing safe position control with force limiting.</p>
 <p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_force_pos()</code></a></p>
 <table>
 <thead>
@@ -1307,20 +1312,25 @@ i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\te
 <td>Maximum velocity during motion</td>
 </tr>
 <tr>
-<td><code>current_limit</code></td>
+<td><code>torque_limit_ratio</code></td>
 <td>0.0-1.0</td>
-<td>Torque current limit (normalized)</td>
+<td>Normalized torque-limit coefficient</td>
 </tr>
 </tbody>
 </table>
 <p><img alt="FORCE_POS mode control law" src="../control_law_force_pos.svg" /></p>
 <div class="arithmatex">\[
-v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
+v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{limit}},\; v_{\text{limit}}\right)
 \]</div>
 <div class="arithmatex">\[
 i_{q,\text{ref}} = \text{clip}\!\left(K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt,\; -\tau_{\text{lim}},\; \tau_{\text{lim}}\right), \quad i_{d,\text{ref}} = 0
 \]</div>
-<p>where <span class="arithmatex">\(v_{\text{target}}\)</span> is the commanded <code>velocity_limit</code>, <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
+<p>In FORCE_POS mode:</p>
+<div class="arithmatex">\[
+\tau_{\text{lim}} = \text{torque_limit_ratio} \cdot T_{\max}
+\]</div>
+<p>Here <span class="arithmatex">\(T_{\max}\)</span> is the max torque for the selected motor type (for example, for <code>4340</code>, <span class="arithmatex">\(T_{\max}=28\)</span> Nm, so <code>torque_limit_ratio=0.5</code> gives <span class="arithmatex">\(\tau_{\text{lim}}=14\)</span> Nm).</p>
+<p>Also, <span class="arithmatex">\(v_{\text{limit}}\)</span> is the commanded <code>velocity_limit</code>, <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
 
 
 

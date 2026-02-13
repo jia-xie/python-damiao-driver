@@ -1168,7 +1168,7 @@
 </ul>
 <h2 id="message-types">Message Types<a class="headerlink" href="#message-types" title="Permanent link">&para;</a></h2>
 <p><strong>1. Control Commands</strong></p>
-<p>Control commands send motion commands to motors. Each control mode uses a different arbitration ID and fixed 8-byte payload.</p>
+<p>Control commands send motion commands to motors. Each <a href="../motor-control-modes/">control mode</a> uses a different arbitration ID and fixed 8-byte payload.</p>
 <table>
 <thead>
 <tr>
@@ -1179,24 +1179,24 @@
 </thead>
 <tbody>
 <tr>
-<td>MIT</td>
+<td><a href="../motor-control-modes/#mit-mode">MIT</a></td>
 <td><code>motor_id</code></td>
 <td>Packed position/velocity/stiffness/damping/feedforward torque</td>
 </tr>
 <tr>
-<td>POS_VEL</td>
+<td><a href="../motor-control-modes/#pos-vel-mode">POS_VEL</a></td>
 <td><code>0x100 + motor_id</code></td>
 <td><code>Byte 0-3</code>: position (<code>float</code>), <code>Byte 4-7</code>: velocity limit (<code>float</code>)</td>
 </tr>
 <tr>
-<td>VEL</td>
+<td><a href="../motor-control-modes/#vel-mode">VEL</a></td>
 <td><code>0x200 + motor_id</code></td>
 <td><code>Byte 0-3</code>: target velocity (<code>float</code>), <code>Byte 4-7</code>: padding (<code>0x00</code>)</td>
 </tr>
 <tr>
-<td>FORCE_POS</td>
+<td><a href="../motor-control-modes/#force-pos-mode">FORCE_POS</a></td>
 <td><code>0x300 + motor_id</code></td>
-<td><code>Byte 0-3</code>: position (<code>float</code>), <code>Byte 4-5</code>: velocity limit (<code>uint16</code>), <code>Byte 6-7</code>: current limit (<code>uint16</code>)</td>
+<td><code>Byte 0-3</code>: position (<code>float</code>), <code>Byte 4-5</code>: velocity limit (<code>uint16</code>), <code>Byte 6-7</code>: torque limit ratio (<code>uint16</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -1427,7 +1427,7 @@
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Motor 2: motor_id=0x02, feedback_id=0x12
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Motor 3: motor_id=0x03, feedback_id=0x13
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>MIT commands:
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>[MIT mode](motor-control-modes.md#mit-mode) commands:
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  Motor 1: arbitration_id = 0x001
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  Motor 2: arbitration_id = 0x002
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  Motor 3: arbitration_id = 0x003
@@ -1461,6 +1461,7 @@
 <ul>
 <li>See <a href="../motor-control-modes/">Motor Control Modes</a> for control mode details</li>
 <li>See <a href="../can/">CAN Bus Fundamentals</a> for CAN bus basics</li>
+<li>For interactive understanding of control modes, use <a href="../../package-usage/web-gui/"><code>damiao gui</code></a></li>
 <li>See <a href="../../api/motor/">API Reference</a> for implementation details</li>
 </ul>
 

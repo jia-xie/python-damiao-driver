@@ -455,10 +455,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#what-you-can-do" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Features
+        What you can do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#control-laws-preview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control laws preview
       
     </span>
   </a>
@@ -489,10 +500,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#install-from-source-for-latest-updates" class="md-nav__link">
+  <a href="#install-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install from source for latest updates
+        Install from source
       
     </span>
   </a>
@@ -519,7 +530,7 @@
   <a href="#next-steps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next Steps
+        Next steps
       
     </span>
   </a>
@@ -1124,31 +1135,60 @@
 <img alt="Platform" src="https://img.shields.io/badge/platform-Linux-lightgrey" />
 <a href="https://pypi.org/project/damiao-motor/"><img alt="PyPI" src="https://img.shields.io/badge/pypi-damiao--motor-blue" /></a></p>
 <p><img alt="DaMiao Motor Control Web GUI" src="package-usage/gui-screenshot.png" /></p>
-<h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Safety</p>
+<p>Commands can move hardware immediately. Use a secure setup and keep clear of moving parts.</p>
+</div>
+<h2 id="what-you-can-do">What you can do<a class="headerlink" href="#what-you-can-do" title="Permanent link">&para;</a></h2>
+<div class="grid cards">
 <ul>
-<li>✅ <strong><a href="package-usage/cli-tool/">CLI tools</a></strong> - Command-line utilities for easy motor control</li>
-<li>✅ <strong><a href="package-usage/web-gui/">GUI</a></strong> - Browser-based interface for viewing and editing motor parameters</li>
-<li>✅ <strong><a href="api/motor/">Python API</a></strong> - Simple API for integrating motor control into your Python projects</li>
+<li><strong><a href="package-usage/cli-tool/">CLI Tools</a></strong></li>
+</ul>
+<p>Use <code>damiao</code> commands to scan, command, and configure motors.</p>
+<ul>
+<li><strong><a href="package-usage/web-gui/">Web GUI</a></strong></li>
+</ul>
+<p>Monitor live position, velocity, torque, and edit writable registers.</p>
+<ul>
+<li><strong><a href="api/motor/">Python API</a></strong></li>
+</ul>
+<p>Build robust control loops and automate multi-motor workflows.</p>
+<ul>
+<li><strong><a href="concept/motor-control-modes/">Motor Control Modes</a></strong></li>
+</ul>
+<p>Understand <a href="concept/motor-control-modes/#mit-mode">MIT</a>, <a href="concept/motor-control-modes/#pos-vel-mode">POS_VEL</a>, <a href="concept/motor-control-modes/#vel-mode">VEL</a>, and <a href="concept/motor-control-modes/#force-pos-mode">FORCE_POS</a> behavior in detail.</p>
+</div>
+<h2 id="control-laws-preview">Control laws preview<a class="headerlink" href="#control-laws-preview" title="Permanent link">&para;</a></h2>
+<p><img alt="MIT mode control law" src="concept/control_law_mit.svg" /></p>
+<p>The <a href="concept/motor-control-modes/#mit-mode">MIT mode</a> combines position error, velocity error, and feedforward torque:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>T_ref  = Kp * (p_des - theta_m) + Kd * (v_des - dtheta_m) + tau_ff
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>iq_ref = T_ref / K_T
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>id_ref = 0
+</span></code></pre></div>
+<p>See all control law diagrams:</p>
+<ul>
+<li><a href="concept/motor-control-modes/#mit-mode">MIT mode</a></li>
+<li><a href="concept/motor-control-modes/#pos-vel-mode">POS_VEL mode</a></li>
+<li><a href="concept/motor-control-modes/#vel-mode">VEL mode</a></li>
+<li><a href="concept/motor-control-modes/#force-pos-mode">FORCE_POS mode</a></li>
 </ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <h3 id="install-from-pypi">Install from PyPI<a class="headerlink" href="#install-from-pypi" title="Permanent link">&para;</a></h3>
-<p>Install using <code>pip</code>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>damiao-motor
-</span></code></pre></div></p>
-<h3 id="install-from-source-for-latest-updates">Install from source for latest updates<a class="headerlink" href="#install-from-source-for-latest-updates" title="Permanent link">&para;</a></h3>
-<p>To install from the source repository:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jia-xie/python-damiao-driver.git
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>python-damiao-driver
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>damiao-motor
+</span></code></pre></div>
+<h3 id="install-from-source">Install from source<a class="headerlink" href="#install-from-source" title="Permanent link">&para;</a></h3>
+<p>For latest repository updates:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jia-xie/python-damiao-driver.git
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">cd</span><span class="w"> </span>python-damiao-driver
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </span></code></pre></div>
 <h3 id="verify-installation">Verify Installation<a class="headerlink" href="#verify-installation" title="Permanent link">&para;</a></h3>
-<p>After installation, verify that the package is correctly installed:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import damiao_motor; print(damiao_motor.__version__)&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import damiao_motor; print(damiao_motor.__version__)&quot;</span>
 </span></code></pre></div>
-<p>You should also be able to use the command-line tools:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>damiao<span class="w"> </span>--help
+<p>Then verify CLI availability:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>damiao<span class="w"> </span>--help
 </span></code></pre></div>
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h2 id="next-steps">Next steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="hardware-setup/can-set-up/">Hardware Setup</a> - CAN interface setup</li>
 <li><a href="package-usage/cli-tool/">Package Usage</a> - Using the CLI tools</li>
