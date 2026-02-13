@@ -251,16 +251,21 @@
             opacity: 0.8;
         }
         .value-cell {
+            vertical-align: middle;
+        }
+        .value-cell-content {
             display: flex;
             align-items: center;
             gap: 10px;
         }
         .value-display {
             flex: 1;
+            min-width: 0;
         }
         .value-edit {
             display: none;
             flex: 1;
+            min-width: 0;
         }
         .value-edit input {
             width: 100%;

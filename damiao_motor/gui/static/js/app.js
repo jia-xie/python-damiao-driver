@@ -369,14 +369,14 @@ let currentMotorId = null;
                 
                 html += `<tr class="${isReadOnly ? 'read-only' : ''}">`;
                 html += `<td>${regInfo.description}</td>`;
-                html += `<td class="value-cell">`;
+                html += `<td class="value-cell"><div class="value-cell-content">`;
                 html += `<span class="value-display" id="value-${rid}">${valueStr}</span>`;
                 if (!isReadOnly) {
                     html += `<span class="value-edit" id="edit-${rid}">`;
                     html += inputHtml;
                     html += `</span>`;
                 }
-                html += `</td>`;
+                html += `</div></td>`;
                 html += `<td>${regInfo.data_type}</td>`;
                 html += `<td>`;
                 if (!isReadOnly) {
