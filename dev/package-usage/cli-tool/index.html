@@ -864,6 +864,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#register-persistence-ram-vs-flash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register Persistence (RAM vs Flash)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#commands" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1243,6 +1254,36 @@
 <p>To get help for a specific command:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>damiao<span class="w"> </span>&lt;command&gt;<span class="w"> </span>--help
 </span></code></pre></div>
+<h2 id="register-persistence-ram-vs-flash">Register Persistence (RAM vs Flash)<a class="headerlink" href="#register-persistence-ram-vs-flash" title="Permanent link">&para;</a></h2>
+<p>Register writes are applied immediately at runtime. To keep them after power cycle, they must be stored to flash.</p>
+<p>Based on current CLI code behavior:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Register write</th>
+<th>Persistence behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>damiao set-motor-id</code></td>
+<td>Writes register <code>8</code> (<code>ESC_ID</code>)</td>
+<td>Also calls <code>store_parameters()</code> -&gt; persisted to flash</td>
+</tr>
+<tr>
+<td><code>damiao set-feedback-id</code></td>
+<td>Writes register <code>7</code> (<code>MST_ID</code>)</td>
+<td>Also calls <code>store_parameters()</code> -&gt; persisted to flash</td>
+</tr>
+<tr>
+<td><code>damiao set-can-timeout</code></td>
+<td>Writes register <code>9</code> (<code>TIMEOUT</code>)</td>
+<td>Also calls <code>store_parameters()</code> -&gt; persisted to flash</td>
+</tr>
+</tbody>
+</table>
+<p>All other CLI commands are control/status operations and do not store register parameters to flash.</p>
 <h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
 <h3 id="scan">scan<a class="headerlink" href="#scan" title="Permanent link">&para;</a></h3>
 <p>Scan for connected motors on the CAN bus.</p>

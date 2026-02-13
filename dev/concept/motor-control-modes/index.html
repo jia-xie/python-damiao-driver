@@ -590,43 +590,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mode-selection-guide" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mode Selection Guide
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#switching-between-modes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Switching Between Modes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mode-compatibility" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mode Compatibility
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#mit-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        MIT Mode
+        MIT Mode (Impedance Control)
       
     </span>
   </a>
@@ -637,7 +604,7 @@
   <a href="#pos-vel-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        POS_VEL Mode
+        POS_VEL Mode (Position + Velocity-Limit)
       
     </span>
   </a>
@@ -648,7 +615,7 @@
   <a href="#vel-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        VEL Mode
+        VEL Mode (Velocity)
       
     </span>
   </a>
@@ -659,7 +626,7 @@
   <a href="#force-pos-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        FORCE_POS Mode
+        FORCE_POS Mode (Force-Limited Position)
       
     </span>
   </a>
@@ -1144,63 +1111,77 @@
 <p>DaMiao motors support four different control modes, each optimized for different use cases.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Control modes determine how the motor interprets command messages. The control mode is set via <a href="../registers/">register 10 (CTRL_MODE)</a> and must match the command format being sent.</p>
+<p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.ensure_control_mode()</code></a></p>
+<p>The <code>ensure_control_mode()</code> method automatically:</p>
+<ol>
+<li>
+<p>Reads the current mode from register 10</p>
+</li>
+<li>
+<p>Writes the new mode if different</p>
+</li>
+<li>
+<p>Verifies the write was successful</p>
+</li>
+</ol>
+<p><strong>Low Level Torque Control (Current-based)</strong></p>
+<p>All four modes eventually do the same low-level job: they run a <strong>current feedback loop</strong> inside the motor controller.</p>
+<p>In simple terms:</p>
+<ul>
+<li>
+<p>The selected mode (MIT/POS_VEL/VEL/FORCE_POS) decides what current the motor should produce.</p>
+</li>
+<li>
+<p>That target current is sent to a fast inner controller.</p>
+</li>
+<li>
+<p>The inner controller continuously compares target current vs measured current and corrects PWM voltage to reduce the error.</p>
+</li>
+<li>
+<p><strong><span class="arithmatex">\(i_{q,\mathrm{ref}}\)</span></strong>: the target for the torque-producing current.
+  Larger magnitude means stronger torque. Sign decides rotation direction.</p>
+</li>
+<li>
+<p><strong><span class="arithmatex">\(i_{d,\mathrm{ref}}\)</span></strong>: the target for the flux-axis current.
+  In these modes it is set to <code>0</code>, meaning "do not add extra d-axis current."</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The motor tracks the calculated <span class="arithmatex">\(i_{q,\mathrm{ref}}\)</span> to produce the desired torque, while keeping the d-axis current at <span class="arithmatex">\(i_{d,\mathrm{ref}} = 0\)</span>.</p>
+</div>
 <table>
 <thead>
 <tr>
 <th>Mode</th>
-<th>Register Value</th>
-<th>CAN ID Format</th>
-<th>Use Case</th>
+<th>Easy interpretation of <span class="arithmatex">\(i_{q,\mathrm{ref}}\)</span></th>
+<th><span class="arithmatex">\(i_{d,\mathrm{ref}}\)</span></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>MIT</td>
-<td>1</td>
-<td><code>motor_id</code></td>
-<td>Impedance control with stiffness/damping</td>
+<td>Calculated from position/velocity error + feedforward torque, then converted to current</td>
+<td><code>0</code></td>
 </tr>
 <tr>
 <td>POS_VEL</td>
-<td>2</td>
-<td><code>0x100 + motor_id</code></td>
-<td>Trapezoidal motion profiles</td>
+<td>Position loop outputs a speed target, speed loop converts that speed error to current</td>
+<td><code>0</code></td>
 </tr>
 <tr>
 <td>VEL</td>
-<td>3</td>
-<td><code>0x200 + motor_id</code></td>
-<td>Velocity control</td>
+<td>Speed loop directly converts velocity error to current</td>
+<td><code>0</code></td>
 </tr>
 <tr>
 <td>FORCE_POS</td>
-<td>4</td>
-<td><code>0x300 + motor_id</code></td>
-<td>Position control with limits</td>
+<td>Position loop and speed loop compute current, then it is clipped by current/force limit</td>
+<td><code>0</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="mode-selection-guide">Mode Selection Guide<a class="headerlink" href="#mode-selection-guide" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>MIT</strong>: Compliant/impedance control, force control, research applications</li>
-<li><strong>POS_VEL</strong>: Smooth point-to-point motion, trapezoidal profiles, position accuracy</li>
-<li><strong>VEL</strong>: Pure velocity control, constant-speed operation</li>
-<li><strong>FORCE_POS</strong>: Safe positioning with force limits, human-robot interaction</li>
-</ul>
-<h2 id="switching-between-modes">Switching Between Modes<a class="headerlink" href="#switching-between-modes" title="Permanent link">&para;</a></h2>
-<p>The control mode must be set before sending commands.</p>
-<p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.ensure_control_mode()</code></a></p>
-<p>The <code>ensure_control_mode()</code> method automatically:
-1. Reads the current mode from register 10
-2. Writes the new mode if different
-3. Verifies the write was successful</p>
-<h2 id="mode-compatibility">Mode Compatibility<a class="headerlink" href="#mode-compatibility" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Commands must match mode</strong>: Sending MIT commands while in VEL mode will not work correctly</li>
-<li><strong>CAN IDs differ</strong>: Each mode uses a different arbitration ID</li>
-<li><strong>Register must match</strong>: Register 10 must match the command format</li>
-</ul>
-<h2 id="mit-mode">MIT Mode<a class="headerlink" href="#mit-mode" title="Permanent link">&para;</a></h2>
+<h2 id="mit-mode">MIT Mode (Impedance Control)<a class="headerlink" href="#mit-mode" title="Permanent link">&para;</a></h2>
 <p><strong>MIT mode</strong> (named after MIT's Cheetah robot) provides impedance control with position, velocity, stiffness, damping, and feedforward torque.</p>
 <p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_mit()</code></a></p>
 <table>
@@ -1246,7 +1227,7 @@ T_{\text{ref}} = K_p \cdot (p_{\text{des}} - \theta_m) + K_d \cdot (v_{\text{des
 <div class="arithmatex">\[
 i_{q,\text{ref}} = \frac{T_{\text{ref}}}{K_T}, \quad i_{d,\text{ref}} = 0
 \]</div>
-<h2 id="pos-vel-mode">POS_VEL Mode<a class="headerlink" href="#pos-vel-mode" title="Permanent link">&para;</a></h2>
+<h2 id="pos-vel-mode">POS_VEL Mode (Position + Velocity-Limit)<a class="headerlink" href="#pos-vel-mode" title="Permanent link">&para;</a></h2>
 <p><strong>POS_VEL mode</strong> provides position-velocity control with trapezoidal motion profiles. The motor moves toward the target position, limiting velocity to the specified maximum, with automatic acceleration and deceleration.</p>
 <p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_pos_vel()</code></a></p>
 <table>
@@ -1274,11 +1255,12 @@ i_{q,\text{ref}} = \frac{T_{\text{ref}}}{K_T}, \quad i_{d,\text{ref}} = 0
 <div class="arithmatex">\[
 v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
 \]</div>
+<p>In the control-law diagram, <code>velocity_limit</code> directly sets the clip bounds <span class="arithmatex">\(\pm v_{\text{target}}\)</span>.</p>
 <div class="arithmatex">\[
 i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt, \quad i_{d,\text{ref}} = 0
 \]</div>
 <p>where <span class="arithmatex">\(v_{\text{target}}\)</span> is the commanded <code>velocity_limit</code>, <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
-<h2 id="vel-mode">VEL Mode<a class="headerlink" href="#vel-mode" title="Permanent link">&para;</a></h2>
+<h2 id="vel-mode">VEL Mode (Velocity)<a class="headerlink" href="#vel-mode" title="Permanent link">&para;</a></h2>
 <p><strong>VEL mode</strong> provides pure velocity control. The motor maintains the commanded velocity. Positive values rotate in one direction, negative values in the opposite direction.</p>
 <p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_vel()</code></a></p>
 <table>
@@ -1302,7 +1284,7 @@ i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\te
 i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt, \quad i_{d,\text{ref}} = 0
 \]</div>
 <p>where <a href="../registers/">KP_ASR</a> (reg 25) and <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
-<h2 id="force-pos-mode">FORCE_POS Mode<a class="headerlink" href="#force-pos-mode" title="Permanent link">&para;</a></h2>
+<h2 id="force-pos-mode">FORCE_POS Mode (Force-Limited Position)<a class="headerlink" href="#force-pos-mode" title="Permanent link">&para;</a></h2>
 <p><strong>FORCE_POS mode</strong> (Force-Position Hybrid) provides position control with velocity and current limits. The motor moves toward the target position while respecting the velocity and current limits, providing safe position control with force limiting.</p>
 <p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.send_cmd_force_pos()</code></a></p>
 <table>
@@ -1333,12 +1315,12 @@ i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\te
 </table>
 <p><img alt="FORCE_POS mode control law" src="../control_law_force_pos.svg" /></p>
 <div class="arithmatex">\[
-v_{\text{des}} = K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt
+v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
 \]</div>
 <div class="arithmatex">\[
 i_{q,\text{ref}} = \text{clip}\!\left(K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt,\; -\tau_{\text{lim}},\; \tau_{\text{lim}}\right), \quad i_{d,\text{ref}} = 0
 \]</div>
-<p>where <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
+<p>where <span class="arithmatex">\(v_{\text{target}}\)</span> is the commanded <code>velocity_limit</code>, <a href="../registers/">KP_APR</a> (reg 27), <a href="../registers/">KI_APR</a> (reg 28) are position loop gains, and <a href="../registers/">KP_ASR</a> (reg 25), <a href="../registers/">KI_ASR</a> (reg 26) are speed loop gains.</p>
 
 
 

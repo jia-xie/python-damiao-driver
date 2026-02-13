@@ -43,56 +43,72 @@
 
   <!-- ===== VELOCITY LOOP ===== -->
 
-  <!-- Arrow PI1 → v_des → sum2 -->
-  <line x1="360" y1="102" x2="436" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
-  <text x="398" y="90" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">v<tspan font-size="16" dy="4">des</tspan><tspan dy="-4"></tspan></text>
+  <!-- Arrow PI1 to velocity saturation -->
+  <line x1="360" y1="102" x2="396" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
 
-  <!-- Sum circle 2 -->
-  <circle cx="460" cy="102" r="22" fill="white" stroke="#2563eb" stroke-width="2"/>
-  <text x="460" y="110" text-anchor="middle" font-size="24" font-weight="700" fill="#2563eb">Σ</text>
-  <text x="446" y="97" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
-  <text x="468" y="120" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626">−</text>
-
-  <!-- dθ_m feedback -->
-  <line x1="460" y1="175" x2="460" y2="126" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
-  <text x="472" y="193" font-size="22" fill="#64748b" font-style="italic">θ̇<tspan font-size="16" dy="4">m</tspan><tspan dy="-4"></tspan></text>
-
-  <!-- Arrow to PI 2 -->
-  <line x1="482" y1="102" x2="546" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
-
-  <!-- PI block 2 -->
-  <rect x="550" y="77" width="120" height="50" rx="8" fill="#2c6fbb" stroke="#1d4ed8" stroke-width="1.5"/>
-  <text x="610" y="110" text-anchor="middle" font-size="26" font-weight="400" font-style="italic" fill="white">PI</text>
-
-  <!-- ===== SATURATION BLOCK ===== -->
-
-  <!-- Arrow PI2 to saturation -->
-  <line x1="670" y1="102" x2="726" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
-
-  <!-- Saturation block -->
-  <rect x="730" y="74" width="80" height="56" rx="6" fill="white" stroke="#2563eb" stroke-width="2"/>
+  <!-- Velocity saturation block -->
+  <rect x="400" y="74" width="80" height="56" rx="6" fill="white" stroke="#2563eb" stroke-width="2"/>
   <!-- Saturation curve -->
-  <polyline points="745,118 755,118 770,102 785,86 795,86"
+  <polyline points="415,118 425,118 440,102 455,86 465,86"
             fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- Axes -->
-  <line x1="770" y1="80" x2="770" y2="124" stroke="#b8d4f0" stroke-width="1" stroke-dasharray="2,2"/>
-  <line x1="736" y1="102" x2="804" y2="102" stroke="#b8d4f0" stroke-width="1" stroke-dasharray="2,2"/>
+  <line x1="440" y1="80" x2="440" y2="124" stroke="#b8d4f0" stroke-width="1" stroke-dasharray="2,2"/>
+  <line x1="406" y1="102" x2="474" y2="102" stroke="#b8d4f0" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <!-- v_target labels -->
+  <text x="440" y="64" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">v<tspan font-size="16" dy="4">target</tspan><tspan dy="-4"></tspan></text>
+  <text x="440" y="152" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">−v<tspan font-size="16" dy="4">target</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- Arrow sat -> v_des -> sum2 -->
+  <line x1="480" y1="102" x2="536" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <text x="508" y="90" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">v<tspan font-size="16" dy="4">des</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- Sum circle 2 -->
+  <circle cx="560" cy="102" r="22" fill="white" stroke="#2563eb" stroke-width="2"/>
+  <text x="560" y="110" text-anchor="middle" font-size="24" font-weight="700" fill="#2563eb">Σ</text>
+  <text x="546" y="97" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
+  <text x="568" y="120" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626">−</text>
+
+  <!-- dθ_m feedback -->
+  <line x1="560" y1="175" x2="560" y2="126" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <text x="572" y="193" font-size="22" fill="#64748b" font-style="italic">θ̇<tspan font-size="16" dy="4">m</tspan><tspan dy="-4"></tspan></text>
+
+  <!-- Arrow to PI 2 -->
+  <line x1="582" y1="102" x2="636" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- PI block 2 -->
+  <rect x="640" y="77" width="120" height="50" rx="8" fill="#2c6fbb" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="700" y="110" text-anchor="middle" font-size="26" font-weight="400" font-style="italic" fill="white">PI</text>
+
+  <!-- ===== CURRENT SATURATION BLOCK ===== -->
+
+  <!-- Arrow PI2 to saturation -->
+  <line x1="760" y1="102" x2="816" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- Saturation block -->
+  <rect x="820" y="74" width="80" height="56" rx="6" fill="white" stroke="#2563eb" stroke-width="2"/>
+  <!-- Saturation curve -->
+  <polyline points="835,118 845,118 860,102 875,86 885,86"
+            fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Axes -->
+  <line x1="860" y1="80" x2="860" y2="124" stroke="#b8d4f0" stroke-width="1" stroke-dasharray="2,2"/>
+  <line x1="826" y1="102" x2="894" y2="102" stroke="#b8d4f0" stroke-width="1" stroke-dasharray="2,2"/>
 
   <!-- τ_lim labels -->
-  <text x="770" y="64" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">τ<tspan font-size="16" dy="4">lim</tspan><tspan dy="-4"></tspan></text>
-  <text x="770" y="152" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">−τ<tspan font-size="16" dy="4">lim</tspan><tspan dy="-4"></tspan></text>
+  <text x="860" y="64" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">τ<tspan font-size="16" dy="4">lim</tspan><tspan dy="-4"></tspan></text>
+  <text x="860" y="152" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">−τ<tspan font-size="16" dy="4">lim</tspan><tspan dy="-4"></tspan></text>
 
   <!-- iq_ref -->
-  <line x1="810" y1="102" x2="900" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
-  <rect x="904" y="84" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
-  <text x="954" y="108" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">q,ref</tspan><tspan dy="-4"></tspan></text>
+  <line x1="900" y1="102" x2="990" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <rect x="994" y="84" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+  <text x="1044" y="108" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">q,ref</tspan><tspan dy="-4"></tspan></text>
 
   <!-- ===== id_ref = 0 ===== -->
 
-  <rect x="640" y="268" width="120" height="50" rx="8" fill="#2c6fbb" stroke="#1d4ed8" stroke-width="1.5" opacity="0.5"/>
-  <text x="700" y="300" text-anchor="middle" font-size="26" font-style="italic" fill="white">0</text>
+  <rect x="730" y="268" width="120" height="50" rx="8" fill="#2c6fbb" stroke="#1d4ed8" stroke-width="1.5" opacity="0.5"/>
+  <text x="790" y="300" text-anchor="middle" font-size="26" font-style="italic" fill="white">0</text>
 
-  <line x1="760" y1="293" x2="900" y2="293" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
-  <rect x="904" y="275" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
-  <text x="954" y="299" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">d,ref</tspan><tspan dy="-4"></tspan></text>
+  <line x1="850" y1="293" x2="990" y2="293" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+  <rect x="994" y="275" width="100" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+  <text x="1044" y="299" text-anchor="middle" font-size="22" font-style="italic" font-weight="600" fill="#059669">i<tspan font-size="16" dy="4">d,ref</tspan><tspan dy="-4"></tspan></text>
 </svg>
