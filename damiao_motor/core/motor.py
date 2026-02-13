@@ -46,7 +46,7 @@ REGISTER_TABLE: Dict[int, RegisterInfo] = {
     9: RegisterInfo(
         9,
         "TIMEOUT",
-        "Timeout alarm time (1 unit = 50 microseconds)",
+        "Timeout alarm time (1 register unit = 50 microseconds)",
         "RW",
         "[0, 2^32-1]",
         "uint32",
@@ -554,9 +554,10 @@ class DaMiaoMotor:
             timeout_ms: Timeout in milliseconds
 
         Note:
-            Register 9 stores timeout in units of 50 microseconds: **1 register unit = 50 microseconds**.
+            Register 9 stores timeout in units of 50 microseconds:
+            1 register unit = 50 microseconds.
 
-            Conversion formula: register_value = timeout_ms × 20
+            Conversion formula: register_value = timeout_ms * 20
         """
         # Convert milliseconds to register units: 1 register unit = 50 microseconds
         # timeout_ms * 1000 us/ms / 50 us/unit = timeout_ms * 20
@@ -1063,14 +1064,16 @@ class DaMiaoMotor:
         Set timeout alarm time (register 9).
 
         Args:
-            value: Timeout value in register units (1 unit = 50 microseconds)
+            value: Timeout value in register units (1 register unit = 50 microseconds)
 
         Note:
+            Register 9 stores timeout in units of 50 microseconds:
+            1 register unit = 50 microseconds.
+
             This method writes the raw register value. For convenience, use `set_can_timeout()`
             which accepts milliseconds and handles the conversion automatically.
 
-            Conversion: 1 register unit = 50 microseconds
-            To convert from milliseconds: register_value = timeout_ms × 20
+            To convert from milliseconds: register_value = timeout_ms * 20
         """
         self.write_register(9, value)
 

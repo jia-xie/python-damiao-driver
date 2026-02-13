@@ -344,7 +344,10 @@ Examples:
     timeout_parser = subparsers.add_parser(
         "set-can-timeout",
         help="Set CAN timeout alarm time (register 9)",
-        description="Set the CAN timeout alarm time in milliseconds. Register 9 uses units of 50 microseconds (1 unit = 50us).",
+        description=(
+            "Set the CAN timeout alarm time in milliseconds. Register 9 stores timeout in units "
+            "of 50 microseconds: 1 register unit = 50 microseconds."
+        ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

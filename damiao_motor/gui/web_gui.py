@@ -272,7 +272,13 @@ def get_registers(motor_id: int):
 
 @app.route("/api/motors/<int:motor_id>/registers/<int:rid>", methods=["PUT"])
 def set_register(motor_id: int, rid: int):
-    """Set a register value."""
+    """
+    Set a register value.
+
+    For register 9 (TIMEOUT), this endpoint expects the raw register value.
+    Register 9 stores timeout in units of 50 microseconds:
+    1 register unit = 50 microseconds.
+    """
     global _controller, _motors
     try:
         if motor_id not in _motors:
@@ -298,9 +304,9 @@ def set_register(motor_id: int, rid: int):
 
         motor = _motors[motor_id]
 
-        # Note: Register 9 (TIMEOUT) uses units of 50 microseconds (1 unit = 50us)
-        # To convert from milliseconds: register_value = timeout_ms × 20
-        # For example: 1000 ms = 20,000 register units, 50 ms = 1,000 register units
+        # Register 9 stores timeout in units of 50 microseconds:
+        # 1 register unit = 50 microseconds.
+        # Convert from milliseconds with: register_value = timeout_ms * 20
         motor.write_register(rid, value)
 
         # If we changed register 7 (MST_ID/feedback_id) or 8 (ESC_ID/receive_id),

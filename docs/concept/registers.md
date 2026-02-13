@@ -51,7 +51,7 @@ From current CLI implementation:
 |---------|----------------|-------------------|
 | `damiao set-motor-id` | Writes register `8` (`ESC_ID`) | Yes (calls `store_parameters()`) |
 | `damiao set-feedback-id` | Writes register `7` (`MST_ID`) | Yes (calls `store_parameters()`) |
-| `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`) | Yes (calls `store_parameters()`) |
+| `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`, 1 register unit = 50 microseconds) | Yes (calls `store_parameters()`) |
 
 Other CLI control commands (`send-cmd-*`, `set-zero-command`, `set-zero-position`) do not store parameters to flash.
 
@@ -134,7 +134,7 @@ for register_id, info in REGISTER_TABLE.items():
 |----|----------|-------------|--------|-------|------|
 | 7 | `MST_ID` | Feedback ID | RW | [0, 0x7FF] | uint32 |
 | 8 | `ESC_ID` | Receive ID | RW | [0, 0x7FF] | uint32 |
-| 9 | <span id="reg-9-timeout"></span>`TIMEOUT` | Timeout alarm time (see [LOST_COMM `0xD`](communication-protocol.md#status-lost-comm)) | RW | [0, 2^32-1] | uint32 |
+| 9 | <span id="reg-9-timeout"></span>`TIMEOUT` | Timeout alarm time (1 register unit = 50 microseconds; see [LOST_COMM `0xD`](communication-protocol.md#status-lost-comm)) | RW | [0, 2^32-1] | uint32 |
 | 10 | `CTRL_MODE` | Control mode | RW | [1, 4] | uint32 |
 
 | ID | Variable | Description | Access | Range | Type |
