@@ -42,26 +42,7 @@ CAN bus uses two wires:
 
 ### Connection Diagram
 
-```
-[Computer/CAN Interface]
-    |
-    | CAN_H ────────────────┐
-    | CAN_L ───────────────┤
-    |                      │
-    |                  [Motor 1]
-    |                      │
-    | CAN_H ───────────────┤
-    | CAN_L ───────────────┤
-    |                      │
-    |                  [Motor 2]
-    |                      │
-    | CAN_H ───────────────┤
-    | CAN_L ───────────────┤
-    |                      │
-    |                  [Motor 3]
-    |                      │
-    |                  120Ω (Termination)
-```
+![CAN bus motor connection diagram with CAN interface, three motors, and 120Ω termination at both ends](motor-connection-diagram.svg){ .doc-screenshot }
 
 ### Termination Resistors
 

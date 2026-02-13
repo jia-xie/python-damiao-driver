@@ -34,7 +34,8 @@ motor.write_register(25, 20.0)  # KP_ASR
 motor.store_parameters()
 ```
 
-### Web GUI {#registers-web-gui}
+<span id="registers-web-gui"></span>
+**Web GUI**
 
 - Editing a register in the Web GUI writes it at runtime first.
 - Click `Store Parameters` to write current parameters to flash.
@@ -154,6 +155,8 @@ for register_id, info in REGISTER_TABLE.items():
 | 21 | `PMAX` | Position mapping range | RW | (0.0, 3.4E38] | float |
 | 22 | `VMAX` | Speed mapping range | RW | (0.0, 3.4E38] | float |
 | 23 | `TMAX` | Torque mapping range | RW | (0.0, 3.4E38] | float |
+
+<span id="pmax-vmax-tmax-defaults"></span>
 
 !!! note "PMAX / VMAX / TMAX Defaults"
     Registers `21` (`PMAX`), `22` (`VMAX`), and `23` (`TMAX`) are writable and can be changed with register writes (API/CLI/GUI).
