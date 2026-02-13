@@ -34,7 +34,9 @@ class DaMiaoController:
     # -----------------------
     # Motor management
     # -----------------------
-    def add_motor(self, motor_id: int, feedback_id: int, motor_type: str, **kwargs: Any) -> DaMiaoMotor:
+    def add_motor(
+        self, motor_id: int, feedback_id: int, motor_type: str, **kwargs: Any
+    ) -> DaMiaoMotor:
         if motor_id in self.motors:
             raise ValueError(f"Motor with ID {motor_id} already exists")
 
@@ -52,7 +54,7 @@ class DaMiaoController:
 
         # Start background polling if not already running
         self._start_polling()
-        
+
         return motor
 
     def get_motor(self, motor_id: int) -> DaMiaoMotor:
@@ -117,10 +119,10 @@ class DaMiaoController:
     def flush_bus(self) -> int:
         """
         Flush all pending messages from the CAN bus buffer.
-        
+
         Returns:
             Number of messages flushed.
-        
+
         Raises:
             can.CanOperationError: If CAN interface is down (Error Code 100) with helpful hint
             OSError: If other network/system errors occur
@@ -134,20 +136,25 @@ class DaMiaoController:
                 count += 1
         except can.CanOperationError as e:
             error_str = str(e)
-            errno = getattr(e, 'errno', None)
-            
+            errno = getattr(e, "errno", None)
+
             # Error Code 100: Network is down - CAN interface not up
-            if errno == 100 or "Error Code 100" in error_str or "Network is down" in error_str or "[Errno 100]" in error_str:
-                channel = getattr(self.bus, 'channel', 'can0')
+            if (
+                errno == 100
+                or "Error Code 100" in error_str
+                or "Network is down" in error_str
+                or "[Errno 100]" in error_str
+            ):
+                channel = getattr(self.bus, "channel", "can0")
                 raise can.CanOperationError(
                     f"CAN interface '{channel}' is down (Error Code 100)"
                 ) from e
             # Re-raise other CanOperationError
             raise
         except OSError as e:
-            errno = getattr(e, 'errno', None)
+            errno = getattr(e, "errno", None)
             if errno == 100 or "Network is down" in str(e) or "[Errno 100]" in str(e):
-                channel = getattr(self.bus, 'channel', 'can0')
+                channel = getattr(self.bus, "channel", "can0")
                 raise OSError(
                     f"CAN interface '{channel}' is down (Error Code 100)"
                 ) from e
@@ -178,7 +185,9 @@ class DaMiaoController:
                 if motor is None:
                     continue
 
-                motor.process_feedback_frame(bytes(msg.data), arbitration_id=msg.arbitration_id)
+                motor.process_feedback_frame(
+                    bytes(msg.data), arbitration_id=msg.arbitration_id
+                )
         except (ValueError, OSError, AttributeError):
             # Bus is closed or invalid, stop polling
             with self._polling_lock:
@@ -192,12 +201,14 @@ class DaMiaoController:
         with self._polling_lock:
             if self._polling_active:
                 return
-            
+
             if len(self.motors) == 0:
                 return
-            
+
             self._polling_active = True
-            self._polling_thread = threading.Thread(target=self._polling_loop, daemon=True)
+            self._polling_thread = threading.Thread(
+                target=self._polling_loop, daemon=True
+            )
             self._polling_thread.start()
 
     def _stop_polling(self) -> None:
@@ -211,7 +222,7 @@ class DaMiaoController:
     def _polling_loop(self) -> None:
         """
         Background thread that continuously polls feedback.
-        
+
         """
         while self._polling_active:
             if len(self.motors) == 0:
@@ -219,7 +230,7 @@ class DaMiaoController:
                 with self._polling_lock:
                     self._polling_active = False
                 break
-            
+
             try:
                 self.poll_feedback()
             except Exception:
@@ -227,41 +238,39 @@ class DaMiaoController:
                 with self._polling_lock:
                     self._polling_active = False
                 break
-            
+
             time.sleep(0.001)  # Small delay to prevent CPU spinning
 
     def _handle_register_reply(self, data: bytes) -> None:
         """
         Handle a register reply frame.
         Delegates to the motor instance to handle the reply.
-        
+
         Args:
             data: 8-byte CAN frame data
         """
         if len(data) < 8:
             return
-        
+
         # Register reply format: D[0]=CANID_L, D[1]=CANID_H, D[2]=0x33, D[3]=RID, D[4-7]=data
         canid_l = data[0]
         canid_h = data[1]
         rid = data[3]
         register_data = data[4:8]  # 4-byte register value
-        
+
         # Reconstruct motor_id from CANID_L and CANID_H
         motor_id = canid_l | (canid_h << 8)
-        
+
         # Get the motor instance
         motor = self.motors.get(motor_id)
         if motor is None:
             return
-        
+
         # Let the motor handle the register reply
         motor.handle_register_reply(rid, register_data)
-    
+
     def shutdown(self) -> None:
         """Shutdown the controller and stop background polling."""
         self._stop_polling()
         self.disable_all()
         self.bus.shutdown()
-
-

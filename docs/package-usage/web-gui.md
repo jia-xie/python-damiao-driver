@@ -32,6 +32,9 @@ Open **http://127.0.0.1:5000** in your browser.
 !!! note "Backward Compatibility"
     Use `damiao gui` to launch the GUI.
 
+!!! tip "Recommended for control modes"
+    To better understand [control modes](../concept/motor-control-modes.md), use `damiao gui` to switch between MIT/POS_VEL/VEL/FORCE_POS and observe parameter visibility and live charts.
+
 ### Command options
 
 | Option | Description |
@@ -69,7 +72,7 @@ The page is split into:
 
 A status log shows connection and scan progress (e.g. *Connecting…*, *Connected to CAN bus: can0*, *Scanning for motors…*, *Found N motor(s)*, *Registers loaded*).
 
-![Connection bar – CAN channel, Connect, Disconnect, and status log](screenshots/connection.png)
+![Connection bar – CAN channel, Connect, Disconnect, and status log](screenshots/connection.png){ .doc-screenshot }
 
 ---
 
@@ -78,7 +81,7 @@ A status log shows connection and scan progress (e.g. *Connecting…*, *Connecte
 - **Scan Motors**: Scans for motors and lists those that respond.
 - **Motor dropdown**: *Select a motor…* when none is chosen; otherwise *Motor ID: 0xXX | Arb ID: 0xYY* for each detected motor. Selecting a motor updates the Control panel, Register Parameters, and charts.
 
-![Motor Selection – Scan Motors and motor dropdown (Motor ID | Arb ID)](screenshots/motor-selection.png)
+![Motor Selection – Scan Motors and motor dropdown (Motor ID | Arb ID)](screenshots/motor-selection.png){ .doc-screenshot }
 
 ---
 
@@ -89,29 +92,30 @@ When a motor is selected, the left column shows **Control Parameters** and **Mot
 ### Control Parameters
 
 - **Motor type**: Choose the motor model (e.g. 4310, 4340, 6006, 8006, 8009, 10010/L, H3510, G6215, H6220, JH11, 6248P, 3507).
-- **Control Mode**: MIT, POS_VEL, VEL, FORCE_POS. Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Position + Velocity Limit for POS_VEL; Velocity for VEL; Vel Limit and Current Limit for FORCE_POS.
+- **[Control Mode](../concept/motor-control-modes.md)**: [MIT](../concept/motor-control-modes.md#mit-mode), [POS_VEL](../concept/motor-control-modes.md#pos-vel-mode), [VEL](../concept/motor-control-modes.md#vel-mode), [FORCE_POS](../concept/motor-control-modes.md#force-pos-mode). Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Position + Velocity Limit for POS_VEL; Velocity for VEL; Vel Limit and Torque Limit Ratio for FORCE_POS.
+- **FORCE_POS Torque Limit Ratio meaning**: `torque_limit_ratio` is normalized (0.0-1.0). The effective torque clip is `tau_lim = torque_limit_ratio * T_max(motor_type)`.
 - **Enable / Disable**: Enable or disable the motor.
 - **Send Command**: Applies the current control parameters. **Single**: once. **Continuous**: at the set Command Frequency (1–1000 Hz).
 - **Stop Command**: Stops Continuous mode and disables the motor.
 - **Set Zero**: Saves the current position as zero.
 - **Clear Error**: Clears the motor error.
 
-![Motor type dropdown – supported motor models (4310, 4340, 6006, …)](screenshots/motor-type-selection.png)
+![Motor type dropdown – supported motor models (4310, 4340, 6006, …)](screenshots/motor-type-selection.png){ .doc-screenshot }
 
 ### Motor Feedback
 
 - **Status** (e.g. ENABLED, DISABLED) and live **Position**, **Velocity**, **Torque**, **MOS Temp**, **Rotor Temp** for the selected motor.
 
-![Motor Control – Control Parameters (mode, position, velocity, Kp/Kd, torque, Enable/Disable, Send Command, Single/Continuous, Set Zero, Clear Error) and Motor Feedback](screenshots/motor-control.png)
+![Motor Control – Control Parameters (mode, position, velocity, Kp/Kd, torque, Enable/Disable, Send Command, Single/Continuous, Set Zero, Clear Error) and Motor Feedback](screenshots/motor-control.png){ .doc-screenshot }
 
 ---
 
 ## Register Parameters
 
 - **Table**: **Description**, **Value**, **Type**, **Action**. **Read-only (RO)** registers have no Edit. **Writable (RW)** registers: click **Edit**, change the value, then **Save** or **Cancel**.
-- **Special UIs**: Feedback ID and Motor ID use hex input; Control mode and CAN baud rate use dropdowns. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.
+- **Special UIs**: Feedback ID and Motor ID use hex input; [Control mode](../concept/motor-control-modes.md) and CAN baud rate use dropdowns. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.
 
-![Register Parameters – Description, Value, Type, Action; Edit with Save/Cancel for RW registers](screenshots/registers.png)
+![Register Parameters – Description, Value, Type, Action; Edit with Save/Cancel for RW registers](screenshots/registers.png){ .doc-screenshot }
 
 ---
 
@@ -145,7 +149,7 @@ Clicking **Export Data** on a chart opens a modal: enter a file name and **Save*
 ## Register editing (details)
 
 - **RO**: Shown in gray; no Edit button.
-- **RW**: Click **Edit**, change the value (or choose from the dropdown for Control mode and CAN baud rate), then **Save** or **Cancel**. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.
+- **RW**: Click **Edit**, change the value (or choose from the dropdown for [Control mode](../concept/motor-control-modes.md) and CAN baud rate), then **Save** or **Cancel**. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.
 
 ---
 

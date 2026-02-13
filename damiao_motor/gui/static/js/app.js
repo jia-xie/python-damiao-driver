@@ -604,9 +604,9 @@ let currentMotorId = null;
                             <label>Vel Limit (rad/s):</label>
                             <input type="number" id="velocityLimit" step="0.1" value="0.0" min="0" max="100">
                         </div>
-                        <div class="control-row" id="curLimitRow" style="display:none;">
-                            <label>Current Limit:</label>
-                            <input type="number" id="currentLimit" step="0.01" value="0.0" min="0" max="1">
+                        <div class="control-row" id="torqueLimitRatioRow" style="display:none;">
+                            <label>Torque Limit Ratio:</label>
+                            <input type="number" id="torqueLimitRatio" step="0.01" value="0.0" min="0" max="1">
                         </div>
                         <div class="motor-actions-row">
                             <button class="btn btn-success" id="enableBtn" onclick="enableMotor()" style="display:none;">Enable</button>
@@ -1454,7 +1454,7 @@ let currentMotorId = null;
             document.getElementById('dampingRow').style.display = mode === 'MIT' ? 'flex' : 'none';
             document.getElementById('torqueRow').style.display = mode === 'MIT' ? 'flex' : 'none';
             document.getElementById('velLimitRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
-            document.getElementById('curLimitRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
+            document.getElementById('torqueLimitRatioRow').style.display = mode === 'FORCE_POS' ? 'flex' : 'none';
             updateControlModeDocsLink();
         }
 
@@ -1552,7 +1552,7 @@ let currentMotorId = null;
                 const damping = parseFloat(document.getElementById('damping').value) || 0.0;
                 const feedforwardTorque = parseFloat(document.getElementById('feedforwardTorque').value) || 0.0;
                 const velocityLimit = parseFloat(document.getElementById('velocityLimit').value) || 0.0;
-                const currentLimit = parseFloat(document.getElementById('currentLimit').value) || 0.0;
+                const torqueLimitRatio = parseFloat(document.getElementById('torqueLimitRatio').value) || 0.0;
                 const posVelVelocityLimit = controlMode === 'POS_VEL' ? targetVelocity : velocityLimit;
 
                 const response = await fetch(`/api/motors/${currentMotorId}/command`, {
@@ -1566,7 +1566,7 @@ let currentMotorId = null;
                         damping: damping,
                         feedforward_torque: feedforwardTorque,
                         velocity_limit: posVelVelocityLimit,
-                        current_limit: currentLimit,
+                        torque_limit_ratio: torqueLimitRatio,
                     })
                 });
                 const data = await response.json();

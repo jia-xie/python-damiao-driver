@@ -1,4 +1,5 @@
 """Minimal DaMiao motor example. Sends a slow sine to position. Ctrl+C to stop."""
+
 import math
 import time
 
@@ -12,7 +13,7 @@ motor = controller.add_motor(motor_id=0x01, feedback_id=0x11, motor_type="4310")
 
 controller.enable_all()
 time.sleep(0.1)
-motor.ensure_control_mode("MIT") # Available modes: MIT, POS_VEL, VEL, FORCE_POS
+motor.ensure_control_mode("MIT")  # Available modes: MIT, POS_VEL, VEL, FORCE_POS
 
 try:
     while True:

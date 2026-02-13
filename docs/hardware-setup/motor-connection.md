@@ -231,7 +231,7 @@ candump can0
 - **Enable motor**: Use `enable_all()` or enable command
 - **Check status**: Read motor status from feedback
 - **Clear errors**: Use clear error command if motor in error state
-- **Verify mode**: Ensure control mode matches command type
+- **Verify mode**: Ensure [control mode](../concept/motor-control-modes.md) matches command type
 
 ## Safety Considerations
 
@@ -247,3 +247,4 @@ candump can0
 - [CAN Setup](can-set-up.md) - Software configuration
 - [Communication Protocol](../concept/communication-protocol.md) - Protocol details
 - [Motor Control Modes](../concept/motor-control-modes.md) - Control mode information
+- [Web GUI](../package-usage/web-gui.md) - Recommended for understanding control modes interactively with `damiao gui`

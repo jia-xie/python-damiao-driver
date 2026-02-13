@@ -9,6 +9,11 @@ tags:
 
 DaMiao motors support four different control modes, each optimized for different use cases.
 
+Quick links: [MIT mode](#mit-mode) | [POS_VEL mode](#pos-vel-mode) | [VEL mode](#vel-mode) | [FORCE_POS mode](#force-pos-mode)
+
+!!! tip "Recommended learning path"
+    To better understand the control modes in practice, use [`damiao gui`](../package-usage/web-gui.md) and switch between modes while observing live feedback and charts.
+
 ## Overview
 
 Control modes determine how the motor interprets command messages. The control mode is set via [register 10 (CTRL_MODE)](registers.md) and must match the command format being sent.
@@ -90,16 +95,16 @@ API method: [`DaMiaoMotor.send_cmd_pos_vel()`](../api/motor.md)
 ![POS_VEL mode control law](control_law_pos_vel.svg)
 
 $$
-v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
+v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{limit}},\; v_{\text{limit}}\right)
 $$
 
-In the control-law diagram, `velocity_limit` directly sets the clip bounds \(\pm v_{\text{target}}\).
+In the control-law diagram, `velocity_limit` directly sets the clip bounds \(\pm v_{\text{limit}}\).
 
 $$
 i_{q,\text{ref}} = K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt, \quad i_{d,\text{ref}} = 0
 $$
 
-where \(v_{\text{target}}\) is the commanded `velocity_limit`, [KP_APR](registers.md) (reg 27), [KI_APR](registers.md) (reg 28) are position loop gains, and [KP_ASR](registers.md) (reg 25), [KI_ASR](registers.md) (reg 26) are speed loop gains.
+where \(v_{\text{limit}}\) is the commanded `velocity_limit`, [KP_APR](registers.md) (reg 27), [KI_APR](registers.md) (reg 28) are position loop gains, and [KP_ASR](registers.md) (reg 25), [KI_ASR](registers.md) (reg 26) are speed loop gains.
 
 ## VEL Mode (Velocity) {#vel-mode}
 
@@ -121,7 +126,7 @@ where [KP_ASR](registers.md) (reg 25) and [KI_ASR](registers.md) (reg 26) are sp
 
 ## FORCE_POS Mode (Force-Limited Position) {#force-pos-mode}
 
-**FORCE_POS mode** (Force-Position Hybrid) provides position control with velocity and current limits. The motor moves toward the target position while respecting the velocity and current limits, providing safe position control with force limiting.
+**FORCE_POS mode** (Force-Position Hybrid) provides position control with velocity and torque-limit-ratio constraints. The motor moves toward the target position while respecting these limits, providing safe position control with force limiting.
 
 API method: [`DaMiaoMotor.send_cmd_force_pos()`](../api/motor.md)
 
@@ -129,16 +134,24 @@ API method: [`DaMiaoMotor.send_cmd_force_pos()`](../api/motor.md)
 |-----------|-------|-------------|
 | `target_position` | Motor-specific | Desired position (radians) |
 | `velocity_limit` | 0-100 rad/s | Maximum velocity during motion |
-| `current_limit` | 0.0-1.0 | Torque current limit (normalized) |
+| `torque_limit_ratio` | 0.0-1.0 | Normalized torque-limit coefficient |
 
 ![FORCE_POS mode control law](control_law_force_pos.svg)
 
 $$
-v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{target}},\; v_{\text{target}}\right)
+v_{\text{des}} = \text{clip}\!\left(K_{p,\text{apr}} (p_{\text{des}} - \theta_m) + K_{i,\text{apr}} \int (p_{\text{des}} - \theta_m) \, dt,\; -v_{\text{limit}},\; v_{\text{limit}}\right)
 $$
 
 $$
 i_{q,\text{ref}} = \text{clip}\!\left(K_{p,\text{asr}} (v_{\text{des}} - \dot{\theta}_m) + K_{i,\text{asr}} \int (v_{\text{des}} - \dot{\theta}_m) \, dt,\; -\tau_{\text{lim}},\; \tau_{\text{lim}}\right), \quad i_{d,\text{ref}} = 0
 $$
 
-where \(v_{\text{target}}\) is the commanded `velocity_limit`, [KP_APR](registers.md) (reg 27), [KI_APR](registers.md) (reg 28) are position loop gains, and [KP_ASR](registers.md) (reg 25), [KI_ASR](registers.md) (reg 26) are speed loop gains.
+In FORCE_POS mode:
+
+$$
+\tau_{\text{lim}} = \text{torque_limit_ratio} \cdot T_{\max}
+$$
+
+Here \(T_{\max}\) is the max torque for the selected motor type (for example, for `4340`, \(T_{\max}=28\) Nm, so `torque_limit_ratio=0.5` gives \(\tau_{\text{lim}}=14\) Nm).
+
+Also, \(v_{\text{limit}}\) is the commanded `velocity_limit`, [KP_APR](registers.md) (reg 27), [KI_APR](registers.md) (reg 28) are position loop gains, and [KP_ASR](registers.md) (reg 25), [KI_ASR](registers.md) (reg 26) are speed loop gains.

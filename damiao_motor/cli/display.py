@@ -2,13 +2,13 @@
 """
 Display utilities for CLI output: ANSI colors, box drawing, and formatted printing.
 """
+
 import re
 import subprocess
 import sys
 import time
 from typing import Any, Dict, Set
 
-import can
 
 from damiao_motor.core.controller import DaMiaoController
 from damiao_motor.core.motor import DaMiaoMotor, REGISTER_TABLE
@@ -36,30 +36,32 @@ BOX_JOIN_RIGHT = "┤"  # Connects vertical line to horizontal line (left)
 
 def strip_ansi_codes(text: str) -> str:
     """Remove ANSI escape sequences from a string."""
-    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-    return ansi_escape.sub('', text)
+    ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+    return ansi_escape.sub("", text)
 
 
 def pad_with_ansi(text: str, width: int) -> str:
     """
     Pad a string to a specific visible width, accounting for ANSI color codes.
-    
+
     Args:
         text: String that may contain ANSI color codes
         width: Desired visible width
-        
+
     Returns:
         Padded string with correct visible width
     """
     visible_length = len(strip_ansi_codes(text))
     padding_needed = max(0, width - visible_length)
-    return text + (' ' * padding_needed)
+    return text + (" " * padding_needed)
 
 
-def print_boxed(title: str, width: int = 60, color: str = "", border_color: str = "") -> None:
+def print_boxed(
+    title: str, width: int = 60, color: str = "", border_color: str = ""
+) -> None:
     """
     Print a title in a box with borders.
-    
+
     Args:
         title: Title text to display
         width: Width of the box (default: 60)
@@ -69,11 +71,15 @@ def print_boxed(title: str, width: int = 60, color: str = "", border_color: str 
     border = border_color if border_color else ""
     title_color = color if color else ""
     reset = RESET
-    
-    top_border = f"{border}{BOX_CORNER_TL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_TR}{reset}"
-    title_line = f"{border}{BOX_VERTICAL}{reset} {title_color}{title:<{width-4}}{reset} {border}{BOX_VERTICAL}{reset}"
-    bottom_border = f"{border}{BOX_CORNER_BL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_BR}{reset}"
-    
+
+    top_border = (
+        f"{border}{BOX_CORNER_TL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_TR}{reset}"
+    )
+    title_line = f"{border}{BOX_VERTICAL}{reset} {title_color}{title:<{width - 4}}{reset} {border}{BOX_VERTICAL}{reset}"
+    bottom_border = (
+        f"{border}{BOX_CORNER_BL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_BR}{reset}"
+    )
+
     print(top_border)
     print(title_line)
     print(bottom_border)
@@ -82,7 +88,7 @@ def print_boxed(title: str, width: int = 60, color: str = "", border_color: str 
 def print_section_header(title: str, width: int = 80) -> None:
     """
     Print a section header with box top borders (bottom border should be closed separately).
-    
+
     Args:
         title: Section title
         width: Width of the box (default: 80)
@@ -94,7 +100,7 @@ def print_section_header(title: str, width: int = 80) -> None:
 def print_error_box(title: str, lines: list[str], width: int = 60) -> None:
     """
     Print an error message in a box.
-    
+
     Args:
         title: Error title
         lines: List of error message lines
@@ -103,25 +109,29 @@ def print_error_box(title: str, lines: list[str], width: int = 60) -> None:
     print()
     border = RED
     reset = RESET
-    
-    top_border = f"{border}{BOX_CORNER_TL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_TR}{reset}"
+
+    top_border = (
+        f"{border}{BOX_CORNER_TL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_TR}{reset}"
+    )
     print(top_border)
-    
-    title_line = f"{border}{BOX_VERTICAL}{reset} {RED}{title:<{width-4}}{reset} {border}{BOX_VERTICAL}{reset}"
+
+    title_line = f"{border}{BOX_VERTICAL}{reset} {RED}{title:<{width - 4}}{reset} {border}{BOX_VERTICAL}{reset}"
     print(title_line)
-    
+
     for line in lines:
-        line_content = f"{border}{BOX_VERTICAL}{reset} {line:<{width-4}}{reset} {border}{BOX_VERTICAL}{reset}"
+        line_content = f"{border}{BOX_VERTICAL}{reset} {line:<{width - 4}}{reset} {border}{BOX_VERTICAL}{reset}"
         print(line_content)
-    
-    bottom_border = f"{border}{BOX_CORNER_BL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_BR}{reset}"
+
+    bottom_border = (
+        f"{border}{BOX_CORNER_BL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_BR}{reset}"
+    )
     print(bottom_border)
 
 
 def print_warning_box(title: str, lines: list[str], width: int = 60) -> None:
     """
     Print a warning message in a box.
-    
+
     Args:
         title: Warning title
         lines: List of warning message lines
@@ -130,25 +140,29 @@ def print_warning_box(title: str, lines: list[str], width: int = 60) -> None:
     print()
     border = YELLOW
     reset = RESET
-    
-    top_border = f"{border}{BOX_CORNER_TL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_TR}{reset}"
+
+    top_border = (
+        f"{border}{BOX_CORNER_TL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_TR}{reset}"
+    )
     print(top_border)
-    
-    title_line = f"{border}{BOX_VERTICAL}{reset} {YELLOW}{title:<{width-4}}{reset} {border}{BOX_VERTICAL}{reset}"
+
+    title_line = f"{border}{BOX_VERTICAL}{reset} {YELLOW}{title:<{width - 4}}{reset} {border}{BOX_VERTICAL}{reset}"
     print(title_line)
-    
+
     for line in lines:
-        line_content = f"{border}{BOX_VERTICAL}{reset} {line:<{width-4}}{reset} {border}{BOX_VERTICAL}{reset}"
+        line_content = f"{border}{BOX_VERTICAL}{reset} {line:<{width - 4}}{reset} {border}{BOX_VERTICAL}{reset}"
         print(line_content)
-    
-    bottom_border = f"{border}{BOX_CORNER_BL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_BR}{reset}"
+
+    bottom_border = (
+        f"{border}{BOX_CORNER_BL}{BOX_HORIZONTAL * (width - 2)}{BOX_CORNER_BR}{reset}"
+    )
     print(bottom_border)
 
 
 def print_motor_state(state: Dict[str, Any]) -> None:
     """
     Print motor state information in a formatted string.
-    
+
     Args:
         state: Dictionary containing motor state information with keys:
             - status_code: Motor status code
@@ -161,22 +175,24 @@ def print_motor_state(state: Dict[str, Any]) -> None:
     """
     status_code = state.get("status_code", "N/A")
     status_name = state.get("status", "UNKNOWN")
-    print(f"State: {status_code} ({status_name}) | "
-          f"Pos:{state.get('pos', 0.0): 8.3f} rad | "
-          f"Vel:{state.get('vel', 0.0): 8.3f} rad/s | "
-          f"Torq:{state.get('torq', 0.0): 8.3f} Nm | "
-          f"T_mos:{state.get('t_mos', 0.0):5.1f}°C | "
-          f"T_rotor:{state.get('t_rotor', 0.0):5.1f}°C")
+    print(
+        f"State: {status_code} ({status_name}) | "
+        f"Pos:{state.get('pos', 0.0): 8.3f} rad | "
+        f"Vel:{state.get('vel', 0.0): 8.3f} rad/s | "
+        f"Torq:{state.get('torq', 0.0): 8.3f} Nm | "
+        f"T_mos:{state.get('t_mos', 0.0):5.1f}°C | "
+        f"T_rotor:{state.get('t_rotor', 0.0):5.1f}°C"
+    )
 
 
 def check_and_bring_up_can_interface(channel: str, bitrate: int = 1000000) -> bool:
     """
     Check if CAN interface is up, and bring it up if it's down.
-    
+
     Args:
         channel: CAN channel name (e.g., "can0")
         bitrate: CAN bitrate in bits per second (default: 1000000)
-    
+
     Returns:
         True if interface is up (or successfully brought up), False otherwise
     """
@@ -188,12 +204,12 @@ def check_and_bring_up_can_interface(channel: str, bitrate: int = 1000000) -> bo
             text=True,
             check=False,
         )
-        
+
         if result.returncode != 0:
             # Interface does not exist - return False
             # Note: Caller should handle printing status within box
             return False
-        
+
         # Check if interface is UP
         if "state UP" in result.stdout or "state UNKNOWN" in result.stdout:
             # Interface exists and is up, but verify it's actually a CAN interface
@@ -204,7 +220,17 @@ def check_and_bring_up_can_interface(channel: str, bitrate: int = 1000000) -> bo
                     check=False,
                 )
                 subprocess.run(
-                    ["sudo", "ip", "link", "set", channel, "type", "can", "bitrate", str(bitrate)],
+                    [
+                        "sudo",
+                        "ip",
+                        "link",
+                        "set",
+                        channel,
+                        "type",
+                        "can",
+                        "bitrate",
+                        str(bitrate),
+                    ],
                     check=True,
                 )
                 subprocess.run(
@@ -221,7 +247,17 @@ def check_and_bring_up_can_interface(channel: str, bitrate: int = 1000000) -> bo
             )
             # Configure and bring up the interface with specified bitrate
             subprocess.run(
-                ["sudo", "ip", "link", "set", channel, "type", "can", "bitrate", str(bitrate)],
+                [
+                    "sudo",
+                    "ip",
+                    "link",
+                    "set",
+                    channel,
+                    "type",
+                    "can",
+                    "bitrate",
+                    str(bitrate),
+                ],
                 check=True,
             )
             subprocess.run(
@@ -247,7 +283,17 @@ def check_and_bring_up_can_interface(channel: str, bitrate: int = 1000000) -> bo
                 check=False,
             )
             subprocess.run(
-                ["sudo", "ip", "link", "set", channel, "type", "can", "bitrate", str(bitrate)],
+                [
+                    "sudo",
+                    "ip",
+                    "link",
+                    "set",
+                    channel,
+                    "type",
+                    "can",
+                    "bitrate",
+                    str(bitrate),
+                ],
                 check=False,
             )
             subprocess.run(
@@ -256,14 +302,14 @@ def check_and_bring_up_can_interface(channel: str, bitrate: int = 1000000) -> bo
             )
             time.sleep(0.5)
             return True
-            
-    except subprocess.CalledProcessError as e:
+
+    except subprocess.CalledProcessError:
         # Caller handles printing
         return False
     except FileNotFoundError:
         # Caller handles printing
         return False
-    except Exception as e:
+    except Exception:
         # Caller handles printing
         return False
 
@@ -286,8 +332,8 @@ def scan_motors(
         bustype: CAN bus type (e.g., "socketcan")
         motor_ids: List of motor IDs to test. If None, tests IDs 0x01-0x10.
         duration_s: How long to listen for responses (seconds)
-        motor_type: Motor type for P/V/T presets (e.g. 4340, 4310, 3507). 
-                    Defaults to "4310". Only used for encoding zero commands; 
+        motor_type: Motor type for P/V/T presets (e.g. 4340, 4310, 3507).
+                    Defaults to "4310". Only used for encoding zero commands;
                     doesn't affect which motors are detected.
 
     Returns:
@@ -298,7 +344,7 @@ def scan_motors(
 
     # Open scan status box (80 chars wide, 78 interior)
     print(f"{BOX_CORNER_TL}{BOX_HORIZONTAL * 78}{BOX_CORNER_TR}")
-    
+
     # Check and bring up CAN interface if needed (only for socketcan)
     if bustype == "socketcan":
         line_text = f" Checking CAN interface {channel}..."
@@ -322,24 +368,28 @@ def scan_motors(
                 print(f"{BOX_VERTICAL}{pad_with_ansi(warning_text, 78)}{BOX_VERTICAL}")
 
     controller = DaMiaoController(channel=channel, bustype=bustype)
-    
+
     # Flush any pending messages from the bus
-    line_text = f" Flushing CAN bus buffer..."
+    line_text = " Flushing CAN bus buffer..."
     print(f"{BOX_VERTICAL}{pad_with_ansi(line_text, 78)}{BOX_VERTICAL}")
     flushed_count = controller.flush_bus()
     if flushed_count > 0:
-        flushed_text = f"   {GREEN}Flushed {flushed_count} pending message(s) from bus{RESET}"
+        flushed_text = (
+            f"   {GREEN}Flushed {flushed_count} pending message(s) from bus{RESET}"
+        )
         print(f"{BOX_VERTICAL}{pad_with_ansi(flushed_text, 78)}{BOX_VERTICAL}")
     else:
-        line_text = f"   Bus buffer is clean"
+        line_text = "   Bus buffer is clean"
         print(f"{BOX_VERTICAL}{pad_with_ansi(line_text, 78)}{BOX_VERTICAL}")
-    
+
     motors: dict[int, DaMiaoMotor] = {}
 
     # Create motor instances for all IDs we want to test
     for motor_id in motor_ids:
         try:
-            motor = controller.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type=motor_type)
+            motor = controller.add_motor(
+                motor_id=motor_id, feedback_id=0x00, motor_type=motor_type
+            )
             motors[motor_id] = motor
         except ValueError:
             # Motor already exists, skip
@@ -350,7 +400,13 @@ def scan_motors(
     print(f"{BOX_VERTICAL}{pad_with_ansi(line_text, 78)}{BOX_VERTICAL}")
     try:
         for motor in motors.values():
-            motor.send_cmd_mit(target_position=0.0, target_velocity=0.0, stiffness=0.0, damping=0.0, feedforward_torque=0.0)
+            motor.send_cmd_mit(
+                target_position=0.0,
+                target_velocity=0.0,
+                stiffness=0.0,
+                damping=0.0,
+                feedforward_torque=0.0,
+            )
             if debug:
                 # Print sent command in debug mode
                 cmd_data = motor.encode_cmd_msg(0.0, 0.0, 0.0, 0.0, 0.0)
@@ -359,7 +415,11 @@ def scan_motors(
                 print(f"{BOX_VERTICAL}{pad_with_ansi(sent_text, 78)}{BOX_VERTICAL}")
     except Exception as e:
         error_str = str(e)
-        if "Error Code 80" in error_str or "No buffer space available" in error_str or "[Errno 80]" in error_str:
+        if (
+            "Error Code 80" in error_str
+            or "No buffer space available" in error_str
+            or "[Errno 80]" in error_str
+        ):
             error_lines = [
                 "Original error: " + str(e),
                 "",
@@ -374,11 +434,15 @@ def scan_motors(
                 "  3. CAN interface hardware is working correctly",
                 "  4. CAN bus termination resistors (120Ω) are installed at both ends",
             ]
-            print_error_box("[ERROR CODE 80] No buffer space available when sending commands", error_lines, width=70)
+            print_error_box(
+                "[ERROR CODE 80] No buffer space available when sending commands",
+                error_lines,
+                width=70,
+            )
             # Clean up and exit gracefully
             try:
                 controller.bus.shutdown()
-            except:
+            except Exception:
                 pass
             sys.exit(1)
         else:
@@ -395,9 +459,13 @@ def scan_motors(
     seen_arbitration_ids: Set[int] = set()  # Track arbitration IDs
     # Collect conflicts to group them at the end
     conflicted_motor_ids: Set[int] = set()  # Motor IDs that appeared multiple times
-    conflicted_arbitration_ids: Set[int] = set()  # Arbitration IDs that appeared multiple times
+    conflicted_arbitration_ids: Set[int] = (
+        set()
+    )  # Arbitration IDs that appeared multiple times
     # Collect motor register information for table display
-    motor_registers: Dict[int, Dict[int, float | int]] = {}  # motor_id -> {rid -> value}
+    motor_registers: Dict[
+        int, Dict[int, float | int]
+    ] = {}  # motor_id -> {rid -> value}
 
     while time.perf_counter() - start_time < duration_s:
         # Debug mode: collect and print raw messages immediately
@@ -416,47 +484,51 @@ def scan_motors(
                 if len(msg.data) == 8:
                     logical_id = msg.data[0] & 0x0F
                     arb_id = msg.arbitration_id
-                    
+
                     # Check for motor ID conflict (same decoded motor ID seen twice)
                     if logical_id in seen_motor_ids:
                         conflicted_motor_ids.add(logical_id)
-                    
+
                     # Check for arbitration ID conflict (same arbitration ID seen twice)
                     if arb_id in seen_arbitration_ids:
                         conflicted_arbitration_ids.add(arb_id)
-                    
+
                     seen_motor_ids.add(logical_id)
                     seen_arbitration_ids.add(arb_id)
-                    
+
                     motor = controller._motors_by_feedback.get(logical_id)
                     if motor is not None:
-                        motor.decode_sensor_feedback(bytes(msg.data), arbitration_id=arb_id)
+                        motor.decode_sensor_feedback(
+                            bytes(msg.data), arbitration_id=arb_id
+                        )
         else:
             # Normal mode: read messages, check conflicts, then process
             while True:
                 msg = controller.bus.recv(timeout=0)
                 if msg is None:
                     break
-                
+
                 if len(msg.data) == 8:
                     logical_id = msg.data[0] & 0x0F
                     arb_id = msg.arbitration_id
-                    
+
                     # Check for motor ID conflict (same decoded motor ID seen twice)
                     if logical_id in seen_motor_ids:
                         conflicted_motor_ids.add(logical_id)
-                    
+
                     # Check for arbitration ID conflict (same arbitration ID seen twice)
                     if arb_id in seen_arbitration_ids:
                         conflicted_arbitration_ids.add(arb_id)
-                    
+
                     seen_motor_ids.add(logical_id)
                     seen_arbitration_ids.add(arb_id)
-                    
+
                     # Process through controller
                     motor = controller._motors_by_feedback.get(logical_id)
                     if motor is not None:
-                        motor.decode_sensor_feedback(bytes(msg.data), arbitration_id=arb_id)
+                        motor.decode_sensor_feedback(
+                            bytes(msg.data), arbitration_id=arb_id
+                        )
 
         # Check which motors have received feedback
         for motor_id, motor in motors.items():
@@ -468,11 +540,15 @@ def scan_motors(
                     arb_id = motor.state.get("arbitration_id")
                     if arb_id is not None:
                         motor_text = f"   {GREEN}✓ Motor ID 0x{motor_id:02X}{RESET} responded (arb_id: 0x{arb_id:03X}, state: {state_name}, pos: {pos:.3f})"
-                        print(f"{BOX_VERTICAL}{pad_with_ansi(motor_text, 78)}{BOX_VERTICAL}")
+                        print(
+                            f"{BOX_VERTICAL}{pad_with_ansi(motor_text, 78)}{BOX_VERTICAL}"
+                        )
                     else:
                         motor_text = f"   {GREEN}✓ Motor ID 0x{motor_id:02X}{RESET} responded (state: {state_name}, pos: {pos:.3f})"
-                        print(f"{BOX_VERTICAL}{pad_with_ansi(motor_text, 78)}{BOX_VERTICAL}")
-                
+                        print(
+                            f"{BOX_VERTICAL}{pad_with_ansi(motor_text, 78)}{BOX_VERTICAL}"
+                        )
+
                 responded_ids.add(motor_id)
 
         time.sleep(0.01)
@@ -482,21 +558,21 @@ def scan_motors(
         error_lines = [
             "Multiple motors responded with the same motor ID.",
             "This indicates multiple motors are configured with the same motor ID.",
-            f"Conflicted Motor IDs: {', '.join(f'0x{mid:02X}' for mid in sorted(conflicted_motor_ids))}"
+            f"Conflicted Motor IDs: {', '.join(f'0x{mid:02X}' for mid in sorted(conflicted_motor_ids))}",
         ]
         print_error_box("[ERROR] Motor ID Conflicts Detected", error_lines)
-    
+
     if conflicted_arbitration_ids:
         warning_lines = [
             "Same arbitration ID seen multiple times.",
             "This may indicate a CAN bus configuration issue.",
-            f"Conflicted Arbitration IDs: {', '.join(f'0x{aid:03X}' for aid in sorted(conflicted_arbitration_ids))}"
+            f"Conflicted Arbitration IDs: {', '.join(f'0x{aid:03X}' for aid in sorted(conflicted_arbitration_ids))}",
         ]
         print_warning_box("[WARNING] Arbitration ID Conflicts Detected", warning_lines)
 
     # Close the scan status box
     print(f"{BOX_CORNER_BL}{BOX_HORIZONTAL * 78}{BOX_CORNER_BR}")
-    
+
     # Read all registers from detected motors if no motor ID conflicts
     if not conflicted_motor_ids and responded_ids:
         print("Reading register parameters from detected motors...")
@@ -507,7 +583,9 @@ def scan_motors(
                     registers = motor.read_all_registers(timeout=0.05)
                     motor_registers[motor_id] = registers
                 except Exception as e:
-                    print(f"  {YELLOW}⚠ Failed to read registers from motor 0x{motor_id:02X}: {e}{RESET}")
+                    print(
+                        f"  {YELLOW}⚠ Failed to read registers from motor 0x{motor_id:02X}: {e}{RESET}"
+                    )
         print()
 
     # Print motor register table if no motor ID conflicts
@@ -519,7 +597,7 @@ def scan_motors(
         # Header line
         header_text = f" {GREEN}Detected Motors - Register Parameters{RESET}"
         print(f"{BOX_VERTICAL}{pad_with_ansi(header_text, 78)}{BOX_VERTICAL}")
-        
+
         # Group registers by motor
         for motor_id in sorted(motor_registers.keys()):
             registers = motor_registers[motor_id]
@@ -537,14 +615,14 @@ def scan_motors(
             print(f"{BOX_VERTICAL}{pad_with_ansi(header_content, 78)}{BOX_VERTICAL}")
             # Header separator
             print(f"{BOX_JOIN_LEFT}{BOX_HORIZONTAL * 78}{BOX_JOIN_RIGHT}")
-            
+
             for rid in sorted(registers.keys()):
                 if rid not in REGISTER_TABLE:
                     continue
-                
+
                 reg_info = REGISTER_TABLE[rid]
                 value = registers[rid]
-                
+
                 # Format value based on type
                 if isinstance(value, str) and value.startswith("ERROR"):
                     value_str = value
@@ -552,27 +630,33 @@ def scan_motors(
                     value_str = f"{float(value):.2f}"
                 else:
                     value_str = str(int(value))
-                
+
                 # Truncate long descriptions to fit (32 chars for desc column)
-                desc = reg_info.description[:30] + ".." if len(reg_info.description) > 32 else reg_info.description
-                
+                desc = (
+                    reg_info.description[:30] + ".."
+                    if len(reg_info.description) > 32
+                    else reg_info.description
+                )
+
                 # Format table row - match header column widths
                 row_content = f" {rid:<4} {reg_info.variable:<10} {desc:<32} {value_str:<12} {reg_info.data_type:<8} {reg_info.access:<6}"
                 print(f"{BOX_VERTICAL}{pad_with_ansi(row_content, 78)}{BOX_VERTICAL}")
-        
+
         # Close the box
         print(f"{BOX_CORNER_BL}{BOX_HORIZONTAL * 78}{BOX_CORNER_BR}")
 
     # Print debug summary if messages were collected
     if debug and debug_messages:
         print()
-        print_section_header(f"DEBUG: Total {len(debug_messages)} raw CAN messages received", width=80)
+        print_section_header(
+            f"DEBUG: Total {len(debug_messages)} raw CAN messages received", width=80
+        )
         print(f"{BOX_CORNER_BL}{BOX_HORIZONTAL * 78}{BOX_CORNER_BR}")
 
     # Cleanup
     try:
         controller.bus.shutdown()
-    except:
+    except Exception:
         pass
 
     return responded_ids

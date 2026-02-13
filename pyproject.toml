@@ -33,6 +33,7 @@ dev = [
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.0.0",
     "mkdocstrings[python]>=0.24.0",
+    "ruff>=0.15.1",
 ]
 
 [tool.setuptools.package-data]
@@ -47,6 +48,7 @@ docs = [
     "mkdocs>=1.5.0",
     "mkdocs-material>=9.0.0",
     "mkdocstrings[python]>=0.24.0",
+    "ruff>=0.15.1",
 ]
 
 

@@ -2,6 +2,7 @@
 """
 CLI tool for DaMiao motors.
 """
+
 import argparse
 import sys
 
@@ -21,13 +22,14 @@ from .commands import (
 )
 from .formatter import ColorizedHelpFormatter
 
+
 def unified_main() -> None:
     """
     Unified CLI entry point with subcommands.
-    
+
     Main entry point for the `damiao` command-line tool. Provides a unified interface
     for scanning, configuring, and controlling DaMiao motors over CAN bus.
-    
+
     Available commands:
         - scan: Scan for connected motors
         - send-cmd-mit: Send MIT control mode command
@@ -40,21 +42,21 @@ def unified_main() -> None:
         - set-motor-id: Change motor receive ID
         - set-feedback-id: Change motor feedback ID
         - gui: Launch web-based GUI for motor control
-    
+
     Global options (available for all commands):
         - --version: Show version number and exit
         - --channel: CAN channel (default: can0)
         - --bustype: CAN bus type (default: socketcan)
         - --bitrate: CAN bitrate in bits per second (default: 1000000)
-    
+
     Examples:
         ```bash
         # Scan for motors
         damiao scan
-        
+
         # Send MIT command
         damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5
-        
+
         # Set current position to zero
         damiao set-zero-position --id 1
         ```
@@ -67,7 +69,7 @@ For more information about a specific command, use:
   damiao <command> --help
         """,
     )
-    
+
     # Global arguments
     parser.add_argument(
         "--version",
@@ -93,16 +95,16 @@ For more information about a specific command, use:
         default=1000000,
         help="CAN bitrate in bits per second (default: 1000000). Only used when bringing up interface.",
     )
-    
+
     subparsers = parser.add_subparsers(
         dest="command",
         help="Available commands",
         required=True,
         metavar="COMMAND",
         title="Commands",
-        description="Use 'damiao <command> --help' for more information about a specific command."
+        description="Use 'damiao <command> --help' for more information about a specific command.",
     )
-    
+
     # gui command (highlighted - listed first)
     gui_parser = subparsers.add_parser(
         "gui",
@@ -125,7 +127,7 @@ Examples:
 
   # Start GUI with debug mode
   damiao gui --debug
-        """
+        """,
     )
     gui_parser.add_argument(
         "--host",
@@ -150,7 +152,7 @@ Examples:
         help="Use production WSGI server (requires waitress)",
     )
     gui_parser.set_defaults(func=cmd_gui)
-    
+
     # Helper function to add global arguments to subcommands
     def add_global_args(subparser):
         """Add global arguments to a subcommand parser."""
@@ -176,11 +178,27 @@ Examples:
             "--motor-type",
             type=str,
             default="4340",
-            choices=["4310", "4310P", "4340", "4340P", "6006", "8006", "8009", "10010L", "10010", "H3510", "G6215", "H6220", "JH11", "6248P", "3507"],
+            choices=[
+                "4310",
+                "4310P",
+                "4340",
+                "4340P",
+                "6006",
+                "8006",
+                "8009",
+                "10010L",
+                "10010",
+                "H3510",
+                "G6215",
+                "H6220",
+                "JH11",
+                "6248P",
+                "3507",
+            ],
             dest="motor_type",
             help="Motor type for P/V/T presets (e.g. 4340, 4310, 3507). Defaults to 4340. Only needed for encoding commands; doesn't affect which motors are detected during scan.",
         )
-    
+
     # scan command
     scan_parser = subparsers.add_parser(
         "scan",
@@ -203,7 +221,7 @@ Examples:
 
   # Scan with debug output (print all raw CAN messages)
   damiao scan --debug
-        """
+        """,
     )
     scan_parser.add_argument(
         "--ids",
@@ -247,12 +265,28 @@ Examples:
         "--motor-type",
         type=str,
         default="4310",
-        choices=["4310", "4310P", "4340", "4340P", "6006", "8006", "8009", "10010L", "10010", "H3510", "G6215", "H6220", "JH11", "6248P", "3507"],
+        choices=[
+            "4310",
+            "4310P",
+            "4340",
+            "4340P",
+            "6006",
+            "8006",
+            "8009",
+            "10010L",
+            "10010",
+            "H3510",
+            "G6215",
+            "H6220",
+            "JH11",
+            "6248P",
+            "3507",
+        ],
         dest="motor_type",
         help="Motor type for P/V/T presets (default: 4310). Only used for encoding zero commands; doesn't affect which motors are detected.",
     )
     scan_parser.set_defaults(func=cmd_scan)
-    
+
     # set-zero-command (renamed from set-zero)
     zero_parser = subparsers.add_parser(
         "set-zero-command",
@@ -266,7 +300,7 @@ Examples:
 
   # With custom frequency
   damiao set-zero-command --id 1 --frequency 50.0
-        """
+        """,
     )
     zero_parser.add_argument(
         "--id",
@@ -283,7 +317,7 @@ Examples:
     )
     add_global_args(zero_parser)
     zero_parser.set_defaults(func=cmd_set_zero)
-    
+
     # set-zero-position command
     zero_pos_parser = subparsers.add_parser(
         "set-zero-position",
@@ -294,7 +328,7 @@ Examples:
 Examples:
   # Set current position to zero
   damiao set-zero-position --id 1
-        """
+        """,
     )
     zero_pos_parser.add_argument(
         "--id",
@@ -305,7 +339,7 @@ Examples:
     )
     add_global_args(zero_pos_parser)
     zero_pos_parser.set_defaults(func=cmd_set_zero_position)
-    
+
     # set-can-timeout command
     timeout_parser = subparsers.add_parser(
         "set-can-timeout",
@@ -316,7 +350,7 @@ Examples:
 Examples:
   # Set CAN timeout to 1000 ms
   damiao set-can-timeout --id 1 --timeout 1000
-        """
+        """,
     )
     timeout_parser.add_argument(
         "--id",
@@ -334,7 +368,7 @@ Examples:
     )
     add_global_args(timeout_parser)
     timeout_parser.set_defaults(func=cmd_set_can_timeout)
-    
+
     # set-motor-id command
     set_motor_id_parser = subparsers.add_parser(
         "set-motor-id",
@@ -347,7 +381,7 @@ Examples:
   damiao set-motor-id --current 1 --target 2
 
 Note: After changing the motor ID, you will need to use the new ID to communicate with the motor.
-        """
+        """,
     )
     set_motor_id_parser.add_argument(
         "--current",
@@ -363,7 +397,7 @@ Note: After changing the motor ID, you will need to use the new ID to communicat
     )
     add_global_args(set_motor_id_parser)
     set_motor_id_parser.set_defaults(func=cmd_set_motor_id)
-    
+
     # set-feedback-id command
     set_feedback_id_parser = subparsers.add_parser(
         "set-feedback-id",
@@ -376,7 +410,7 @@ Examples:
   damiao set-feedback-id --current 1 --target 3
 
 Note: The motor will now respond with feedback using the new feedback ID.
-        """
+        """,
     )
     set_feedback_id_parser.add_argument(
         "--current",
@@ -392,7 +426,7 @@ Note: The motor will now respond with feedback using the new feedback ID.
     )
     add_global_args(set_feedback_id_parser)
     set_feedback_id_parser.set_defaults(func=cmd_set_feedback_id)
-    
+
     # send-cmd-mit command
     send_cmd_mit_parser = subparsers.add_parser(
         "send-cmd-mit",
@@ -406,7 +440,7 @@ Examples:
 
   # With custom frequency
   damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5 --frequency 50.0
-        """
+        """,
     )
     send_cmd_mit_parser.add_argument(
         "--id",
@@ -456,7 +490,7 @@ Examples:
     )
     add_global_args(send_cmd_mit_parser)
     send_cmd_mit_parser.set_defaults(func=cmd_send_cmd_mit)
-    
+
     # send-cmd-pos-vel command
     send_cmd_pos_vel_parser = subparsers.add_parser(
         "send-cmd-pos-vel",
@@ -470,7 +504,7 @@ Examples:
 
   # With custom frequency
   damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity-limit 2.0 --frequency 50.0
-        """
+        """,
     )
     send_cmd_pos_vel_parser.add_argument(
         "--id",
@@ -500,7 +534,7 @@ Examples:
     )
     add_global_args(send_cmd_pos_vel_parser)
     send_cmd_pos_vel_parser.set_defaults(func=cmd_send_cmd_pos_vel)
-    
+
     # send-cmd-vel command
     send_cmd_vel_parser = subparsers.add_parser(
         "send-cmd-vel",
@@ -514,7 +548,7 @@ Examples:
 
   # With custom frequency
   damiao send-cmd-vel --id 1 --velocity 3.0 --frequency 50.0
-        """
+        """,
     )
     send_cmd_vel_parser.add_argument(
         "--id",
@@ -537,7 +571,7 @@ Examples:
     )
     add_global_args(send_cmd_vel_parser)
     send_cmd_vel_parser.set_defaults(func=cmd_send_cmd_vel)
-    
+
     # send-cmd-force-pos command
     send_cmd_force_pos_parser = subparsers.add_parser(
         "send-cmd-force-pos",
@@ -547,11 +581,11 @@ Examples:
         epilog="""
 Examples:
   # FORCE_POS mode
-  damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8
+  damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --torque-limit-ratio 0.8
 
   # With custom frequency
-  damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8 --frequency 50.0
-        """
+  damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --torque-limit-ratio 0.8 --frequency 50.0
+        """,
     )
     send_cmd_force_pos_parser.add_argument(
         "--id",
@@ -574,11 +608,11 @@ Examples:
         help="Velocity limit (rad/s, 0-100)",
     )
     send_cmd_force_pos_parser.add_argument(
-        "--current-limit",
+        "--torque-limit-ratio",
         type=float,
         required=True,
-        dest="current_limit",
-        help="Torque current limit normalized (0.0-1.0)",
+        dest="torque_limit_ratio",
+        help="Normalized torque-limit coefficient (0.0-1.0)",
     )
     send_cmd_force_pos_parser.add_argument(
         "--frequency",
@@ -588,9 +622,9 @@ Examples:
     )
     add_global_args(send_cmd_force_pos_parser)
     send_cmd_force_pos_parser.set_defaults(func=cmd_send_cmd_force_pos)
-    
+
     args = parser.parse_args()
-    
+
     # Execute the appropriate command
     try:
         args.func(args)

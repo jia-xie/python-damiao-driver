@@ -23,6 +23,9 @@ To get help for a specific command:
 damiao <command> --help
 ```
 
+!!! tip "Understand modes faster"
+    To better understand control mode behavior, use [`damiao gui`](web-gui.md) for interactive switching and live feedback, then use CLI commands for repeatable workflows.
+
 ## Register Persistence (RAM vs Flash)
 
 Register writes are applied immediately at runtime. To keep them after power cycle, they must be stored to flash.
@@ -78,7 +81,7 @@ damiao scan --debug
 
 ### send-cmd-mit
 
-Send MIT control mode command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on MIT mode.
+Send [MIT mode](../concept/motor-control-modes.md#mit-mode) command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for control mode details.
 
 ```bash
 damiao send-cmd-mit [OPTIONS]
@@ -110,7 +113,7 @@ damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --dampi
 
 ### send-cmd-pos-vel
 
-Send POS_VEL control mode command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on POS_VEL mode.
+Send [POS_VEL mode](../concept/motor-control-modes.md#pos-vel-mode) command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for control mode details.
 
 ```bash
 damiao send-cmd-pos-vel [OPTIONS]
@@ -139,7 +142,7 @@ damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity-limit 2.0 --frequency 5
 
 ### send-cmd-vel
 
-Send VEL control mode command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on VEL mode.
+Send [VEL mode](../concept/motor-control-modes.md#vel-mode) command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for control mode details.
 
 ```bash
 damiao send-cmd-vel [OPTIONS]
@@ -167,7 +170,7 @@ damiao send-cmd-vel --id 1 --velocity 3.0 --frequency 50.0
 
 ### send-cmd-force-pos
 
-Send FORCE_POS control mode command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for details on FORCE_POS mode.
+Send [FORCE_POS mode](../concept/motor-control-modes.md#force-pos-mode) command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for control mode details.
 
 ```bash
 damiao send-cmd-force-pos [OPTIONS]
@@ -180,7 +183,7 @@ damiao send-cmd-force-pos [OPTIONS]
 | `--id` | `INT` | Motor ID (required) |
 | `--position` | `FLOAT` | Desired position (radians) (required) |
 | `--velocity-limit` | `FLOAT` | Velocity limit (rad/s, 0-100) (required) |
-| `--current-limit` | `FLOAT` | Torque current limit normalized (0.0-1.0) (required) |
+| `--torque-limit-ratio` | `FLOAT` | Normalized torque-limit coefficient (0.0-1.0), where `tau_lim = torque_limit_ratio * T_max(motor_type)` (required) |
 | `--frequency` | `FLOAT` | Command frequency in Hz (default: 100.0) |
 | `--channel` | `STR` | CAN channel (default: can0) |
 | `--bustype` | `STR` | CAN bus type (default: socketcan) |
@@ -189,10 +192,10 @@ damiao send-cmd-force-pos [OPTIONS]
 **Examples:**
 ```bash
 # FORCE_POS mode
-damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8
+damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --torque-limit-ratio 0.8
 
 # With custom frequency
-damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --current-limit 0.8 --frequency 50.0
+damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --torque-limit-ratio 0.8 --frequency 50.0
 ```
 
 ### set-zero-command

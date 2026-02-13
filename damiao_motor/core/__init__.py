@@ -1,4 +1,5 @@
 """Core motor and controller functionality."""
+
 from .motor import (
     DaMiaoMotor,
     REGISTER_TABLE,

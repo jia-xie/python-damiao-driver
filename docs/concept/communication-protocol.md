@@ -21,14 +21,14 @@ DaMiao motors communicate over CAN bus using a custom protocol. The protocol sup
 
 **1. Control Commands**
 
-Control commands send motion commands to motors. Each control mode uses a different arbitration ID and fixed 8-byte payload.
+Control commands send motion commands to motors. Each [control mode](motor-control-modes.md) uses a different arbitration ID and fixed 8-byte payload.
 
 | Mode | Arbitration ID | Payload |
 |------|----------------|---------|
-| MIT | `motor_id` | Packed position/velocity/stiffness/damping/feedforward torque |
-| POS_VEL | `0x100 + motor_id` | `Byte 0-3`: position (`float`), `Byte 4-7`: velocity limit (`float`) |
-| VEL | `0x200 + motor_id` | `Byte 0-3`: target velocity (`float`), `Byte 4-7`: padding (`0x00`) |
-| FORCE_POS | `0x300 + motor_id` | `Byte 0-3`: position (`float`), `Byte 4-5`: velocity limit (`uint16`), `Byte 6-7`: current limit (`uint16`) |
+| [MIT](motor-control-modes.md#mit-mode) | `motor_id` | Packed position/velocity/stiffness/damping/feedforward torque |
+| [POS_VEL](motor-control-modes.md#pos-vel-mode) | `0x100 + motor_id` | `Byte 0-3`: position (`float`), `Byte 4-7`: velocity limit (`float`) |
+| [VEL](motor-control-modes.md#vel-mode) | `0x200 + motor_id` | `Byte 0-3`: target velocity (`float`), `Byte 4-7`: padding (`0x00`) |
+| [FORCE_POS](motor-control-modes.md#force-pos-mode) | `0x300 + motor_id` | `Byte 0-3`: position (`float`), `Byte 4-5`: velocity limit (`uint16`), `Byte 6-7`: torque limit ratio (`uint16`) |
 
 **2. System Commands**
 
@@ -153,7 +153,7 @@ Motor 1: motor_id=0x01, feedback_id=0x11
 Motor 2: motor_id=0x02, feedback_id=0x12
 Motor 3: motor_id=0x03, feedback_id=0x13
 
-MIT commands:
+[MIT mode](motor-control-modes.md#mit-mode) commands:
   Motor 1: arbitration_id = 0x001
   Motor 2: arbitration_id = 0x002
   Motor 3: arbitration_id = 0x003
@@ -189,4 +189,5 @@ Feedback:
 
 - See [Motor Control Modes](motor-control-modes.md) for control mode details
 - See [CAN Bus Fundamentals](can.md) for CAN bus basics
+- For interactive understanding of control modes, use [`damiao gui`](../package-usage/web-gui.md)
 - See [API Reference](../api/motor.md) for implementation details

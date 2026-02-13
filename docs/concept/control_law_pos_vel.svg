@@ -56,8 +56,8 @@
   <line x1="426" y1="102" x2="494" y2="102" stroke="#b8d4f0" stroke-width="1" stroke-dasharray="2,2"/>
 
   <!-- velocity_limit labels -->
-  <text x="460" y="64" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">v<tspan font-size="16" dy="4">target</tspan><tspan dy="-4"></tspan></text>
-  <text x="460" y="152" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">−v<tspan font-size="16" dy="4">target</tspan><tspan dy="-4"></tspan></text>
+  <text x="460" y="64" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">v<tspan font-size="16" dy="4">limit</tspan><tspan dy="-4"></tspan></text>
+  <text x="460" y="152" text-anchor="middle" font-size="22" font-style="italic" fill="#64748b">−v<tspan font-size="16" dy="4">limit</tspan><tspan dy="-4"></tspan></text>
 
   <!-- Arrow sat -> v_des -> sum2 -->
   <line x1="500" y1="102" x2="576" y2="102" stroke="#334155" stroke-width="1.8" marker-end="url(#arrowhead)"/>
