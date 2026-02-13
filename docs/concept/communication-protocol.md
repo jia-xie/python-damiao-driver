@@ -25,10 +25,47 @@ Control commands send motion commands to motors. Each [control mode](motor-contr
 
 | Mode | Arbitration ID | Payload |
 |------|----------------|---------|
-| [MIT](motor-control-modes.md#mit-mode) | `motor_id` | Packed position/velocity/stiffness/damping/feedforward torque |
-| [POS_VEL](motor-control-modes.md#pos-vel-mode) | `0x100 + motor_id` | `Byte 0-3`: position (`float`), `Byte 4-7`: velocity limit (`float`) |
-| [VEL](motor-control-modes.md#vel-mode) | `0x200 + motor_id` | `Byte 0-3`: target velocity (`float`), `Byte 4-7`: padding (`0x00`) |
-| [FORCE_POS](motor-control-modes.md#force-pos-mode) | `0x300 + motor_id` | `Byte 0-3`: position (`float`), `Byte 4-5`: velocity limit (`uint16`), `Byte 6-7`: torque limit ratio (`uint16`) |
+| [MIT](motor-control-modes.md#mit-mode) | `motor_id` | 8-byte packed P/V/Kp/Kd/T command |
+| [POS_VEL](motor-control-modes.md#pos-vel-mode) | `0x100 + motor_id` | 8-byte payload (`float32` position + `float32` velocity limit) |
+| [VEL](motor-control-modes.md#vel-mode) | `0x200 + motor_id` | 8-byte payload (`float32` velocity + 4-byte zero padding) |
+| [FORCE_POS](motor-control-modes.md#force-pos-mode) | `0x300 + motor_id` | 8-byte payload (`float32` position + `uint16` velocity limit + `uint16` torque limit ratio) |
+
+Control payload byte maps:
+
+**MIT payload (8 bytes, packed)**
+
+| Byte | Bits | Field |
+|------|------|-------|
+| `0` | `7:0` | <span class="bm bm-pos">`pos_u[15:8]`</span> |
+| `1` | `7:0` | <span class="bm bm-pos">`pos_u[7:0]`</span> |
+| `2` | `7:0` | <span class="bm bm-vel">`vel_u[11:4]`</span> |
+| `3` | `7:4` / `3:0` | <span class="bm bm-vel">`vel_u[3:0]`</span> / <span class="bm bm-kp">`kp_u[11:8]`</span> |
+| `4` | `7:0` | <span class="bm bm-kp">`kp_u[7:0]`</span> |
+| `5` | `7:0` | <span class="bm bm-kd">`kd_u[11:4]`</span> |
+| `6` | `7:4` / `3:0` | <span class="bm bm-kd">`kd_u[3:0]`</span> / <span class="bm bm-torque">`torq_u[11:8]`</span> |
+| `7` | `7:0` | <span class="bm bm-torque">`torq_u[7:0]`</span> |
+
+**POS_VEL payload (8 bytes, little-endian)**
+
+| Byte | Field |
+|------|-------|
+| `0-3` | <span class="bm bm-pos">`target_position` (`float32`)</span> |
+| `4-7` | <span class="bm bm-vel">`velocity_limit` (`float32`)</span> |
+
+**VEL payload (8 bytes, little-endian)**
+
+| Byte | Field |
+|------|-------|
+| `0-3` | <span class="bm bm-vel">`target_velocity` (`float32`)</span> |
+| `4-7` | <span class="bm bm-pad">padding (`0x00 0x00 0x00 0x00`)</span> |
+
+**FORCE_POS payload (8 bytes, little-endian)**
+
+| Byte | Field |
+|------|-------|
+| `0-3` | <span class="bm bm-pos">`target_position` (`float32`)</span> |
+| `4-5` | <span class="bm bm-vel">`velocity_limit` (`uint16`, scaled)</span> |
+| `6-7` | <span class="bm bm-torque">`torque_limit_ratio` (`uint16`, scaled)</span> |
 
 **2. System Commands**
 
@@ -43,28 +80,52 @@ System commands use `arbitration_id = motor_id` and fixed 8-byte payloads:
 
 **3. Register Operations**
 
-Register operations use a unified format with arbitration ID `0x7FF`:
+Register operations use arbitration ID `0x7FF` and 8-byte payloads.
 
-| Operation | Byte 2 | Byte 3 | Byte 4-7 |
-|-----------|--------|--------|----------|
-| Read | `0x33` | Register ID (`RID`) | Don't care (`0x00`) |
-| Write | `0x55` | Register ID (`RID`) | Register value (4 bytes) |
-| Store | `0xAA` | Register ID (`RID`, usually `0x00`) | Don't care (`0x00`) |
+Read request byte map (`Byte 2 = 0x33`):
 
-Common prefix: `Byte 0-1 = CAN ID` (low byte, high byte).
+| Byte | Field |
+|------|-------|
+| `0` | <span class="bm bm-canid">`CANID_L`</span> |
+| `1` | <span class="bm bm-canid">`CANID_H`</span> |
+| `2` | <span class="bm bm-read">`0x33` (read command)</span> |
+| `3` | <span class="bm bm-rid">Register ID (`RID`)</span> |
+| `4-7` | <span class="bm bm-pad">`0x00 0x00 0x00 0x00` (don't care)</span> |
+
+Write request byte map (`Byte 2 = 0x55`):
+
+| Byte | Field |
+|------|-------|
+| `0` | <span class="bm bm-canid">`CANID_L`</span> |
+| `1` | <span class="bm bm-canid">`CANID_H`</span> |
+| `2` | <span class="bm bm-write">`0x55` (write command)</span> |
+| `3` | <span class="bm bm-rid">Register ID (`RID`)</span> |
+| `4-7` | <span class="bm bm-value">Register value (4 bytes)</span> |
+
+Store request byte map (`Byte 2 = 0xAA`):
+
+| Byte | Field |
+|------|-------|
+| `0` | <span class="bm bm-canid">`CANID_L`</span> |
+| `1` | <span class="bm bm-canid">`CANID_H`</span> |
+| `2` | <span class="bm bm-store">`0xAA` (store command)</span> |
+| `3` | <span class="bm bm-rid">Store selector (`RID`, driver uses `0x01`)</span> |
+| `4-7` | <span class="bm bm-pad">`0x00 0x00 0x00 0x00` (don't care)</span> |
 
 **4. Feedback Messages**
 
 Motors continuously send 8-byte state frames with `arbitration_id = feedback_id` (MST_ID, register 7):
 
-| Bytes | Meaning |
-|-------|---------|
-| `0` | Status (high 4 bits) + Motor ID (low 4 bits) |
-| `1-2` | Position (16-bit mapped) |
-| `3-4` | Velocity (12-bit mapped) |
-| `5` | Torque (12-bit mapped, split across bytes 4/5) |
-| `6` | MOSFET temperature (°C) |
-| `7` | Rotor temperature (°C) |
+| Byte | Bits | Meaning |
+|------|------|---------|
+| `0` | `7:4` / `3:0` | <span class="bm bm-status">Status code</span> / <span class="bm bm-mid">Motor ID</span> |
+| `1` | `7:0` | <span class="bm bm-pos">Position `pos_u[15:8]`</span> |
+| `2` | `7:0` | <span class="bm bm-pos">Position `pos_u[7:0]`</span> |
+| `3` | `7:0` | <span class="bm bm-vel">Velocity `vel_u[11:4]`</span> |
+| `4` | `7:4` / `3:0` | <span class="bm bm-vel">Velocity `vel_u[3:0]`</span> / <span class="bm bm-torque">Torque `torq_u[11:8]`</span> |
+| `5` | `7:0` | <span class="bm bm-torque">Torque `torq_u[7:0]`</span> |
+| `6` | `7:0` | <span class="bm bm-temp">MOSFET temperature (degC)</span> |
+| `7` | `7:0` | <span class="bm bm-temp">Rotor temperature (degC)</span> |
 
 #### Status Codes
 
@@ -84,11 +145,13 @@ Motors continuously send 8-byte state frames with `arbitration_id = feedback_id`
 
 Register read replies use `arbitration_id = feedback_id` (MST_ID), 8-byte payload:
 
-| Bytes | Meaning |
-|-------|---------|
-| `0-2` | CAN ID encoding |
-| `3` | Register ID (`RID`) |
-| `4-7` | Register value (4 bytes) |
+| Byte | Meaning |
+|------|---------|
+| `0` | <span class="bm bm-canid">`CANID_L`</span> |
+| `1` | <span class="bm bm-canid">`CANID_H`</span> |
+| `2` | <span class="bm bm-read">Reply marker (`0x33`)</span> |
+| `3` | <span class="bm bm-rid">Register ID (`RID`)</span> |
+| `4-7` | <span class="bm bm-value">Register value (4 bytes)</span> |
 
 ## Data Encoding
 
@@ -96,19 +159,20 @@ Register read replies use `arbitration_id = feedback_id` (MST_ID), 8-byte payloa
 
 Position, velocity, and torque values are encoded using a mapping function:
 
-```
-uint_value = (float_value - min) / (max - min) * (2^bits - 1)
-```
+$$
+u=\frac{x-x_{\min}}{x_{\max}-x_{\min}}\left(2^{N}-1\right)
+$$
 
 Where:
-- `min` and `max` are motor-specific limits (from motor type presets; see [PMAX / VMAX / TMAX defaults](registers.md#pmax-vmax-tmax-defaults))
-- `bits` is the bit width (16 for position, 12 for velocity/torque)
+- `x_{\min}` and `x_{\max}` are motor-specific limits (from motor type presets; see [PMAX / VMAX / TMAX defaults](registers.md#pmax-vmax-tmax-defaults))
+- `N` is the bit width (16 for position, 12 for velocity/torque)
+- `u` is the encoded unsigned integer value
 
 Decoding reverses this process:
 
-```
-float_value = min + (uint_value / (2^bits - 1)) * (max - min)
-```
+$$
+x=x_{\min}+\frac{u}{2^{N}-1}\left(x_{\max}-x_{\min}\right)
+$$
 
 **Stiffness/Damping Encoding**
 
@@ -117,52 +181,48 @@ Stiffness (kp) and damping (kd) use fixed ranges:
 - **Stiffness**: 0-500 (12-bit encoding)
 - **Damping**: 0-5 (12-bit encoding)
 
-## Message Timing
-
-**Command Frequency**
-
-- **Recommended**: 100-1000 Hz
-- **Minimum**: ~10 Hz (for basic control)
-- **Maximum**: Limited by CAN bus bandwidth
-
-**Feedback Frequency**
-
-- Motors send feedback automatically
-- Typical frequency: 100-1000 Hz (depends on motor firmware)
-- Feedback is asynchronous (not tied to command timing)
-
-**Register Operations**
-
-- Register reads/writes are request-reply operations
-- Typical timeout: 100-500 ms
-- Store operations may take longer (flash write)
-
 ## Multi-Motor Communication
 
 Multiple motors can share the same CAN bus:
 
 1. Each motor has a unique `motor_id` (ESC_ID, register 8)
-2. Each motor has a unique `feedback_id` (MST_ID, register 7)
+2. Each motor has a `feedback_id` (MST_ID, register 7); unique assignment is recommended
 3. Commands are addressed to specific `motor_id`
 4. Feedback is identified by `feedback_id`
 
+**@remarks**
+
+Each motor has a unique `feedback_id` (MST_ID, register 7) that identifies the motor in feedback messages.
+While the `feedback_id` does not strictly need to be unique for each motor (since the motor ID is included in the data frame),
+it is recommended to assign unique `feedback_id`s to avoid confusion and simplify message routing.
+
+**@see** [Message frame structure](#message-types) for details on motor ID encoding in feedback messages.
+
 **Example: Three Motors**
 
-```
-Motor 1: motor_id=0x01, feedback_id=0x11
-Motor 2: motor_id=0x02, feedback_id=0x12
-Motor 3: motor_id=0x03, feedback_id=0x13
+Motor ID assignment:
 
-[MIT mode](motor-control-modes.md#mit-mode) commands:
-  Motor 1: arbitration_id = 0x001
-  Motor 2: arbitration_id = 0x002
-  Motor 3: arbitration_id = 0x003
+| Motor | `motor_id` (ESC_ID, reg 8) | `feedback_id` (MST_ID, reg 7) |
+|-------|-----------------------------|--------------------------------|
+| Motor 1 | `0x01` | `0x11` |
+| Motor 2 | `0x02` | `0x12` |
+| Motor 3 | `0x03` | `0x13` |
 
-Feedback:
-  Motor 1: arbitration_id = 0x011
-  Motor 2: arbitration_id = 0x012
-  Motor 3: arbitration_id = 0x013
-```
+[MIT mode](motor-control-modes.md#mit-mode) command arbitration IDs (`arbitration_id = motor_id`):
+
+| Motor | Arbitration ID |
+|-------|----------------|
+| Motor 1 | `0x001` |
+| Motor 2 | `0x002` |
+| Motor 3 | `0x003` |
+
+Feedback arbitration IDs (`arbitration_id = feedback_id`):
+
+| Motor | Arbitration ID |
+|-------|----------------|
+| Motor 1 | `0x011` |
+| Motor 2 | `0x012` |
+| Motor 3 | `0x013` |
 
 ## Error Handling
 
