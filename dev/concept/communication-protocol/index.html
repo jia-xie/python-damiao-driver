@@ -657,17 +657,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#message-timing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Message Timing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#multi-motor-communication" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1168,132 +1157,329 @@
 </ul>
 <h2 id="message-types">Message Types<a class="headerlink" href="#message-types" title="Permanent link">&para;</a></h2>
 <p><strong>1. Control Commands</strong></p>
-<p>Control commands send motion commands to motors. Each <a href="../motor-control-modes/">control mode</a> uses a different arbitration ID and fixed 8-byte payload.</p>
+<p>Control commands send motion commands to motors. All frames are standard CAN (<code>STD</code>) with 8-byte data payload (<code>D[0]..D[7]</code>).</p>
+<p><strong>MIT command frame</strong> (<a href="../motor-control-modes/#mit-mode">MIT mode</a>)</p>
 <table>
 <thead>
 <tr>
-<th>Mode</th>
 <th>Arbitration ID</th>
-<th>Payload</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="../motor-control-modes/#mit-mode">MIT</a></td>
 <td><code>motor_id</code></td>
-<td>Packed position/velocity/stiffness/damping/feedforward torque</td>
-</tr>
-<tr>
-<td><a href="../motor-control-modes/#pos-vel-mode">POS_VEL</a></td>
-<td><code>0x100 + motor_id</code></td>
-<td><code>Byte 0-3</code>: position (<code>float</code>), <code>Byte 4-7</code>: velocity limit (<code>float</code>)</td>
-</tr>
-<tr>
-<td><a href="../motor-control-modes/#vel-mode">VEL</a></td>
-<td><code>0x200 + motor_id</code></td>
-<td><code>Byte 0-3</code>: target velocity (<code>float</code>), <code>Byte 4-7</code>: padding (<code>0x00</code>)</td>
-</tr>
-<tr>
-<td><a href="../motor-control-modes/#force-pos-mode">FORCE_POS</a></td>
-<td><code>0x300 + motor_id</code></td>
-<td><code>Byte 0-3</code>: position (<code>float</code>), <code>Byte 4-5</code>: velocity limit (<code>uint16</code>), <code>Byte 6-7</code>: torque limit ratio (<code>uint16</code>)</td>
+<td><code>STD</code></td>
+<td><span class="bm bm-pos"><code>pos_u[15:8]</code></span></td>
+<td><span class="bm bm-pos"><code>pos_u[7:0]</code></span></td>
+<td><span class="bm bm-vel"><code>vel_u[11:4]</code></span></td>
+<td><span class="bm bm-vel"><code>vel_u[3:0]</code></span> / <span class="bm bm-kp"><code>kp_u[11:8]</code></span></td>
+<td><span class="bm bm-kp"><code>kp_u[7:0]</code></span></td>
+<td><span class="bm bm-kd"><code>kd_u[11:4]</code></span></td>
+<td><span class="bm bm-kd"><code>kd_u[3:0]</code></span> / <span class="bm bm-torque"><code>torq_u[11:8]</code></span></td>
+<td><span class="bm bm-torque"><code>torq_u[7:0]</code></span></td>
 </tr>
 </tbody>
 </table>
+<p><strong>POS_VEL command frame</strong> (<a href="../motor-control-modes/#pos-vel-mode">POS_VEL mode</a>, little-endian)</p>
+<table>
+<thead>
+<tr>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x100 + motor_id</code></td>
+<td><code>STD</code></td>
+<td><span class="bm bm-pos"><code>position_b0</code></span></td>
+<td><span class="bm bm-pos"><code>position_b1</code></span></td>
+<td><span class="bm bm-pos"><code>position_b2</code></span></td>
+<td><span class="bm bm-pos"><code>position_b3</code></span></td>
+<td><span class="bm bm-vel"><code>vel_limit_b0</code></span></td>
+<td><span class="bm bm-vel"><code>vel_limit_b1</code></span></td>
+<td><span class="bm bm-vel"><code>vel_limit_b2</code></span></td>
+<td><span class="bm bm-vel"><code>vel_limit_b3</code></span></td>
+</tr>
+</tbody>
+</table>
+<p><strong>VEL command frame</strong> (<a href="../motor-control-modes/#vel-mode">VEL mode</a>, little-endian)</p>
+<table>
+<thead>
+<tr>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x200 + motor_id</code></td>
+<td><code>STD</code></td>
+<td><span class="bm bm-vel"><code>velocity_b0</code></span></td>
+<td><span class="bm bm-vel"><code>velocity_b1</code></span></td>
+<td><span class="bm bm-vel"><code>velocity_b2</code></span></td>
+<td><span class="bm bm-vel"><code>velocity_b3</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+</tr>
+</tbody>
+</table>
+<p><strong>FORCE_POS command frame</strong> (<a href="../motor-control-modes/#force-pos-mode">FORCE_POS mode</a>, little-endian)</p>
+<table>
+<thead>
+<tr>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x300 + motor_id</code></td>
+<td><code>STD</code></td>
+<td><span class="bm bm-pos"><code>position_b0</code></span></td>
+<td><span class="bm bm-pos"><code>position_b1</code></span></td>
+<td><span class="bm bm-pos"><code>position_b2</code></span></td>
+<td><span class="bm bm-pos"><code>position_b3</code></span></td>
+<td><span class="bm bm-vel"><code>vel_limit_b0</code></span></td>
+<td><span class="bm bm-vel"><code>vel_limit_b1</code></span></td>
+<td><span class="bm bm-torque"><code>torque_ratio_b0</code></span></td>
+<td><span class="bm bm-torque"><code>torque_ratio_b1</code></span></td>
+</tr>
+</tbody>
+</table>
+<p><code>b0</code> is the least significant byte (LSB), <code>b3</code> is the most significant byte (MSB).</p>
 <p><strong>2. System Commands</strong></p>
-<p>System commands use <code>arbitration_id = motor_id</code> and fixed 8-byte payloads:</p>
+<p>System commands also use <code>arbitration_id = motor_id</code> and <code>STD</code> frames:</p>
 <table>
 <thead>
 <tr>
 <th>Command</th>
-<th>Data</th>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Enable motor</td>
-<td><code>[FF, FF, FF, FF, FF, FF, FF, FC]</code></td>
+<td><code>motor_id</code></td>
+<td><code>STD</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFC</code></td>
 </tr>
 <tr>
 <td>Disable motor</td>
-<td><code>[FF, FF, FF, FF, FF, FF, FF, FD]</code></td>
+<td><code>motor_id</code></td>
+<td><code>STD</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFD</code></td>
 </tr>
 <tr>
 <td>Set zero position</td>
-<td><code>[FF, FF, FF, FF, FF, FF, FF, FE]</code></td>
+<td><code>motor_id</code></td>
+<td><code>STD</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFE</code></td>
 </tr>
 <tr>
 <td>Clear error</td>
-<td><code>[FF, FF, FF, FF, FF, FF, FF, FB]</code></td>
+<td><code>motor_id</code></td>
+<td><code>STD</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFF</code></td>
+<td><code>0xFB</code></td>
 </tr>
 </tbody>
 </table>
 <p><strong>3. Register Operations</strong></p>
-<p>Register operations use a unified format with arbitration ID <code>0x7FF</code>:</p>
+<p>Register command requests use arbitration ID <code>0x7FF</code> and <code>STD</code> frames:</p>
+<p><strong>Read register request (<code>D[2] = 0x33</code>)</strong></p>
 <table>
 <thead>
 <tr>
-<th>Operation</th>
-<th>Byte 2</th>
-<th>Byte 3</th>
-<th>Byte 4-7</th>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Read</td>
-<td><code>0x33</code></td>
-<td>Register ID (<code>RID</code>)</td>
-<td>Don't care (<code>0x00</code>)</td>
-</tr>
-<tr>
-<td>Write</td>
-<td><code>0x55</code></td>
-<td>Register ID (<code>RID</code>)</td>
-<td>Register value (4 bytes)</td>
-</tr>
-<tr>
-<td>Store</td>
-<td><code>0xAA</code></td>
-<td>Register ID (<code>RID</code>, usually <code>0x00</code>)</td>
-<td>Don't care (<code>0x00</code>)</td>
+<td><code>0x7FF</code></td>
+<td><code>STD</code></td>
+<td><span class="bm bm-canid"><code>CANID_L</code></span></td>
+<td><span class="bm bm-canid"><code>CANID_H</code></span></td>
+<td><span class="bm bm-read"><code>0x33</code></span></td>
+<td><span class="bm bm-rid"><code>RID</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
 </tr>
 </tbody>
 </table>
-<p>Common prefix: <code>Byte 0-1 = CAN ID</code> (low byte, high byte).</p>
-<p><strong>4. Feedback Messages</strong></p>
-<p>Motors continuously send 8-byte state frames with <code>arbitration_id = feedback_id</code> (MST_ID, register 7):</p>
+<p><strong>Write register request (<code>D[2] = 0x55</code>)</strong></p>
 <table>
 <thead>
 <tr>
-<th>Bytes</th>
-<th>Meaning</th>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>0</code></td>
-<td>Status (high 4 bits) + Motor ID (low 4 bits)</td>
+<td><code>0x7FF</code></td>
+<td><code>STD</code></td>
+<td><span class="bm bm-canid"><code>CANID_L</code></span></td>
+<td><span class="bm bm-canid"><code>CANID_H</code></span></td>
+<td><span class="bm bm-write"><code>0x55</code></span></td>
+<td><span class="bm bm-rid"><code>RID</code></span></td>
+<td><span class="bm bm-value"><code>data_b0</code></span></td>
+<td><span class="bm bm-value"><code>data_b1</code></span></td>
+<td><span class="bm bm-value"><code>data_b2</code></span></td>
+<td><span class="bm bm-value"><code>data_b3</code></span></td>
 </tr>
+</tbody>
+</table>
+<p><strong>Store parameters request (<code>D[2] = 0xAA</code>)</strong></p>
+<table>
+<thead>
 <tr>
-<td><code>1-2</code></td>
-<td>Position (16-bit mapped)</td>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<td><code>3-4</code></td>
-<td>Velocity (12-bit mapped)</td>
+<td><code>0x7FF</code></td>
+<td><code>STD</code></td>
+<td><span class="bm bm-canid"><code>CANID_L</code></span></td>
+<td><span class="bm bm-canid"><code>CANID_H</code></span></td>
+<td><span class="bm bm-store"><code>0xAA</code></span></td>
+<td><span class="bm bm-rid"><code>RID</code> (driver uses <code>0x01</code>)</span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
+<td><span class="bm bm-pad"><code>0x00</code></span></td>
 </tr>
+</tbody>
+</table>
+<p><strong>4. Feedback Messages</strong></p>
+<p>Motors continuously send feedback as <code>STD</code> frames:</p>
+<table>
+<thead>
 <tr>
-<td><code>5</code></td>
-<td>Torque (12-bit mapped, split across bytes 4/5)</td>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<td><code>6</code></td>
-<td>MOSFET temperature (°C)</td>
-</tr>
-<tr>
-<td><code>7</code></td>
-<td>Rotor temperature (°C)</td>
+<td><code>feedback_id</code> (MST_ID, reg 7)</td>
+<td><code>STD</code></td>
+<td><span class="bm bm-status"><code>status[7:4]</code></span> / <span class="bm bm-mid"><code>motor_id[3:0]</code></span></td>
+<td><span class="bm bm-pos"><code>pos_u[15:8]</code></span></td>
+<td><span class="bm bm-pos"><code>pos_u[7:0]</code></span></td>
+<td><span class="bm bm-vel"><code>vel_u[11:4]</code></span></td>
+<td><span class="bm bm-vel"><code>vel_u[3:0]</code></span> / <span class="bm bm-torque"><code>torq_u[11:8]</code></span></td>
+<td><span class="bm bm-torque"><code>torq_u[7:0]</code></span></td>
+<td><span class="bm bm-temp"><code>T_mos</code></span></td>
+<td><span class="bm bm-temp"><code>T_rotor</code></span></td>
 </tr>
 </tbody>
 </table>
@@ -1301,6 +1487,7 @@
 <table>
 <thead>
 <tr>
+<th>Group</th>
 <th>Code</th>
 <th>Name</th>
 <th>Description</th>
@@ -1308,46 +1495,55 @@
 </thead>
 <tbody>
 <tr>
+<td>Normal</td>
 <td><code>0x0</code></td>
 <td>DISABLED</td>
 <td>Motor is disabled</td>
 </tr>
 <tr>
+<td>Normal</td>
 <td><code>0x1</code></td>
 <td>ENABLED</td>
 <td>Motor is enabled and ready</td>
 </tr>
 <tr>
+<td>Fault</td>
 <td><code>0x8</code></td>
 <td><span id="status-over-voltage"></span>OVER_VOLTAGE</td>
 <td>Over-voltage protection triggered (threshold: <a href="../registers/#reg-29-ov-value">OV_Value reg 29</a>)</td>
 </tr>
 <tr>
+<td>Fault</td>
 <td><code>0x9</code></td>
 <td><span id="status-under-voltage"></span>UNDER_VOLTAGE</td>
 <td>Under-voltage protection triggered (threshold: <a href="../registers/#reg-0-uv-value">UV_Value reg 0</a>)</td>
 </tr>
 <tr>
+<td>Fault</td>
 <td><code>0xA</code></td>
 <td><span id="status-over-current"></span>OVER_CURRENT</td>
 <td>Over-current protection triggered (threshold: <a href="../registers/#reg-3-oc-value">OC_Value reg 3</a>)</td>
 </tr>
 <tr>
+<td>Fault</td>
 <td><code>0xB</code></td>
 <td><span id="status-over-temp"></span>MOS_OVER_TEMP</td>
 <td>MOSFET over-temperature protection triggered (threshold: <a href="../registers/#reg-2-ot-value">OT_Value reg 2</a>)</td>
 </tr>
 <tr>
+<td>Fault</td>
 <td><code>0xC</code></td>
 <td>ROTOR_OVER_TEMP</td>
 <td>Rotor over-temperature protection triggered (threshold: <a href="../registers/#reg-2-ot-value">OT_Value reg 2</a>)</td>
 </tr>
 <tr>
+<td>Fault</td>
 <td><code>0xD</code></td>
 <td><span id="status-lost-comm"></span>LOST_COMM</td>
-<td>Communication timeout/loss detected (related: <a href="../registers/#reg-9-timeout">TIMEOUT reg 9</a>)</td>
+<td>Communication timeout/loss detected (related: <a href="../registers/#reg-9-timeout">TIMEOUT reg 9</a>, where 1 register unit = 50 microseconds)</td>
 </tr>
 <tr>
+<td>Fault</td>
 <td><code>0xE</code></td>
 <td>OVERLOAD</td>
 <td>Motor overload detected</td>
@@ -1355,94 +1551,150 @@
 </tbody>
 </table>
 <p><strong>5. Register Reply Messages</strong></p>
-<p>Register read replies use <code>arbitration_id = feedback_id</code> (MST_ID), 8-byte payload:</p>
+<p>Register read replies are <code>STD</code> frames:</p>
 <table>
 <thead>
 <tr>
-<th>Bytes</th>
-<th>Meaning</th>
+<th>Arbitration ID</th>
+<th>Attribute</th>
+<th>D[0]</th>
+<th>D[1]</th>
+<th>D[2]</th>
+<th>D[3]</th>
+<th>D[4]</th>
+<th>D[5]</th>
+<th>D[6]</th>
+<th>D[7]</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>0-2</code></td>
-<td>CAN ID encoding</td>
-</tr>
-<tr>
-<td><code>3</code></td>
-<td>Register ID (<code>RID</code>)</td>
-</tr>
-<tr>
-<td><code>4-7</code></td>
-<td>Register value (4 bytes)</td>
+<td><code>feedback_id</code> (MST_ID, reg 7)</td>
+<td><code>STD</code></td>
+<td><span class="bm bm-canid"><code>CANID_L</code></span></td>
+<td><span class="bm bm-canid"><code>CANID_H</code></span></td>
+<td><span class="bm bm-read"><code>0x33</code></span></td>
+<td><span class="bm bm-rid"><code>RID</code></span></td>
+<td><span class="bm bm-value"><code>data_b0</code></span></td>
+<td><span class="bm bm-value"><code>data_b1</code></span></td>
+<td><span class="bm bm-value"><code>data_b2</code></span></td>
+<td><span class="bm bm-value"><code>data_b3</code></span></td>
 </tr>
 </tbody>
 </table>
 <h2 id="data-encoding">Data Encoding<a class="headerlink" href="#data-encoding" title="Permanent link">&para;</a></h2>
 <p><strong>Position/Velocity/Torque Encoding</strong></p>
 <p>Position, velocity, and torque values are encoded using a mapping function:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uint_value = (float_value - min) / (max - min) * (2^bits - 1)
-</span></code></pre></div>
+<div class="arithmatex">\[
+u=\frac{x-x_{\min}}{x_{\max}-x_{\min}}\left(2^{N}-1\right)
+\]</div>
 <p>Where:
-- <code>min</code> and <code>max</code> are motor-specific limits (from motor type presets; see <a href="../registers/#pmax-vmax-tmax-defaults">PMAX / VMAX / TMAX defaults</a>)
-- <code>bits</code> is the bit width (16 for position, 12 for velocity/torque)</p>
+- <code>x_{\min}</code> and <code>x_{\max}</code> are motor-specific limits (from motor type presets; see <a href="../registers/#pmax-vmax-tmax-defaults">PMAX / VMAX / TMAX defaults</a>)
+- <code>N</code> is the bit width (16 for position, 12 for velocity/torque)
+- <code>u</code> is the encoded unsigned integer value</p>
 <p>Decoding reverses this process:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>float_value = min + (uint_value / (2^bits - 1)) * (max - min)
-</span></code></pre></div>
+<div class="arithmatex">\[
+x=x_{\min}+\frac{u}{2^{N}-1}\left(x_{\max}-x_{\min}\right)
+\]</div>
 <p><strong>Stiffness/Damping Encoding</strong></p>
 <p>Stiffness (kp) and damping (kd) use fixed ranges:</p>
 <ul>
 <li><strong>Stiffness</strong>: 0-500 (12-bit encoding)</li>
 <li><strong>Damping</strong>: 0-5 (12-bit encoding)</li>
 </ul>
-<h2 id="message-timing">Message Timing<a class="headerlink" href="#message-timing" title="Permanent link">&para;</a></h2>
-<p><strong>Command Frequency</strong></p>
-<ul>
-<li><strong>Recommended</strong>: 100-1000 Hz</li>
-<li><strong>Minimum</strong>: ~10 Hz (for basic control)</li>
-<li><strong>Maximum</strong>: Limited by CAN bus bandwidth</li>
-</ul>
-<p><strong>Feedback Frequency</strong></p>
-<ul>
-<li>Motors send feedback automatically</li>
-<li>Typical frequency: 100-1000 Hz (depends on motor firmware)</li>
-<li>Feedback is asynchronous (not tied to command timing)</li>
-</ul>
-<p><strong>Register Operations</strong></p>
-<ul>
-<li>Register reads/writes are request-reply operations</li>
-<li>Typical timeout: 100-500 ms</li>
-<li>Store operations may take longer (flash write)</li>
-</ul>
 <h2 id="multi-motor-communication">Multi-Motor Communication<a class="headerlink" href="#multi-motor-communication" title="Permanent link">&para;</a></h2>
 <p>Multiple motors can share the same CAN bus:</p>
 <ol>
 <li>Each motor has a unique <code>motor_id</code> (ESC_ID, register 8)</li>
-<li>Each motor has a unique <code>feedback_id</code> (MST_ID, register 7)</li>
+<li>Each motor has a <code>feedback_id</code> (MST_ID, register 7); unique assignment is recommended</li>
 <li>Commands are addressed to specific <code>motor_id</code></li>
 <li>Feedback is identified by <code>feedback_id</code></li>
 </ol>
+<p><strong>@remarks</strong></p>
+<p>Each motor has a unique <code>feedback_id</code> (MST_ID, register 7) that identifies the motor in feedback messages.
+While the <code>feedback_id</code> does not strictly need to be unique for each motor (since the motor ID is included in the data frame),
+it is recommended to assign unique <code>feedback_id</code>s to avoid confusion and simplify message routing.</p>
+<p><strong>@see</strong> <a href="#message-types">Message frame structure</a> for details on motor ID encoding in feedback messages.</p>
 <p><strong>Example: Three Motors</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Motor 1: motor_id=0x01, feedback_id=0x11
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Motor 2: motor_id=0x02, feedback_id=0x12
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Motor 3: motor_id=0x03, feedback_id=0x13
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>[MIT mode](motor-control-modes.md#mit-mode) commands:
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  Motor 1: arbitration_id = 0x001
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  Motor 2: arbitration_id = 0x002
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  Motor 3: arbitration_id = 0x003
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>Feedback:
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>  Motor 1: arbitration_id = 0x011
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  Motor 2: arbitration_id = 0x012
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>  Motor 3: arbitration_id = 0x013
-</span></code></pre></div>
+<p>Motor ID assignment:</p>
+<table>
+<thead>
+<tr>
+<th>Motor</th>
+<th><code>motor_id</code> (ESC_ID, reg 8)</th>
+<th><code>feedback_id</code> (MST_ID, reg 7)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Motor 1</td>
+<td><code>0x01</code></td>
+<td><code>0x11</code></td>
+</tr>
+<tr>
+<td>Motor 2</td>
+<td><code>0x02</code></td>
+<td><code>0x12</code></td>
+</tr>
+<tr>
+<td>Motor 3</td>
+<td><code>0x03</code></td>
+<td><code>0x13</code></td>
+</tr>
+</tbody>
+</table>
+<p><a href="../motor-control-modes/#mit-mode">MIT mode</a> command arbitration IDs (<code>arbitration_id = motor_id</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Motor</th>
+<th>Arbitration ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Motor 1</td>
+<td><code>0x001</code></td>
+</tr>
+<tr>
+<td>Motor 2</td>
+<td><code>0x002</code></td>
+</tr>
+<tr>
+<td>Motor 3</td>
+<td><code>0x003</code></td>
+</tr>
+</tbody>
+</table>
+<p>Feedback arbitration IDs (<code>arbitration_id = feedback_id</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Motor</th>
+<th>Arbitration ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Motor 1</td>
+<td><code>0x011</code></td>
+</tr>
+<tr>
+<td>Motor 2</td>
+<td><code>0x012</code></td>
+</tr>
+<tr>
+<td>Motor 3</td>
+<td><code>0x013</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <p><strong>Timeout Protection</strong></p>
 <ul>
 <li>Register operations have timeout protection</li>
 <li>If no reply received within timeout, operation fails</li>
-<li>Motor has CAN timeout alarm (<a href="../registers/#reg-9-timeout">TIMEOUT register 9</a>); motor disables if no commands are received</li>
+<li>Motor has CAN timeout alarm (<a href="../registers/#reg-9-timeout">TIMEOUT register 9</a>); Register 9 stores timeout in units of 50 microseconds (1 register unit = 50 microseconds), and motor disables if no commands are received</li>
 <li>Timeout-related status is reported as <a href="#status-lost-comm">LOST_COMM (<code>0xD</code>)</a></li>
 </ul>
 <p><strong>Error States</strong></p>

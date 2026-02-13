@@ -1282,7 +1282,7 @@
 </tr>
 <tr>
 <td><code>damiao set-can-timeout</code></td>
-<td>Writes register <code>9</code> (<code>TIMEOUT</code>)</td>
+<td>Writes register <code>9</code> (<code>TIMEOUT</code>, 1 register unit = 50 microseconds)</td>
 <td>Also calls <code>store_parameters()</code> -&gt; persisted to flash</td>
 </tr>
 </tbody>
@@ -1687,7 +1687,9 @@
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>damiao<span class="w"> </span>set-zero-position<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span>
 </span></code></pre></div></p>
 <h3 id="set-can-timeout">set-can-timeout<a class="headerlink" href="#set-can-timeout" title="Permanent link">&para;</a></h3>
-<p>Set CAN timeout alarm time (register 9).</p>
+<p>Set CAN timeout alarm time (register 9).
+Register 9 stores timeout in units of 50 microseconds: <strong>1 register unit = 50 microseconds</strong>.
+The CLI converts milliseconds using <code>register_value = timeout_ms * 20</code>.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>damiao<span class="w"> </span>set-can-timeout<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>

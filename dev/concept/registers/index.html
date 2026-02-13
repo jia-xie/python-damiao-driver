@@ -1128,7 +1128,7 @@
 </tr>
 <tr>
 <td><code>damiao set-can-timeout</code></td>
-<td>Writes register <code>9</code> (<code>TIMEOUT</code>)</td>
+<td>Writes register <code>9</code> (<code>TIMEOUT</code>, 1 register unit = 50 microseconds)</td>
 <td>Yes (calls <code>store_parameters()</code>)</td>
 </tr>
 </tbody>
@@ -1312,7 +1312,7 @@
 <tr>
 <td>9</td>
 <td><span id="reg-9-timeout"></span><code>TIMEOUT</code></td>
-<td>Timeout alarm time (see <a href="../communication-protocol/#status-lost-comm">LOST_COMM <code>0xD</code></a>)</td>
+<td>Timeout alarm time (1 register unit = 50 microseconds; see <a href="../communication-protocol/#status-lost-comm">LOST_COMM <code>0xD</code></a>)</td>
 <td>RW</td>
 <td>[0, 2^32-1]</td>
 <td>uint32</td>
