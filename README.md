@@ -14,11 +14,11 @@ Python driver for **DaMiao** brushless motors over CAN with a unified CLI, web G
 
 | Resource | Link |
 |---------|------|
-| Documentation home | https://jia-xie.github.io/python-damiao-driver/ |
-| Control modes and control laws | https://jia-xie.github.io/python-damiao-driver/concept/motor-control-modes/ |
-| API reference | https://jia-xie.github.io/python-damiao-driver/api/controller/ |
-| Firmware reference | https://gitee.com/kit-miao/motor-firmware |
-| Source code | https://github.com/jia-xie/python-damiao-driver |
+| Documentation home | [GitHub Pages docs](https://jia-xie.github.io/python-damiao-driver/) |
+| Control modes and control laws | [Motor Control Modes](https://jia-xie.github.io/python-damiao-driver/concept/motor-control-modes/) |
+| API reference | [DaMiaoController API](https://jia-xie.github.io/python-damiao-driver/api/controller/) |
+| Firmware reference | [DaMiao motor firmware (Gitee)](https://gitee.com/kit-miao/motor-firmware) |
+| Source code | [GitHub repository](https://github.com/jia-xie/python-damiao-driver) |
 
 ## Highlights
 
@@ -80,10 +80,7 @@ id_ref = 0
 
 Full mode documentation:
 
-- MIT / POS_VEL / VEL / FORCE_POS overview: https://jia-xie.github.io/python-damiao-driver/concept/motor-control-modes/
-- POS_VEL control law diagram: https://raw.githubusercontent.com/jia-xie/python-damiao-driver/main/docs/concept/control_law_pos_vel.svg
-- VEL control law diagram: https://raw.githubusercontent.com/jia-xie/python-damiao-driver/main/docs/concept/control_law_vel.svg
-- FORCE_POS control law diagram: https://raw.githubusercontent.com/jia-xie/python-damiao-driver/main/docs/concept/control_law_force_pos.svg
+- [MIT / POS_VEL / VEL / FORCE_POS overview](https://jia-xie.github.io/python-damiao-driver/concept/motor-control-modes/)
 
 ## CLI commands
 
@@ -108,9 +105,9 @@ All `damiao` subcommands require `--motor-type` (example: `4340`).
 damiao gui
 ```
 
-Open `http://127.0.0.1:5000`.
+Open the local web UI (default to http://127.0.0.1:5000).
 
-GUI docs: https://jia-xie.github.io/python-damiao-driver/package-usage/web-gui/
+GUI docs: [Web GUI guide](https://jia-xie.github.io/python-damiao-driver/package-usage/web-gui/)
 
 ## API reference
 
@@ -127,5 +124,5 @@ GUI docs: https://jia-xie.github.io/python-damiao-driver/package-usage/web-gui/
 
 API docs:
 
-- Controller: https://jia-xie.github.io/python-damiao-driver/api/controller/
-- Motor: https://jia-xie.github.io/python-damiao-driver/api/motor/
+- [Controller API](https://jia-xie.github.io/python-damiao-driver/api/controller/)
+- [Motor API](https://jia-xie.github.io/python-damiao-driver/api/motor/)
