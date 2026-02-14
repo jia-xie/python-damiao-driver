@@ -18,12 +18,12 @@ Quick links: [MIT mode](#mit-mode) | [POS_VEL mode](#pos-vel-mode) | [VEL mode](
 
 Control modes determine how the motor interprets command messages. The control mode is set via [register 10 (CTRL_MODE)](registers.md) and must match the command format being sent.
 
-API method: [`DaMiaoMotor.ensure_control_mode()`](../api/motor.md)
+API method: [`DaMiaoMotor.ensure_control_mode()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.ensure_control_mode)
 
 Mode parameters marked as "Motor-specific" use the mapping limits for the selected motor type.
 See [PMAX / VMAX / TMAX defaults](registers.md#pmax-vmax-tmax-defaults). These registers are writable, but changing them is generally not recommended.
 
-The `ensure_control_mode()` method automatically:
+The [`ensure_control_mode()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.ensure_control_mode) method automatically:
 
 1. Reads the current mode from register 10
 

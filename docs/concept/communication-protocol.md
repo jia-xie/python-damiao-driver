@@ -25,33 +25,51 @@ Control commands send motion commands to motors. All frames are standard CAN (`S
 
 **MIT command frame** ([MIT mode](motor-control-modes.md#mit-mode))
 
+<div class="protocol-frame" markdown="1">
+
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `motor_id` | `STD` | <span class="bm bm-pos">`pos_u[15:8]`</span> | <span class="bm bm-pos">`pos_u[7:0]`</span> | <span class="bm bm-vel">`vel_u[11:4]`</span> | <span class="bm bm-vel">`vel_u[3:0]`</span> / <span class="bm bm-kp">`kp_u[11:8]`</span> | <span class="bm bm-kp">`kp_u[7:0]`</span> | <span class="bm bm-kd">`kd_u[11:4]`</span> | <span class="bm bm-kd">`kd_u[3:0]`</span> / <span class="bm bm-torque">`torq_u[11:8]`</span> | <span class="bm bm-torque">`torq_u[7:0]`</span> |
 
+</div>
+
 **POS_VEL command frame** ([POS_VEL mode](motor-control-modes.md#pos-vel-mode), little-endian)
+
+<div class="protocol-frame" markdown="1">
 
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `0x100 + motor_id` | `STD` | <span class="bm bm-pos">`position_b0`</span> | <span class="bm bm-pos">`position_b1`</span> | <span class="bm bm-pos">`position_b2`</span> | <span class="bm bm-pos">`position_b3`</span> | <span class="bm bm-vel">`vel_limit_b0`</span> | <span class="bm bm-vel">`vel_limit_b1`</span> | <span class="bm bm-vel">`vel_limit_b2`</span> | <span class="bm bm-vel">`vel_limit_b3`</span> |
 
+</div>
+
 **VEL command frame** ([VEL mode](motor-control-modes.md#vel-mode), little-endian)
+
+<div class="protocol-frame" markdown="1">
 
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `0x200 + motor_id` | `STD` | <span class="bm bm-vel">`velocity_b0`</span> | <span class="bm bm-vel">`velocity_b1`</span> | <span class="bm bm-vel">`velocity_b2`</span> | <span class="bm bm-vel">`velocity_b3`</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> |
 
+</div>
+
 **FORCE_POS command frame** ([FORCE_POS mode](motor-control-modes.md#force-pos-mode), little-endian)
+
+<div class="protocol-frame" markdown="1">
 
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `0x300 + motor_id` | `STD` | <span class="bm bm-pos">`position_b0`</span> | <span class="bm bm-pos">`position_b1`</span> | <span class="bm bm-pos">`position_b2`</span> | <span class="bm bm-pos">`position_b3`</span> | <span class="bm bm-vel">`vel_limit_b0`</span> | <span class="bm bm-vel">`vel_limit_b1`</span> | <span class="bm bm-torque">`torque_ratio_b0`</span> | <span class="bm bm-torque">`torque_ratio_b1`</span> |
+
+</div>
 
 `b0` is the least significant byte (LSB), `b3` is the most significant byte (MSB).
 
 **2. System Commands**
 
 System commands also use `arbitration_id = motor_id` and `STD` frames:
+
+<div class="protocol-frame" markdown="1">
 
 | Command | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -60,35 +78,59 @@ System commands also use `arbitration_id = motor_id` and `STD` frames:
 | Set zero position | `motor_id` | `STD` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `0xFE` |
 | Clear error | `motor_id` | `STD` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `0xFF` | `0xFB` |
 
+</div>
+
 **3. Register Operations**
 
 Register command requests use arbitration ID `0x7FF` and `STD` frames:
 
+For register semantics and persistence behavior:
+
+- See [Registers: How it works?](registers.md#how-it-works) for write (RAM/runtime) vs store (flash persistence) behavior ([`write_register(...)`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.write_register) vs [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters)).
+- See [Register Table](registers.md#register-table) for valid `RID`, access type (`RW`/`RO`), value range, and data type.
+- Terminology used in this documentation: **write** = runtime RAM update, **store** = persist to flash.
+
 **Read register request (`D[2] = 0x33`)**
+
+<div class="protocol-frame" markdown="1">
 
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `0x7FF` | `STD` | <span class="bm bm-canid">`CANID_L`</span> | <span class="bm bm-canid">`CANID_H`</span> | <span class="bm bm-read">`0x33`</span> | <span class="bm bm-rid">`RID`</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> |
 
+</div>
+
 **Write register request (`D[2] = 0x55`)**
+
+<div class="protocol-frame" markdown="1">
 
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `0x7FF` | `STD` | <span class="bm bm-canid">`CANID_L`</span> | <span class="bm bm-canid">`CANID_H`</span> | <span class="bm bm-write">`0x55`</span> | <span class="bm bm-rid">`RID`</span> | <span class="bm bm-value">`data_b0`</span> | <span class="bm bm-value">`data_b1`</span> | <span class="bm bm-value">`data_b2`</span> | <span class="bm bm-value">`data_b3`</span> |
 
+</div>
+
 **Store parameters request (`D[2] = 0xAA`)**
+
+<div class="protocol-frame" markdown="1">
 
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `0x7FF` | `STD` | <span class="bm bm-canid">`CANID_L`</span> | <span class="bm bm-canid">`CANID_H`</span> | <span class="bm bm-store">`0xAA`</span> | <span class="bm bm-rid">`RID` (driver uses `0x01`)</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> | <span class="bm bm-pad">`0x00`</span> |
 
+</div>
+
 **4. Feedback Messages**
 
 Motors continuously send feedback as `STD` frames:
 
+<div class="protocol-frame" markdown="1">
+
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `feedback_id` (MST_ID, reg 7) | `STD` | <span class="bm bm-status">`status[7:4]`</span> / <span class="bm bm-mid">`motor_id[3:0]`</span> | <span class="bm bm-pos">`pos_u[15:8]`</span> | <span class="bm bm-pos">`pos_u[7:0]`</span> | <span class="bm bm-vel">`vel_u[11:4]`</span> | <span class="bm bm-vel">`vel_u[3:0]`</span> / <span class="bm bm-torque">`torq_u[11:8]`</span> | <span class="bm bm-torque">`torq_u[7:0]`</span> | <span class="bm bm-temp">`T_mos`</span> | <span class="bm bm-temp">`T_rotor`</span> |
+
+</div>
 
 #### Status Codes
 
@@ -108,9 +150,13 @@ Motors continuously send feedback as `STD` frames:
 
 Register read replies are `STD` frames:
 
+<div class="protocol-frame" markdown="1">
+
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
 | `feedback_id` (MST_ID, reg 7) | `STD` | <span class="bm bm-canid">`CANID_L`</span> | <span class="bm bm-canid">`CANID_H`</span> | <span class="bm bm-read">`0x33`</span> | <span class="bm bm-rid">`RID`</span> | <span class="bm bm-value">`data_b0`</span> | <span class="bm bm-value">`data_b1`</span> | <span class="bm bm-value">`data_b2`</span> | <span class="bm bm-value">`data_b3`</span> |
+
+</div>
 
 ## Data Encoding
 

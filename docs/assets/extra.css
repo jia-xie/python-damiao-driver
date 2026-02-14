@@ -150,8 +150,8 @@
     border-color: rgba(148, 163, 184, 0.35);
 }
 
-/* Protocol table box styling (scoped to byte-frame tables only) */
-.md-typeset:has(h1#communication-protocol) table:not([class]):has(th:nth-child(8)) {
+/* Protocol table box styling (applies to explicit protocol-frame wrappers) */
+.md-typeset .protocol-frame table:not([class]) {
     border-collapse: separate;
     border-spacing: 0;
     border: 1px solid rgba(14, 116, 144, 0.28);
@@ -166,7 +166,7 @@
     );
 }
 
-.md-typeset:has(h1#communication-protocol) table:not([class]):has(th:nth-child(8)) th {
+.md-typeset .protocol-frame table:not([class]) th {
     background: linear-gradient(
         180deg,
         rgba(14, 116, 144, 0.16),
@@ -176,10 +176,10 @@
     border-bottom: 1px solid rgba(14, 116, 144, 0.22);
 }
 
-.md-typeset:has(h1#communication-protocol) table:not([class]):has(th:nth-child(8)) td {
+.md-typeset .protocol-frame table:not([class]) td {
     background: transparent;
 }
 
-.md-typeset:has(h1#communication-protocol) table:not([class]):has(th:nth-child(8)) tbody tr:nth-child(even) td {
+.md-typeset .protocol-frame table:not([class]) tbody tr:nth-child(even) td {
     background: rgba(14, 116, 144, 0.03);
 }

@@ -187,7 +187,7 @@ candump can0
 
 ### Motor Not Responding
 
-- **Enable motor**: Use `enable_all()` or enable command
+- **Enable motor**: Use the `damiao enable` CLI command (or equivalent API call in your control flow)
 - **Check status**: Read motor status from feedback
 - **Clear errors**: Use clear error command if motor in error state
 - **Verify mode**: Ensure [control mode](../concept/motor-control-modes.md) matches command type

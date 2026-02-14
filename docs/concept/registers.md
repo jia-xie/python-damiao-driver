@@ -10,36 +10,36 @@ tags:
 This page documents all motor registers available in the DaMiao motor.
 
 ## How it works?
-**Register Persistence (RAM vs Flash)**
+**Register Persistence (Write vs Store)**
 
-When you write a register, it is applied immediately, but by default it is a runtime value (RAM).
+`write` and `store` are two different operations:
 
-- RAM write: takes effect now, but is lost after power cycle.
-- Flash write: survives power cycle.
+- **Write** ([`write_register`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.write_register)): update register value in RAM immediately (runtime only).
+- **Store** ([`store_parameters`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters)): persist current runtime register values to flash (survives power cycle).
 
 **Python API (`damiao_motor/core/motor.py`)**
 
-Use these methods on `DaMiaoMotor`:
+Use these methods on [`DaMiaoMotor`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor):
 
-- `write_register(rid, value)` to write one register.
-- Most `set_*` helper methods (for example `set_control_mode`, `set_speed_loop_kp`, `set_can_timeout`) internally call `write_register`.
-- `store_parameters()` to save current parameters to flash.
-- `set_can_baud_rate(...)` writes register `35` and then stores to flash automatically.
+- [`write_register(rid, value)`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.write_register) to write one register at runtime (RAM).
+- Most `set_*` helper methods (for example [`set_control_mode`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.set_control_mode), [`set_speed_loop_kp`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.set_speed_loop_kp), [`set_can_timeout`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.set_can_timeout)) internally call [`write_register`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.write_register).
+- [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) to store current runtime parameters to flash.
+- [`set_can_baud_rate(...)`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.set_can_baud_rate) writes register `35` and then calls store automatically.
 
 ```python
 # Write to register (RAM, immediate but NOT persistent)
 motor.write_register(25, 20.0)  # KP_ASR
 
-# Persist current parameters to flash
+# Store current runtime parameters to flash (persistent)
 motor.store_parameters()
 ```
 
 <span id="registers-web-gui"></span>
-**Web GUI**
+**Web GUI (Write vs Store)**
 
-- Editing a register in the Web GUI writes it at runtime first.
-- Click `Store Parameters` to write current parameters to flash.
-- In current implementation, changing register `7` (`MST_ID`) or `8` (`ESC_ID`) also triggers a flash store automatically.
+- Editing a register in the Web GUI performs a runtime write first.
+- Click `Store Parameters` to store current runtime values to flash.
+- In current implementation, changing register `7` (`MST_ID`) or `8` (`ESC_ID`) also triggers store automatically.
 
 ![Register Parameters – Description, Value, Type, Action; Edit with Save/Cancel for RW registers](../package-usage/screenshots/registers.png)
 
@@ -47,13 +47,13 @@ motor.store_parameters()
 
 From current CLI implementation:
 
-| Command | Register write | Flash persistence |
-|---------|----------------|-------------------|
-| `damiao set-motor-id` | Writes register `8` (`ESC_ID`) | Yes (calls `store_parameters()`) |
-| `damiao set-feedback-id` | Writes register `7` (`MST_ID`) | Yes (calls `store_parameters()`) |
-| `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`, 1 register unit = 50 microseconds) | Yes (calls `store_parameters()`) |
+| Command | Write action (RAM) | Store behavior (flash) |
+|---------|--------------------|------------------------|
+| `damiao set-motor-id` | Writes register `8` (`ESC_ID`) | Yes (calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters)) |
+| `damiao set-feedback-id` | Writes register `7` (`MST_ID`) | Yes (calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters)) |
+| `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`, 1 register unit = 50 microseconds) | Yes (calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters)) |
 
-Other CLI control commands (`send-cmd-*`, `set-zero-command`, `set-zero-position`) do not store parameters to flash.
+Other CLI control commands (`send-cmd-*`, `set-zero-command`, `set-zero-position`) do not call store, so parameter changes are not persisted.
 
 **CAN Baud Rate Codes**
 
@@ -95,7 +95,7 @@ if value is not None:
 # Write to a register (only RW registers can be written)
 motor.write_register(7, 0x01)  # Set MST_ID to 1 (RAM)
 
-# Keep the change after power cycle
+# Store to keep the change after power cycle
 motor.store_parameters()
 ```
 

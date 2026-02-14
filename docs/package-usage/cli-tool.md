@@ -26,17 +26,22 @@ damiao <command> --help
 !!! tip "Understand modes faster"
     To better understand control mode behavior, use [`damiao gui`](web-gui.md) for interactive switching and live feedback, then use CLI commands for repeatable workflows.
 
-## Register Persistence (RAM vs Flash)
+## Register Persistence (Write vs Store)
+
+Terminology:
+
+- **Write**: runtime register update in RAM.
+- **Store**: persist current runtime values to flash.
 
 Register writes are applied immediately at runtime. To keep them after power cycle, they must be stored to flash.
 
 Based on current CLI code behavior:
 
-| Command | Register write | Persistence behavior |
+| Command | Write action (RAM) | Store behavior (flash) |
 |--------|----------------|----------------------|
-| `damiao set-motor-id` | Writes register `8` (`ESC_ID`) | Also calls `store_parameters()` -> persisted to flash |
-| `damiao set-feedback-id` | Writes register `7` (`MST_ID`) | Also calls `store_parameters()` -> persisted to flash |
-| `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`, 1 register unit = 50 microseconds) | Also calls `store_parameters()` -> persisted to flash |
+| `damiao set-motor-id` | Writes register `8` (`ESC_ID`) | Also calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) -> persisted to flash |
+| `damiao set-feedback-id` | Writes register `7` (`MST_ID`) | Also calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) -> persisted to flash |
+| `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`, 1 register unit = 50 microseconds) | Also calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) -> persisted to flash |
 
 All other CLI commands are control/status operations and do not store register parameters to flash.
 
