@@ -37,6 +37,21 @@ class DaMiaoController:
     def add_motor(
         self, motor_id: int, feedback_id: int, motor_type: str, **kwargs: Any
     ) -> DaMiaoMotor:
+        """
+        Create and register a motor on this controller.
+
+        Args:
+            motor_id: Command CAN ID (ESC_ID) used to send commands to the motor.
+            feedback_id: Feedback CAN ID (MST_ID) configured on the motor.
+            motor_type: Motor type preset name (for example ``"4310"``, ``"4340"``).
+            **kwargs: Extra arguments forwarded to ``DaMiaoMotor`` constructor.
+
+        Returns:
+            The created ``DaMiaoMotor`` instance.
+
+        Raises:
+            ValueError: If a motor with the same ``motor_id`` is already registered.
+        """
         if motor_id in self.motors:
             raise ValueError(f"Motor with ID {motor_id} already exists")
 
@@ -58,19 +73,36 @@ class DaMiaoController:
         return motor
 
     def get_motor(self, motor_id: int) -> DaMiaoMotor:
+        """
+        Get a registered motor by command ID.
+
+        Args:
+            motor_id: Command CAN ID (ESC_ID) used when the motor was added.
+
+        Returns:
+            The matching ``DaMiaoMotor`` instance.
+        """
         return self.motors[motor_id]
 
     def all_motors(self) -> Iterable[DaMiaoMotor]:
+        """
+        Iterate over all registered motors.
+
+        Returns:
+            Iterable of ``DaMiaoMotor`` instances.
+        """
         return self.motors.values()
 
     # -----------------------
     # Enable / disable
     # -----------------------
     def enable_all(self) -> None:
+        """Enable all registered motors."""
         for m in self.all_motors():
             m.enable()
 
     def disable_all(self) -> None:
+        """Disable all registered motors."""
         for m in self.all_motors():
             m.disable()
 

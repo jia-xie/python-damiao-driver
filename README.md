@@ -112,7 +112,7 @@ GUI docs: [Web GUI guide](https://jia-xie.github.io/python-damiao-driver/dev/pac
 ## API reference
 
 - [`DaMiaoController(channel, bustype)`](https://jia-xie.github.io/python-damiao-driver/dev/api/controller/#damiao_motor.core.controller.DaMiaoController)
-- `controller.add_motor(motor_id, feedback_id, motor_type)` (not shown in generated API page)
+- [`controller.add_motor(motor_id, feedback_id, motor_type)`](https://jia-xie.github.io/python-damiao-driver/dev/api/controller/#damiao_motor.core.controller.DaMiaoController.add_motor)
 - [`motor.ensure_control_mode(mode)`](https://jia-xie.github.io/python-damiao-driver/dev/api/motor/#damiao_motor.core.motor.DaMiaoMotor.ensure_control_mode)
 - [`motor.send_cmd_mit(...)`](https://jia-xie.github.io/python-damiao-driver/dev/api/motor/#damiao_motor.core.motor.DaMiaoMotor.send_cmd_mit)
 - [`motor.send_cmd_pos_vel(...)`](https://jia-xie.github.io/python-damiao-driver/dev/api/motor/#damiao_motor.core.motor.DaMiaoMotor.send_cmd_pos_vel)
