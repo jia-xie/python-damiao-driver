@@ -254,14 +254,15 @@ class DaMiaoController:
         """
         with self._polling_lock:
             if self._polling_active:
-                return # Already active, do nothing
+                return  # Already active, do nothing
 
             if len(self.motors) == 0:
-                return # No motors, no need to start polling
+                return  # No motors, no need to start polling
 
             self._polling_active = True
             self._polling_thread = threading.Thread(
-                target=self._polling_loop, daemon=True # Daemon thread will exit automatically on program shutdown
+                target=self._polling_loop,
+                daemon=True,  # Daemon thread will exit automatically on program shutdown
             )
             self._polling_thread.start()
 
