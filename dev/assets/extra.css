@@ -183,3 +183,64 @@
 .md-typeset .protocol-frame table:not([class]) tbody tr:nth-child(even) td {
     background: rgba(14, 116, 144, 0.03);
 }
+
+/* Motor mode visual emphasis */
+.md-typeset .mode-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0.35rem 0 1rem;
+}
+
+.md-typeset .mode-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+}
+
+.md-typeset .mode-title {
+    display: inline-block;
+    padding: 0.05rem 0.52rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.md-typeset .mode-chip-mit,
+.md-typeset .mode-title-mit {
+    background: rgba(37, 99, 235, 0.14);
+    border-color: rgba(37, 99, 235, 0.35);
+    color: rgb(30, 64, 175);
+}
+
+.md-typeset .mode-chip-posvel,
+.md-typeset .mode-title-posvel {
+    background: rgba(2, 132, 199, 0.14);
+    border-color: rgba(2, 132, 199, 0.35);
+    color: rgb(7, 89, 133);
+}
+
+.md-typeset .mode-chip-vel,
+.md-typeset .mode-title-vel {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: rgb(6, 95, 70);
+}
+
+.md-typeset .mode-chip-forcepos,
+.md-typeset .mode-title-forcepos {
+    background: rgba(249, 115, 22, 0.14);
+    border-color: rgba(249, 115, 22, 0.35);
+    color: rgb(154, 52, 18);
+}
+
+.md-typeset .mode-chip:hover {
+    filter: brightness(0.95);
+}
