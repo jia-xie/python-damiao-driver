@@ -198,8 +198,22 @@ class DaMiaoController:
     # -----------------------
     def poll_feedback(self) -> None:
         """
-        Non-blocking read of all pending CAN frames on this bus, and dispatch
-        feedback frames to the corresponding motors.
+        Drain pending CAN frames (non-blocking) and dispatch feedback to motors.
+
+        Behavior:
+        - Uses ``self.bus.recv(timeout=0)`` in a loop to read all currently queued
+          frames without blocking.
+        - Stops the loop when ``recv`` returns ``None`` (queue is empty).
+        - Ignores frames that are not 8 bytes.
+        - Routes frames by logical motor ID encoded in the low 4 bits of ``D[0]``.
+        - For matched motors, forwards frames to
+          ``DaMiaoMotor.process_feedback_frame(...)``.
+
+        Notes:
+        - This method performs one drain pass. It can be called manually, and is
+          also used repeatedly by the background polling thread.
+        - If bus/controller state becomes invalid (for example bus closed),
+          polling is marked inactive to let background loop exit cleanly.
         """
         try:
             while True:
@@ -229,22 +243,36 @@ class DaMiaoController:
     # Background polling
     # -----------------------
     def _start_polling(self) -> None:
-        """Start background polling thread if not already running."""
+        """
+        Start the background polling thread if needed.
+
+        Starts a daemon thread running ``_polling_loop`` only when:
+        - polling is not already active, and
+        - at least one motor is registered.
+
+        This method is idempotent for repeated calls.
+        """
         with self._polling_lock:
             if self._polling_active:
-                return
+                return # Already active, do nothing
 
             if len(self.motors) == 0:
-                return
+                return # No motors, no need to start polling
 
             self._polling_active = True
             self._polling_thread = threading.Thread(
-                target=self._polling_loop, daemon=True
+                target=self._polling_loop, daemon=True # Daemon thread will exit automatically on program shutdown
             )
             self._polling_thread.start()
 
     def _stop_polling(self) -> None:
-        """Stop background polling thread."""
+        """
+        Request background polling thread shutdown and wait briefly.
+
+        Sets ``_polling_active`` to ``False`` and joins the worker thread with a
+        short timeout. The polling loop checks this flag each cycle, so shutdown
+        is typically fast.
+        """
         with self._polling_lock:
             self._polling_active = False
             if self._polling_thread is not None:
@@ -253,8 +281,16 @@ class DaMiaoController:
 
     def _polling_loop(self) -> None:
         """
-        Background thread that continuously polls feedback.
+        Background worker that continuously calls ``poll_feedback``.
 
+        Loop behavior:
+        - Runs while ``_polling_active`` is ``True``.
+        - Exits if no motors remain registered.
+        - Exits on polling exceptions (bus errors, invalid state, etc.).
+        - Sleeps 1 ms per cycle to avoid CPU busy spinning.
+
+        The inner frame-drain loop lives in ``poll_feedback`` and is non-blocking,
+        so this worker remains responsive to shutdown requests.
         """
         while self._polling_active:
             if len(self.motors) == 0:
@@ -302,7 +338,16 @@ class DaMiaoController:
         motor.handle_register_reply(rid, register_data)
 
     def shutdown(self) -> None:
-        """Shutdown the controller and stop background polling."""
+        """
+        Shutdown controller resources in a safe order.
+
+        Steps:
+        1. Stop background polling thread (via ``_stop_polling``).
+        2. Disable all registered motors.
+        3. Shutdown the CAN bus handle.
+
+        This ensures polling is not racing against bus shutdown.
+        """
         self._stop_polling()
         self.disable_all()
         self.bus.shutdown()

@@ -67,6 +67,15 @@ damiao set-feedback-id --current 1 --target 3
 
 ### 4. Test Communication
 
+Ensure control mode matches the command you send:
+
+- MIT command path -> MIT mode
+- POS_VEL command path -> POS_VEL mode
+- VEL command path -> VEL mode
+- FORCE_POS command path -> FORCE_POS mode
+
+CLI send commands call [`ensure_control_mode(...)`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.ensure_control_mode) internally before transmitting, so mode is validated/set automatically.
+
 ```bash
 # Send zero command to verify communication
 damiao set-zero-command --id 1 --motor-type 4340
