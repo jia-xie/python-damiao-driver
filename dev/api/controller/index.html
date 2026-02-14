@@ -2125,8 +2125,7 @@
 
             <details class="quote">
               <summary>Source code in <code>damiao_motor/core/controller.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-340">340</a></span>
-<span class="normal"><a href="#__codelineno-0-341">341</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-341">341</a></span>
 <span class="normal"><a href="#__codelineno-0-342">342</a></span>
 <span class="normal"><a href="#__codelineno-0-343">343</a></span>
 <span class="normal"><a href="#__codelineno-0-344">344</a></span>
@@ -2138,20 +2137,21 @@
 <span class="normal"><a href="#__codelineno-0-350">350</a></span>
 <span class="normal"><a href="#__codelineno-0-351">351</a></span>
 <span class="normal"><a href="#__codelineno-0-352">352</a></span>
-<span class="normal"><a href="#__codelineno-0-353">353</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-340"><a id="__codelineno-0-340" name="__codelineno-0-340"></a><span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-341"><a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-342"><a id="__codelineno-0-342" name="__codelineno-0-342"></a><span class="sd">    Shutdown controller resources in a safe order.</span>
-</span><span id="__span-0-343"><a id="__codelineno-0-343" name="__codelineno-0-343"></a>
-</span><span id="__span-0-344"><a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">    Steps:</span>
-</span><span id="__span-0-345"><a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">    1. Stop background polling thread (via ``_stop_polling``).</span>
-</span><span id="__span-0-346"><a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">    2. Disable all registered motors.</span>
-</span><span id="__span-0-347"><a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">    3. Shutdown the CAN bus handle.</span>
-</span><span id="__span-0-348"><a id="__codelineno-0-348" name="__codelineno-0-348"></a>
-</span><span id="__span-0-349"><a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">    This ensures polling is not racing against bus shutdown.</span>
-</span><span id="__span-0-350"><a id="__codelineno-0-350" name="__codelineno-0-350"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-351"><a id="__codelineno-0-351" name="__codelineno-0-351"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_stop_polling</span><span class="p">()</span>
-</span><span id="__span-0-352"><a id="__codelineno-0-352" name="__codelineno-0-352"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">disable_all</span><span class="p">()</span>
-</span><span id="__span-0-353"><a id="__codelineno-0-353" name="__codelineno-0-353"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+<span class="normal"><a href="#__codelineno-0-353">353</a></span>
+<span class="normal"><a href="#__codelineno-0-354">354</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-341"><a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-342"><a id="__codelineno-0-342" name="__codelineno-0-342"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-343"><a id="__codelineno-0-343" name="__codelineno-0-343"></a><span class="sd">    Shutdown controller resources in a safe order.</span>
+</span><span id="__span-0-344"><a id="__codelineno-0-344" name="__codelineno-0-344"></a>
+</span><span id="__span-0-345"><a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">    Steps:</span>
+</span><span id="__span-0-346"><a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">    1. Stop background polling thread (via ``_stop_polling``).</span>
+</span><span id="__span-0-347"><a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">    2. Disable all registered motors.</span>
+</span><span id="__span-0-348"><a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">    3. Shutdown the CAN bus handle.</span>
+</span><span id="__span-0-349"><a id="__codelineno-0-349" name="__codelineno-0-349"></a>
+</span><span id="__span-0-350"><a id="__codelineno-0-350" name="__codelineno-0-350"></a><span class="sd">    This ensures polling is not racing against bus shutdown.</span>
+</span><span id="__span-0-351"><a id="__codelineno-0-351" name="__codelineno-0-351"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-352"><a id="__codelineno-0-352" name="__codelineno-0-352"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_stop_polling</span><span class="p">()</span>
+</span><span id="__span-0-353"><a id="__codelineno-0-353" name="__codelineno-0-353"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">disable_all</span><span class="p">()</span>
+</span><span id="__span-0-354"><a id="__codelineno-0-354" name="__codelineno-0-354"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
