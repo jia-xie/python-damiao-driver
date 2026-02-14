@@ -61,12 +61,12 @@ DaMiao motors use different arbitration IDs for different purposes:
 
 | Purpose | Arbitration ID Format | Example (motor_id=1) |
 |---------|----------------------|---------------------|
-| [MIT Control](motor-control-modes.md#mit-mode) | `motor_id` | 0x001 |
+| [MIT Control](motor-control-modes.md#mit-mode) | `motor_id` ([ESC_ID reg 8](registers.md#reg-8-esc-id)) | 0x001 |
 | [POS_VEL Control](motor-control-modes.md#pos-vel-mode) | `0x100 + motor_id` | 0x101 |
 | [VEL Control](motor-control-modes.md#vel-mode) | `0x200 + motor_id` | 0x201 |
 | [FORCE_POS Control](motor-control-modes.md#force-pos-mode) | `0x300 + motor_id` | 0x301 |
 | Register Operations | `0x7FF` | 0x7FF |
-| Feedback | `feedback_id` (MST_ID) | Variable |
+| Feedback | `feedback_id` ([MST_ID reg 7](registers.md#reg-7-mst-id)) | Variable |
 
 **Message Length**
 

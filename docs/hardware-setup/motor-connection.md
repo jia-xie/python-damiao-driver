@@ -9,29 +9,9 @@ tags:
 
 This guide covers the physical connection of DaMiao motors to your system.
 
-## Overview
-
-DaMiao motors connect to your computer via CAN bus. This requires:
-
-- **CAN interface hardware** (USB-CAN adapter, CAN-capable board, etc.)
-- **CAN bus wiring** (CAN_H, CAN_L, GND)
-- **Termination resistors** (120Ω at both ends)
-- **Power supply** for the motors
-
-## CAN Interface Options
-
-- **CANable/CandleLight**: Open-source USB-CAN adapter
-- **Raspberry Pi**: With CAN HAT (e.g., Waveshare CAN HAT)
-- **Jetson**: With CAN expansion boards
-
-### Requirements
-
-- **SocketCAN support**: Must have Linux kernel driver
-- **1 Mbps capability**: Should support 1 Mbps bitrate
+For CAN interface bring-up and software configuration, see [CAN Setup](can-set-up.md).
 
 ## Wiring
-
-### CAN Bus Wiring
 
 CAN bus uses two wires:
 
@@ -40,22 +20,12 @@ CAN bus uses two wires:
 | CAN_H | CAN High signal |
 | CAN_L | CAN Low signal |
 
-### Connection Diagram
 
 ![CAN bus motor connection diagram with CAN interface, three motors, and 120Ω termination at both ends](motor-connection-diagram.svg){ .doc-screenshot }
 
-### Termination Resistors
+For CAN bus termination requirements, see [Termination Resistors](can-set-up.md#termination-resistors).
 
-**Critical**: Termination resistors (120Ω) must be installed at **both ends** of the bus.
-
-- **Location**: First and last device on the bus
-- **Value**: 120Ω (standard CAN bus impedance)
-- **Type**: Standard resistor, can be through-hole or SMD
-- **Connection**: Between CAN_H and CAN_L
-
-Without termination resistors, signal reflections will cause communication errors.
-
-### Power Supply
+## Power
 
 Motors require a separate power supply:
 
@@ -68,131 +38,29 @@ Motors require a separate power supply:
     - Verify polarity before connecting
     - Keep power and signal grounds connected
 
-## Motor ID Configuration
-
-Each motor on the bus must have a unique ID:
-
-- **ESC_ID (Register 8)**: Motor receive ID (for commands)
-- **MST_ID (Register 7)**: Motor feedback ID (for feedback messages)
-
-### Default IDs
-
-Motors typically come with default IDs. Check motor documentation or use the scan command:
-
-```bash
-# Motor type is optional (defaults to 4310)
-damiao scan
-```
-
-### Changing Motor IDs
-
-Use the CLI to change motor IDs:
-
-```bash
-# Change receive ID (ESC_ID)
-damiao set-motor-id --current 1 --target 2 --motor-type 4340
-
-# Change feedback ID (MST_ID)
-damiao set-feedback-id --current 1 --target 3 --motor-type 4340
-```
-
-!!! note "ID Selection"
-    - Each motor on the same bus must have a unique ESC_ID and MST_ID
-    - Use sequential IDs for simplicity (0x01, 0x02, 0x03, ...)
-    - Lower ID number will have higher priority in physical layer.
-
-### Power Considerations
+Power planning:
 
 - **Total current**: Sum of all motor currents
 - **Voltage drop**: Longer bus may have voltage drop
-- **Power distribution**: Consider power distribution if motors are far apart
+- **Power distribution**: Consider distribution if motors are far apart
 
-## Testing Connections
+## Connection Bring-Up and Validation
 
-Use one of the following options to validate your setup.
+Use one of the following workflows to validate your setup:
 
-### Option 1: GUI (Recommended)
-
-```bash
-# Start the Web GUI
-damiao gui
-```
-
-In the GUI, follow these steps:
-
-1. **Connect and scan motors**: Click **Connect**, then **Scan Motors**. See [GUI Connection](../package-usage/web-gui.md#connection).
-2. **Configure the motor**: Select motor type, IDs, and relevant registers. See [GUI Register Parameters](../package-usage/web-gui.md#register-parameters).
-3. **Test motor control**: Select control mode and send test commands while monitoring feedback. See [GUI Motor Control](../package-usage/web-gui.md#motor-control).
-
-### Option 2: CLI (If strictly headless)
-
-#### 1. Verify CAN Interface
-
-```bash
-# Check interface is up
-ip link show can0
-
-# Should show: state UP
-```
-
-#### 2. Scan for Motors
-
-```bash
-# Scan for connected motors (motor-type is optional)
-damiao scan
-
-# Should detect all connected motors
-```
-
-#### 3. Test Communication
-
-```bash
-# Send zero command to verify communication
-damiao set-zero-command --id 1 --motor-type 4340
-```
-
-#### 4. Monitor CAN Traffic
-
-```bash
-# Install can-utils if needed
-sudo apt-get install can-utils
-
-# Monitor all CAN messages
-candump can0
-```
+- **GUI (recommended)**: [Web GUI - Connection Bring-Up Workflow](../package-usage/web-gui.md#connection-bring-up-workflow-gui)
+- **CLI (headless)**: [CLI Tool - Connection Bring-Up Workflow](../package-usage/cli-tool.md#connection-bring-up-workflow-headless)
 
 ## Troubleshooting
 
-### No Motors Detected
+| Symptom | Checks |
+|---------|--------|
+| No motors detected | Verify power is on.<br>Verify CAN_H / CAN_L / GND wiring.<br>Verify 120 ohm termination on both ends.<br>Verify bitrate matches motor configuration.<br>Verify motor IDs are in scan range. |
+| Intermittent communication | Check loose connections.<br>Check cable quality for CAN use.<br>Keep bus length reasonable (< 40 m at 1 Mbps).<br>Verify termination values and placement. |
+| Communication errors | Verify all devices use the same bitrate.<br>Resolve motor ID conflicts.<br>Check physical-layer bus errors.<br>Verify power supply capacity/stability. |
+| Motor not responding | Enable the motor in control flow.<br>Check status feedback.<br>Clear errors if motor is in fault state.<br>Verify [control mode](../concept/motor-control-modes.md) matches the command type. |
 
-- **Check power**: Verify motors are powered on
-- **Check wiring**: Verify CAN_H, CAN_L, GND connections
-- **Check termination**: Verify 120Ω resistors are installed
-- **Check bitrate**: Verify bitrate matches motor configuration
-- **Check IDs**: Verify motor IDs are in scan range
-
-### Intermittent Communication
-
-- **Loose connections**: Check all connections are secure
-- **Cable quality**: Verify cable is suitable for CAN bus
-- **Bus length**: Keep bus length reasonable (< 40m for 1 Mbps)
-- **Termination**: Verify termination resistors are correct
-
-### Communication Errors
-
-- **Bitrate mismatch**: All devices must use same bitrate
-- **ID conflicts**: Each motor must have unique IDs
-- **Bus errors**: Check for physical layer issues
-- **Power issues**: Verify power supply is adequate
-
-### Motor Not Responding
-
-- **Enable motor**: Use the `damiao enable` CLI command (or equivalent API call in your control flow)
-- **Check status**: Read motor status from feedback
-- **Clear errors**: Use clear error command if motor in error state
-- **Verify mode**: Ensure [control mode](../concept/motor-control-modes.md) matches command type
-
-## Safety Considerations
+## Safety
 
 !!! warning "Safety First"
     - Always ensure motors are securely mounted before powering on

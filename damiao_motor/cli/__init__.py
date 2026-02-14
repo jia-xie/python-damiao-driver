@@ -154,7 +154,7 @@ Examples:
     gui_parser.set_defaults(func=cmd_gui)
 
     # Helper function to add global arguments to subcommands
-    def add_global_args(subparser):
+    def add_global_args(subparser, include_motor_type: bool = True):
         """Add global arguments to a subcommand parser."""
         subparser.add_argument(
             "--channel",
@@ -174,30 +174,31 @@ Examples:
             default=1000000,
             help="CAN bitrate in bits per second (default: 1000000). Only used when bringing up interface.",
         )
-        subparser.add_argument(
-            "--motor-type",
-            type=str,
-            default="4340",
-            choices=[
-                "4310",
-                "4310P",
-                "4340",
-                "4340P",
-                "6006",
-                "8006",
-                "8009",
-                "10010L",
-                "10010",
-                "H3510",
-                "G6215",
-                "H6220",
-                "JH11",
-                "6248P",
-                "3507",
-            ],
-            dest="motor_type",
-            help="Motor type for P/V/T presets (e.g. 4340, 4310, 3507). Defaults to 4340. Only needed for encoding commands; doesn't affect which motors are detected during scan.",
-        )
+        if include_motor_type:
+            subparser.add_argument(
+                "--motor-type",
+                type=str,
+                default="4340",
+                choices=[
+                    "4310",
+                    "4310P",
+                    "4340",
+                    "4340P",
+                    "6006",
+                    "8006",
+                    "8009",
+                    "10010L",
+                    "10010",
+                    "H3510",
+                    "G6215",
+                    "H6220",
+                    "JH11",
+                    "6248P",
+                    "3507",
+                ],
+                dest="motor_type",
+                help="Motor type for P/V/T presets (e.g. 4340, 4310, 3507). Defaults to 4340. Only needed for encoding commands; doesn't affect which motors are detected during scan.",
+            )
 
     # scan command
     scan_parser = subparsers.add_parser(
@@ -398,7 +399,7 @@ Note: After changing the motor ID, you will need to use the new ID to communicat
         required=True,
         help="Target motor ID (new receive ID)",
     )
-    add_global_args(set_motor_id_parser)
+    add_global_args(set_motor_id_parser, include_motor_type=False)
     set_motor_id_parser.set_defaults(func=cmd_set_motor_id)
 
     # set-feedback-id command
@@ -427,7 +428,7 @@ Note: The motor will now respond with feedback using the new feedback ID.
         required=True,
         help="Target feedback ID (new MST_ID)",
     )
-    add_global_args(set_feedback_id_parser)
+    add_global_args(set_feedback_id_parser, include_motor_type=False)
     set_feedback_id_parser.set_defaults(func=cmd_set_feedback_id)
 
     # send-cmd-mit command

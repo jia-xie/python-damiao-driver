@@ -228,8 +228,9 @@ def cmd_set_motor_id(args) -> None:
 
     try:
         # Use current ID to connect
+        config_motor_type = getattr(args, "motor_type", "4340")
         motor = controller.add_motor(
-            motor_id=args.current, feedback_id=0x00, motor_type=args.motor_type
+            motor_id=args.current, feedback_id=0x00, motor_type=config_motor_type
         )
 
         print("Reading current register values...")
@@ -741,8 +742,9 @@ def cmd_set_feedback_id(args) -> None:
 
     try:
         # Use current motor ID to connect
+        config_motor_type = getattr(args, "motor_type", "4340")
         motor = controller.add_motor(
-            motor_id=args.current, feedback_id=0x00, motor_type=args.motor_type
+            motor_id=args.current, feedback_id=0x00, motor_type=config_motor_type
         )
 
         print("Reading current register values...")

@@ -51,102 +51,78 @@ damiao gui --production
 
 ---
 
-## Interface layout
+## Connection Bring-Up Workflow (GUI)
 
-The page is split into:
+Use this workflow to validate setup and start controlling motors from the GUI.
 
-- **Top bar**: Connection (CAN channel, Connect, Disconnect).
-- **Left column**: Motor Selection, Motor Control (Control Parameters + Motor Feedback), Register Parameters.
+### 1. Start the GUI
+
+```bash
+damiao gui
+```
+
+Open **http://127.0.0.1:5000** in your browser.
+
+Interface layout:
+
+- **Top bar**: Connection controls (CAN channel, Connect, Disconnect).
+- **Left column**: Motor Selection, Motor Control, Register Parameters.
 - **Right column**: Chart Visualizations (Position, Velocity, Torque).
 
----
+### 2. Connect to CAN Interface
 
-## Connection
-
-- **CAN Channel**: Choose an interface (e.g. can0, vcan0). A refresh button reloads the list.
-- **Connect**: Connects to the selected channel.
-- **Disconnect**: Disconnects and clears detected motors.
-
-A status log shows connection and scan progress (e.g. *Connecting…*, *Connected to CAN bus: can0*, *Scanning for motors…*, *Found N motor(s)*, *Registers loaded*).
+- Select CAN channel (`can0`, `vcan0`, etc.) and click **Connect**.
+- If your interface is not listed, use the refresh button and select again.
+- Confirm status log messages show successful connection (for example: *Connecting...*, then *Connected to CAN bus: can0*).
+- Use **Disconnect** to safely reset connection and clear detected motors.
 
 ![Connection bar – CAN channel, Connect, Disconnect, and status log](screenshots/connection.png){ .doc-screenshot }
 
----
+### 3. Scan and Select Motor
 
-## Motor Selection
-
-- **Scan Motors**: Scans for motors and lists those that respond.
-- **Motor dropdown**: *Select a motor…* when none is chosen; otherwise *Motor ID: 0xXX | Arb ID: 0xYY* for each detected motor. Selecting a motor updates the Control panel, Register Parameters, and charts.
+- Click **Scan Motors**.
+- Select the target motor from the dropdown (`Motor ID: 0xXX | Arb ID: 0xYY`).
+- Selecting a motor updates control parameters, register parameters, and charts.
 
 ![Motor Selection – Scan Motors and motor dropdown (Motor ID | Arb ID)](screenshots/motor-selection.png){ .doc-screenshot }
 
----
+### 4. Configure Motor and Registers
 
-## Motor Control
-
-When a motor is selected, the left column shows **Control Parameters** and **Motor Feedback**.
-
-### Control Parameters
-
-- **Motor type**: Choose the motor model (e.g. 4310, 4340, 6006, 8006, 8009, 10010/L, H3510, G6215, H6220, JH11, 6248P, 3507).
-- **[Control Mode](../concept/motor-control-modes.md)**: [MIT](../concept/motor-control-modes.md#mit-mode), [POS_VEL](../concept/motor-control-modes.md#pos-vel-mode), [VEL](../concept/motor-control-modes.md#vel-mode), [FORCE_POS](../concept/motor-control-modes.md#force-pos-mode). Row visibility depends on mode: Position, Velocity, Stiffness, Damping, Torque for MIT; Position + Velocity Limit for POS_VEL; Velocity for VEL; Vel Limit and Torque Limit Ratio for FORCE_POS.
-- **FORCE_POS Torque Limit Ratio meaning**: `torque_limit_ratio` is normalized (0.0-1.0). The effective torque clip is `tau_lim = torque_limit_ratio * T_max(motor_type)`.
-- **Enable / Disable**: Enable or disable the motor.
-- **Send Command**: Applies the current control parameters. **Single**: once. **Continuous**: at the set Command Frequency (1–1000 Hz).
-- **Stop Command**: Stops Continuous mode and disables the motor.
-- **Set Zero**: Saves the current position as zero.
-- **Clear Error**: Clears the motor error.
+- Set **Motor type** and choose the target [Control Mode](../concept/motor-control-modes.md).
+- Configure mode-specific command fields:
+  - MIT: position, velocity, stiffness, damping, torque
+  - POS_VEL: position, velocity limit
+  - VEL: velocity
+  - FORCE_POS: position, velocity limit, torque limit ratio
+- In **Register Parameters**, editable (`RW`) rows support **Write** and **Cancel**; read-only (`RO`) rows have no edit action.
+- Feedback ID / Motor ID use hex input; [Control mode](../concept/motor-control-modes.md) and CAN baud rate use dropdowns.
+- For persistence after power cycle, use **Store Parameters** after runtime writes.
+- Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.
 
 ![Motor type dropdown – supported motor models (4310, 4340, 6006, …)](screenshots/motor-type-selection.png){ .doc-screenshot }
+![Register Parameters – Description, Value, Type, Action; edit flow for RW registers](screenshots/registers.png){ .doc-screenshot }
 
-### Motor Feedback
+### 5. Test Motor Control and Verify Feedback
 
-- **Status** (e.g. ENABLED, DISABLED) and live **Position**, **Velocity**, **Torque**, **MOS Temp**, **Rotor Temp** for the selected motor.
+- Click **Enable**.
+- Send commands in **Single** mode for quick checks, then switch to **Continuous** mode if needed.
+- Set command frequency for continuous mode and use **Stop Command** to halt sending.
+- Use **Set Zero** when you need to redefine current position as zero.
+- Use **Clear Error** if the motor reports an error state.
+- Verify live feedback: **Status**, **Position**, **Velocity**, **Torque**, **MOS Temp**, and **Rotor Temp**.
+- `torque_limit_ratio` in FORCE_POS is normalized (`0.0-1.0`) and applied as `tau_lim = torque_limit_ratio * T_max(motor_type)`.
 
-![Motor Control – Control Parameters (mode, position, velocity, Kp/Kd, torque, Enable/Disable, Send Command, Single/Continuous, Set Zero, Clear Error) and Motor Feedback](screenshots/motor-control.png){ .doc-screenshot }
+![Motor Control – Control Parameters and Motor Feedback](screenshots/motor-control.png){ .doc-screenshot }
 
----
+### 6. Monitor Charts and Export Data
 
-## Register Parameters
+- Watch Position / Velocity / Torque charts while testing.
+- Adjust chart controls as needed: **Grid**, **Duration (s)**, **Y Min / Y Max**, **Reset Limits**, and **Points**.
+- Use **Export Data** on each chart to download visible data as CSV.
+- Export opens a modal where you enter the filename before download.
 
-- **Table**: **Description**, **Value**, **Type**, **Action**. **Read-only (RO)** registers have no Edit. **Writable (RW)** registers: click **Edit**, change the value, then **Save** or **Cancel**.
-- **Special UIs**: Feedback ID and Motor ID use hex input; [Control mode](../concept/motor-control-modes.md) and CAN baud rate use dropdowns. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.
-
-![Register Parameters – Description, Value, Type, Action; Edit with Save/Cancel for RW registers](screenshots/registers.png){ .doc-screenshot }
-
----
-
-## Chart Visualizations
-
-Three line charts: **Position (rad)**, **Velocity (rad/s)**, **Torque (Nm)**. Live data when a motor is selected (and when sending commands in Continuous mode).
-
-For each chart:
-
-- **Export Data**: Save the visible data as CSV.
-- **Grid**: Toggle grid on/off.
-- **Duration (s)**: Time window on the X-axis.
-- **Y Min / Y Max**: Set Y-axis limits, or "Auto".
-- **Reset Limits**: Restore Y-axis to the motor’s limits or auto.
-- **Points**: Toggle data points.
-
-Charts support zoom (scroll or pinch). Each chart shows live data over the set time window.
-
-![Chart Visualizations – Position (rad), Velocity (rad/s), Torque (Nm) with Export Data, Grid, Duration, Y limits, Reset Limits, Points](screenshots/charts.png)
-
----
-
-## Export Chart Data
-
-Clicking **Export Data** on a chart opens a modal: enter a file name and **Save** to download a CSV of the chart’s visible data. The file is saved to your default download folder.
-
-![Export Chart Data – file name, Save to CSV, Cancel](screenshots/export-data.png)
-
----
-
-## Register editing (details)
-
-- **RO**: Shown in gray; no Edit button.
-- **RW**: Click **Edit**, change the value (or choose from the dropdown for [Control mode](../concept/motor-control-modes.md) and CAN baud rate), then **Save** or **Cancel**. Changing Feedback ID or Motor ID triggers a rescan so the motor list stays correct.
+![Chart Visualizations – Position (rad), Velocity (rad/s), Torque (Nm)](screenshots/charts.png){ .doc-screenshot }
+![Export Chart Data – file name input and CSV save action](screenshots/export-data.png){ .doc-screenshot }
 
 ---
 

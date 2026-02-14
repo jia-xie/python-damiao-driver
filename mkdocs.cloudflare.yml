@@ -107,11 +107,11 @@ nav:
       - Communication Protocol: concept/communication-protocol.md
       - CAN Bus Fundamentals: concept/can.md
   - Hardware Setup:
-      - CAN Setup: hardware-setup/can-set-up.md
       - Motor Connection: hardware-setup/motor-connection.md
+      - CAN Setup: hardware-setup/can-set-up.md
   - Package Tools:
-      - CLI Tool: package-usage/cli-tool.md
       - Web GUI: package-usage/web-gui.md
+      - CLI Tool: package-usage/cli-tool.md
   - API Reference:
       - DaMiaoController: api/controller.md
       - DaMiaoMotor: api/motor.md

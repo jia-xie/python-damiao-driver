@@ -128,7 +128,7 @@ Motors continuously send feedback as `STD` frames:
 
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
-| `feedback_id` (MST_ID, reg 7) | `STD` | <span class="bm bm-status">`status[7:4]`</span> / <span class="bm bm-mid">`motor_id[3:0]`</span> | <span class="bm bm-pos">`pos_u[15:8]`</span> | <span class="bm bm-pos">`pos_u[7:0]`</span> | <span class="bm bm-vel">`vel_u[11:4]`</span> | <span class="bm bm-vel">`vel_u[3:0]`</span> / <span class="bm bm-torque">`torq_u[11:8]`</span> | <span class="bm bm-torque">`torq_u[7:0]`</span> | <span class="bm bm-temp">`T_mos`</span> | <span class="bm bm-temp">`T_rotor`</span> |
+| `feedback_id` (MST_ID, [reg 7](registers.md#reg-7-mst-id)) | `STD` | <span class="bm bm-status">`status[7:4]`</span> / <span class="bm bm-mid">`motor_id[3:0]`</span> | <span class="bm bm-pos">`pos_u[15:8]`</span> | <span class="bm bm-pos">`pos_u[7:0]`</span> | <span class="bm bm-vel">`vel_u[11:4]`</span> | <span class="bm bm-vel">`vel_u[3:0]`</span> / <span class="bm bm-torque">`torq_u[11:8]`</span> | <span class="bm bm-torque">`torq_u[7:0]`</span> | <span class="bm bm-temp">`T_mos`</span> | <span class="bm bm-temp">`T_rotor`</span> |
 
 </div>
 
@@ -154,7 +154,7 @@ Register read replies are `STD` frames:
 
 | Arbitration ID | Attribute | D[0] | D[1] | D[2] | D[3] | D[4] | D[5] | D[6] | D[7] |
 |---|---|---|---|---|---|---|---|---|---|
-| `feedback_id` (MST_ID, reg 7) | `STD` | <span class="bm bm-canid">`CANID_L`</span> | <span class="bm bm-canid">`CANID_H`</span> | <span class="bm bm-read">`0x33`</span> | <span class="bm bm-rid">`RID`</span> | <span class="bm bm-value">`data_b0`</span> | <span class="bm bm-value">`data_b1`</span> | <span class="bm bm-value">`data_b2`</span> | <span class="bm bm-value">`data_b3`</span> |
+| `feedback_id` (MST_ID, [reg 7](registers.md#reg-7-mst-id)) | `STD` | <span class="bm bm-canid">`CANID_L`</span> | <span class="bm bm-canid">`CANID_H`</span> | <span class="bm bm-read">`0x33`</span> | <span class="bm bm-rid">`RID`</span> | <span class="bm bm-value">`data_b0`</span> | <span class="bm bm-value">`data_b1`</span> | <span class="bm bm-value">`data_b2`</span> | <span class="bm bm-value">`data_b3`</span> |
 
 </div>
 
@@ -190,14 +190,14 @@ Stiffness (kp) and damping (kd) use fixed ranges:
 
 Multiple motors can share the same CAN bus:
 
-1. Each motor has a unique `motor_id` (ESC_ID, register 8)
-2. Each motor has a `feedback_id` (MST_ID, register 7); unique assignment is recommended
+1. Each motor has a unique `motor_id` (ESC_ID, [register 8](registers.md#reg-8-esc-id))
+2. Each motor has a `feedback_id` (MST_ID, [register 7](registers.md#reg-7-mst-id)); unique assignment is recommended
 3. Commands are addressed to specific `motor_id`
 4. Feedback is identified by `feedback_id`
 
 **@remarks**
 
-Each motor has a unique `feedback_id` (MST_ID, register 7) that identifies the motor in feedback messages.
+Each motor has a unique `feedback_id` (MST_ID, [register 7](registers.md#reg-7-mst-id)) that identifies the motor in feedback messages.
 While the `feedback_id` does not strictly need to be unique for each motor (since the motor ID is included in the data frame),
 it is recommended to assign unique `feedback_id`s to avoid confusion and simplify message routing.
 
@@ -207,7 +207,7 @@ it is recommended to assign unique `feedback_id`s to avoid confusion and simplif
 
 Motor ID assignment:
 
-| Motor | `motor_id` (ESC_ID, reg 8) | `feedback_id` (MST_ID, reg 7) |
+| Motor | `motor_id` (ESC_ID, [reg 8](registers.md#reg-8-esc-id)) | `feedback_id` (MST_ID, [reg 7](registers.md#reg-7-mst-id)) |
 |-------|-----------------------------|--------------------------------|
 | Motor 1 | `0x01` | `0x11` |
 | Motor 2 | `0x02` | `0x12` |

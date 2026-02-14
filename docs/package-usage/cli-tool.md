@@ -26,6 +26,62 @@ damiao <command> --help
 !!! tip "Understand modes faster"
     To better understand control mode behavior, use [`damiao gui`](web-gui.md) for interactive switching and live feedback, then use CLI commands for repeatable workflows.
 
+## Connection Bring-Up Workflow (Headless)
+
+Use this workflow when running without the GUI.
+
+### 1. Verify CAN Interface
+
+```bash
+# Check interface is up
+ip link show can0
+
+# Should show: state UP
+```
+
+### 2. Scan for Motors
+
+```bash
+damiao scan
+```
+
+### 3. Configure Motor IDs
+
+Each motor on the same CAN bus must have unique IDs:
+
+- **ESC_ID ([register 8](../concept/registers.md#reg-8-esc-id))**: receive ID for commands
+- **MST_ID ([register 7](../concept/registers.md#reg-7-mst-id))**: feedback ID in status frames
+
+
+Change IDs (motor type is not needed for ID configuration):
+
+```bash
+damiao set-motor-id --current 1 --target 2
+damiao set-feedback-id --current 1 --target 3
+```
+
+!!! note "ID Selection"
+    - Each motor on the same bus must have a unique ESC_ID and MST_ID.
+    - Use sequential IDs for simplicity (`0x01`, `0x02`, `0x03`, ...).
+    - Lower ID numbers have higher bus priority during arbitration.
+
+### 4. Test Communication
+
+```bash
+# Send zero command to verify communication
+damiao set-zero-command --id 1 --motor-type 4340
+```
+
+### 5. Monitor CAN Traffic (Optional)
+
+```bash
+# Install can-utils if needed
+sudo apt-get install can-utils
+
+# Monitor all CAN messages
+candump can0
+```
+
 ## Register Persistence (Write vs Store)
 
 Terminology:
@@ -39,15 +95,54 @@ Based on current CLI code behavior:
 
 | Command | Write action (RAM) | Store behavior (flash) |
 |--------|----------------|----------------------|
-| `damiao set-motor-id` | Writes register `8` (`ESC_ID`) | Also calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) -> persisted to flash |
-| `damiao set-feedback-id` | Writes register `7` (`MST_ID`) | Also calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) -> persisted to flash |
+| `damiao set-motor-id` | Writes [register `8` (`ESC_ID`)](../concept/registers.md#reg-8-esc-id) | Also calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) -> persisted to flash |
+| `damiao set-feedback-id` | Writes [register `7` (`MST_ID`)](../concept/registers.md#reg-7-mst-id) | Also calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) -> persisted to flash |
 | `damiao set-can-timeout` | Writes register `9` (`TIMEOUT`, 1 register unit = 50 microseconds) | Also calls [`store_parameters()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.store_parameters) -> persisted to flash |
 
 All other CLI commands are control/status operations and do not store register parameters to flash.
 
-## Commands
+## Command Reference
 
-### scan
+### GUI Launcher
+
+#### gui
+
+Launch the web-based GUI for viewing and controlling DaMiao motors.
+
+```bash
+damiao gui [OPTIONS]
+```
+
+**Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `--host` | `STR` | Host to bind to (default: 127.0.0.1) |
+| `--port` | `INT` | Port to bind to (default: 5000) |
+| `--debug` | flag | Enable debug mode |
+| `--production` | flag | Use production WSGI server (requires waitress) |
+
+**Examples:**
+```bash
+# Start GUI on default host and port (http://127.0.0.1:5000)
+damiao gui
+
+# Start GUI on custom port
+damiao gui --port 8080
+
+# Start GUI on all interfaces
+damiao gui --host 0.0.0.0
+
+# Start GUI with production server
+damiao gui --production
+```
+
+!!! note "Backward Compatibility"
+    Use `damiao gui` to launch the GUI.
+
+### Discovery and Bus Checks
+
+#### scan
 
 Scan for connected motors on the CAN bus.
 
@@ -84,7 +179,9 @@ damiao scan --motor-type 4340
 damiao scan --debug
 ```
 
-### send-cmd-mit
+### Control Commands
+
+#### send-cmd-mit
 
 Send [MIT mode](../concept/motor-control-modes.md#mit-mode) command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for control mode details.
 
@@ -116,7 +213,7 @@ damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --dampi
 damiao send-cmd-mit --id 1 --position 1.5 --velocity 0.0 --stiffness 3.0 --damping 0.5 --frequency 50.0
 ```
 
-### send-cmd-pos-vel
+#### send-cmd-pos-vel
 
 Send [POS_VEL mode](../concept/motor-control-modes.md#pos-vel-mode) command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for control mode details.
 
@@ -145,7 +242,7 @@ damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity-limit 2.0
 damiao send-cmd-pos-vel --id 1 --position 1.5 --velocity-limit 2.0 --frequency 50.0
 ```
 
-### send-cmd-vel
+#### send-cmd-vel
 
 Send [VEL mode](../concept/motor-control-modes.md#vel-mode) command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for control mode details.
 
@@ -173,7 +270,7 @@ damiao send-cmd-vel --id 1 --velocity 3.0
 damiao send-cmd-vel --id 1 --velocity 3.0 --frequency 50.0
 ```
 
-### send-cmd-force-pos
+#### send-cmd-force-pos
 
 Send [FORCE_POS mode](../concept/motor-control-modes.md#force-pos-mode) command to motor. Loops continuously until Ctrl+C. See [Motor Control Modes](../concept/motor-control-modes.md) for control mode details.
 
@@ -203,7 +300,7 @@ damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --torque-l
 damiao send-cmd-force-pos --id 1 --position 1.5 --velocity-limit 50.0 --torque-limit-ratio 0.8 --frequency 50.0
 ```
 
-### set-zero-command
+#### set-zero-command
 
 Send zero command to a motor (pos=0, vel=0, torq=0, kp=0, kd=0). Loops continuously until Ctrl+C.
 
@@ -230,7 +327,7 @@ damiao set-zero-command --id 1
 damiao set-zero-command --id 1 --frequency 50.0
 ```
 
-### set-zero-position
+#### set-zero-position
 
 Set the current output shaft position to zero.
 
@@ -253,7 +350,9 @@ damiao set-zero-position [OPTIONS]
 damiao set-zero-position --id 1
 ```
 
-### set-can-timeout
+### Register and ID Configuration
+
+#### set-can-timeout
 
 Set CAN timeout alarm time (register 9).
 Register 9 stores timeout in units of 50 microseconds: **1 register unit = 50 microseconds**.
@@ -279,9 +378,9 @@ damiao set-can-timeout [OPTIONS]
 damiao set-can-timeout --id 1 --timeout 1000
 ```
 
-### set-motor-id
+#### set-motor-id
 
-Change the motor's receive ID (ESC_ID, register 8). This is the ID used to send commands to the motor.
+Change the motor's receive ID (ESC_ID, [register 8](../concept/registers.md#reg-8-esc-id)). This is the ID used to send commands to the motor.
 
 ```bash
 damiao set-motor-id [OPTIONS]
@@ -306,9 +405,9 @@ damiao set-motor-id --current 1 --target 2
 !!! note "Note"
     After changing the motor ID, you will need to use the new ID to communicate with the motor.
 
-### set-feedback-id
+#### set-feedback-id
 
-Change the motor's feedback ID (MST_ID, register 7). This is the ID used to identify feedback messages from the motor.
+Change the motor's feedback ID (MST_ID, [register 7](../concept/registers.md#reg-7-mst-id)). This is the ID used to identify feedback messages from the motor.
 
 ```bash
 damiao set-feedback-id [OPTIONS]
@@ -332,41 +431,6 @@ damiao set-feedback-id --current 1 --target 3
 
 !!! note "Note"
     The motor will now respond with feedback using the new feedback ID.
-
-### gui
-
-Launch the web-based GUI for viewing and controlling DaMiao motors.
-
-```bash
-damiao gui [OPTIONS]
-```
-
-**Options:**
-
-| Option | Type | Description |
-|--------|------|-------------|
-| `--host` | `STR` | Host to bind to (default: 127.0.0.1) |
-| `--port` | `INT` | Port to bind to (default: 5000) |
-| `--debug` | flag | Enable debug mode |
-| `--production` | flag | Use production WSGI server (requires waitress) |
-
-**Examples:**
-```bash
-# Start GUI on default host and port (http://127.0.0.1:5000)
-damiao gui
-
-# Start GUI on custom port
-damiao gui --port 8080
-
-# Start GUI on all interfaces
-damiao gui --host 0.0.0.0
-
-# Start GUI with production server
-damiao gui --production
-```
-
-!!! note "Backward Compatibility"
-    Use `damiao gui` to launch the GUI.
 
 ## Global Options
 

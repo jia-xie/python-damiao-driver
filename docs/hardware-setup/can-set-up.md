@@ -14,10 +14,25 @@ This guide covers setting up the CAN interface for use with DaMiao motors.
 - Linux operating system
 - CAN interface hardware (USB-CAN adapter, CAN-capable board, etc.)
 - SocketCAN drivers
+- Jetson: [NVIDIA Jetson Linux CAN guide](https://docs.nvidia.com/jetson/archives/r35.3.1/DeveloperGuide/text/HR/ControllerAreaNetworkCan.html)
+
+## Termination Resistors
+
+**Critical**: Termination resistors (120 ohms) must be installed at **both ends** of the bus.
+
+- **Location**: First and last device on the bus
+- **Value**: 120 ohms (standard CAN bus impedance)
+- **Type**: Standard resistor, can be through-hole or SMD
+- **Connection**: Between CAN_H and CAN_L
+
+Without termination resistors, signal reflections will cause communication errors.
+
+!!! note
+    Some CAN devices (for example USB2CAN adapters and DaMiao Motor 3507) have a termination resistor switch to engage onboard resistors.
 
 ## Basic CAN Setup
 
-### 1. Check CAN Interface
+**Step 1 - Check CAN interface**
 
 List available network interfaces:
 
@@ -27,7 +42,7 @@ ip link show
 
 Look for `can0`, `can1`, or similar interfaces.
 
-### 2. Bring Up CAN Interface
+**Step 2 - Bring up CAN interface**
 
 ```bash
 sudo ip link set can0 up type can bitrate 1000000
@@ -35,7 +50,7 @@ sudo ip link set can0 up type can bitrate 1000000
 
 This sets up `can0` with a 1 Mbps bitrate.
 
-### 3. Verify Interface
+**Step 3 - Verify interface state**
 
 ```bash
 ip link show can0
@@ -48,7 +63,7 @@ You should see the interface is `UP`.
 If you use multiple CAN adapters, Linux may swap `can0`/`can1` order across reboots.  
 Use a udev rule to assign a fixed name to a specific adapter.
 
-### 1. Find a Unique Identifier
+**Step 1 - Find a unique identifier**
 
 ```bash
 # Replace can0 with your current interface
@@ -57,7 +72,7 @@ udevadm info -a -p /sys/class/net/can0 | grep -E "ATTRS\\{serial\\}|ATTRS\\{idVe
 
 Pick a stable value such as `ATTRS{serial}`.
 
-### 2. Create a udev Rule
+**Step 2 - Create a udev rule**
 
 ```bash
 sudo tee /etc/udev/rules.d/70-can-persistent.rules >/dev/null <<'EOF'
@@ -70,7 +85,7 @@ Notes:
 - Replace `YOUR_SERIAL_HERE` with your adapter serial.
 - `can_damiao` is an example; interface names must be 15 characters or fewer.
 
-### 3. Reload Rules and Reconnect Adapter
+**Step 3 - Reload rules and reconnect adapter**
 
 ```bash
 sudo udevadm control --reload-rules
@@ -78,16 +93,16 @@ sudo udevadm control --reload-rules
 
 Then unplug/replug the adapter (or reboot).
 
-### 4. Use the Fixed Name
+**Step 4 - Use the fixed name**
 
 ```bash
 sudo ip link set can_damiao up type can bitrate 1000000
 damiao scan --channel can_damiao
 ```
 
-## Testing CAN Interface
+## Testing
 
-### Using candump
+**Using `candump`**
 
 ```bash
 sudo apt-get install can-utils
@@ -96,7 +111,7 @@ sudo candump can0
 
 This will show all CAN messages on the bus.
 
-### Using damiao scan
+**Using `damiao scan`**
 
 ```bash
 damiao scan --channel can0
@@ -104,25 +119,11 @@ damiao scan --channel can0
 
 ## Troubleshooting
 
-### Interface Not Found
-
-- Check hardware connection
-- Verify drivers are loaded: `lsmod | grep can`
-- Check dmesg for errors: `dmesg | grep can`
-
-### Permission Errors
-
-You may need to run with `sudo` or add your user to a group with CAN access:
-
-```bash
-sudo usermod -a -G dialout $USER
-```
-
-Then log out and back in.
-
-### Bitrate Mismatch
-
-Ensure the CAN bitrate matches your motor configuration. Check motor firmware settings.
+| Symptom | Checks / Fix |
+|---------|---------------|
+| Interface not found | Check hardware connection.<br>Verify drivers are loaded: `lsmod \| grep can`.<br>Check kernel logs: `dmesg \| grep can`. |
+| Permission errors | Run with `sudo` or add user to CAN-access group:<br>`sudo usermod -a -G dialout $USER`.<br>Log out and back in. |
+| Bitrate mismatch | Ensure CAN bitrate matches motor firmware configuration. |
 
 ## Multiple CAN Interfaces
 
