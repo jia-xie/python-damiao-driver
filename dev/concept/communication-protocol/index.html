@@ -285,7 +285,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../hardware-setup/can-set-up/" class="md-tabs__link">
+        <a href="../../hardware-setup/motor-connection/" class="md-tabs__link">
           
   
   
@@ -307,7 +307,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../package-usage/cli-tool/" class="md-tabs__link">
+        <a href="../../package-usage/web-gui/" class="md-tabs__link">
           
   
   
@@ -811,14 +811,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../hardware-setup/can-set-up/" class="md-nav__link">
+      <a href="../../hardware-setup/motor-connection/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    CAN Setup
+    Motor Connection
   
 
     
@@ -839,14 +839,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../hardware-setup/motor-connection/" class="md-nav__link">
+      <a href="../../hardware-setup/can-set-up/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Motor Connection
+    CAN Setup
   
 
     
@@ -875,6 +875,8 @@
   
     
     
+      
+        
       
         
       
@@ -934,6 +936,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../package-usage/web-gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../package-usage/cli-tool/" class="md-nav__link">
         
   
@@ -962,14 +992,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../package-usage/web-gui/" class="md-nav__link">
+      <a href="../../package-usage/python-api/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Web GUI
+    Python API
   
 
     
@@ -1493,7 +1523,7 @@
 </thead>
 <tbody>
 <tr>
-<td><code>feedback_id</code> (MST_ID, reg 7)</td>
+<td><code>feedback_id</code> (MST_ID, <a href="../registers/#reg-7-mst-id">reg 7</a>)</td>
 <td><code>STD</code></td>
 <td><span class="bm bm-status"><code>status[7:4]</code></span> / <span class="bm bm-mid"><code>motor_id[3:0]</code></span></td>
 <td><span class="bm bm-pos"><code>pos_u[15:8]</code></span></td>
@@ -1594,7 +1624,7 @@
 </thead>
 <tbody>
 <tr>
-<td><code>feedback_id</code> (MST_ID, reg 7)</td>
+<td><code>feedback_id</code> (MST_ID, <a href="../registers/#reg-7-mst-id">reg 7</a>)</td>
 <td><code>STD</code></td>
 <td><span class="bm bm-canid"><code>CANID_L</code></span></td>
 <td><span class="bm bm-canid"><code>CANID_H</code></span></td>
@@ -1631,13 +1661,13 @@ x=x_{\min}+\frac{u}{2^{N}-1}\left(x_{\max}-x_{\min}\right)
 <h2 id="multi-motor-communication">Multi-Motor Communication<a class="headerlink" href="#multi-motor-communication" title="Permanent link">&para;</a></h2>
 <p>Multiple motors can share the same CAN bus:</p>
 <ol>
-<li>Each motor has a unique <code>motor_id</code> (ESC_ID, register 8)</li>
-<li>Each motor has a <code>feedback_id</code> (MST_ID, register 7); unique assignment is recommended</li>
+<li>Each motor has a unique <code>motor_id</code> (ESC_ID, <a href="../registers/#reg-8-esc-id">register 8</a>)</li>
+<li>Each motor has a <code>feedback_id</code> (MST_ID, <a href="../registers/#reg-7-mst-id">register 7</a>); unique assignment is recommended</li>
 <li>Commands are addressed to specific <code>motor_id</code></li>
 <li>Feedback is identified by <code>feedback_id</code></li>
 </ol>
 <p><strong>@remarks</strong></p>
-<p>Each motor has a unique <code>feedback_id</code> (MST_ID, register 7) that identifies the motor in feedback messages.
+<p>Each motor has a unique <code>feedback_id</code> (MST_ID, <a href="../registers/#reg-7-mst-id">register 7</a>) that identifies the motor in feedback messages.
 While the <code>feedback_id</code> does not strictly need to be unique for each motor (since the motor ID is included in the data frame),
 it is recommended to assign unique <code>feedback_id</code>s to avoid confusion and simplify message routing.</p>
 <p><strong>@see</strong> <a href="#message-types">Message frame structure</a> for details on motor ID encoding in feedback messages.</p>
@@ -1647,8 +1677,8 @@ it is recommended to assign unique <code>feedback_id</code>s to avoid confusion 
 <thead>
 <tr>
 <th>Motor</th>
-<th><code>motor_id</code> (ESC_ID, reg 8)</th>
-<th><code>feedback_id</code> (MST_ID, reg 7)</th>
+<th><code>motor_id</code> (ESC_ID, <a href="../registers/#reg-8-esc-id">reg 8</a>)</th>
+<th><code>feedback_id</code> (MST_ID, <a href="../registers/#reg-7-mst-id">reg 7</a>)</th>
 </tr>
 </thead>
 <tbody>

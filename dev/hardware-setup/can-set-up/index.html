@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://jia-xie.github.io/python-damiao-driver/dev/hardware-setup/can-set-up/">
       
       
-        <link rel="prev" href="../../concept/can/">
+        <link rel="prev" href="../motor-connection/">
       
       
-        <link rel="next" href="../motor-connection/">
+        <link rel="next" href="../../package-usage/web-gui/">
       
       
         
@@ -285,7 +285,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../motor-connection/" class="md-tabs__link">
           
   
   
@@ -307,7 +307,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../package-usage/cli-tool/" class="md-tabs__link">
+        <a href="../../package-usage/web-gui/" class="md-tabs__link">
           
   
   
@@ -667,6 +667,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../motor-connection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motor Connection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -741,6 +769,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#termination-resistors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Termination Resistors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#basic-can-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -748,45 +787,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Basic CAN Setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-check-can-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Check CAN Interface
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-bring-up-can-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Bring Up CAN Interface
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-verify-interface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Verify Interface
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -799,94 +799,16 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Persistent Interface Name (Fixed Device Name)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-find-a-unique-identifier" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Find a Unique Identifier
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-create-a-udev-rule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Create a udev Rule
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-reload-rules-and-reconnect-adapter" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Reload Rules and Reconnect Adapter
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-use-the-fixed-name" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Use the Fixed Name
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
-  <a href="#testing-can-interface" class="md-nav__link">
+  <a href="#testing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Testing CAN Interface
+        Testing
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Testing CAN Interface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#using-candump" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Using candump
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#using-damiao-scan" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Using damiao scan
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -898,45 +820,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#interface-not-found" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interface Not Found
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#permission-errors" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Permission Errors
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#bitrate-mismatch" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bitrate Mismatch
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -960,34 +843,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../motor-connection/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Motor Connection
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1003,6 +858,8 @@
   
     
     
+      
+        
       
         
       
@@ -1062,6 +919,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../package-usage/web-gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../package-usage/cli-tool/" class="md-nav__link">
         
   
@@ -1090,14 +975,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../package-usage/web-gui/" class="md-nav__link">
+      <a href="../../package-usage/python-api/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Web GUI
+    Python API
   
 
     
@@ -1281,30 +1166,44 @@
 <li>Linux operating system</li>
 <li>CAN interface hardware (USB-CAN adapter, CAN-capable board, etc.)</li>
 <li>SocketCAN drivers</li>
+<li>Jetson: <a href="https://docs.nvidia.com/jetson/archives/r35.3.1/DeveloperGuide/text/HR/ControllerAreaNetworkCan.html">NVIDIA Jetson Linux CAN guide</a></li>
 </ul>
+<h2 id="termination-resistors">Termination Resistors<a class="headerlink" href="#termination-resistors" title="Permanent link">&para;</a></h2>
+<p><strong>Critical</strong>: Termination resistors (120 ohms) must be installed at <strong>both ends</strong> of the bus.</p>
+<ul>
+<li><strong>Location</strong>: First and last device on the bus</li>
+<li><strong>Value</strong>: 120 ohms (standard CAN bus impedance)</li>
+<li><strong>Type</strong>: Standard resistor, can be through-hole or SMD</li>
+<li><strong>Connection</strong>: Between CAN_H and CAN_L</li>
+</ul>
+<p>Without termination resistors, signal reflections will cause communication errors.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some CAN devices (for example USB2CAN adapters and DaMiao Motor 3507) have a termination resistor switch to engage onboard resistors.</p>
+</div>
 <h2 id="basic-can-setup">Basic CAN Setup<a class="headerlink" href="#basic-can-setup" title="Permanent link">&para;</a></h2>
-<h3 id="1-check-can-interface">1. Check CAN Interface<a class="headerlink" href="#1-check-can-interface" title="Permanent link">&para;</a></h3>
+<p><strong>Step 1 - Check CAN interface</strong></p>
 <p>List available network interfaces:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ip<span class="w"> </span>link<span class="w"> </span>show
 </span></code></pre></div>
 <p>Look for <code>can0</code>, <code>can1</code>, or similar interfaces.</p>
-<h3 id="2-bring-up-can-interface">2. Bring Up CAN Interface<a class="headerlink" href="#2-bring-up-can-interface" title="Permanent link">&para;</a></h3>
+<p><strong>Step 2 - Bring up CAN interface</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can0<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
 </span></code></pre></div>
 <p>This sets up <code>can0</code> with a 1 Mbps bitrate.</p>
-<h3 id="3-verify-interface">3. Verify Interface<a class="headerlink" href="#3-verify-interface" title="Permanent link">&para;</a></h3>
+<p><strong>Step 3 - Verify interface state</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ip<span class="w"> </span>link<span class="w"> </span>show<span class="w"> </span>can0
 </span></code></pre></div>
 <p>You should see the interface is <code>UP</code>.</p>
 <h2 id="persistent-interface-name-fixed-device-name">Persistent Interface Name (Fixed Device Name)<a class="headerlink" href="#persistent-interface-name-fixed-device-name" title="Permanent link">&para;</a></h2>
 <p>If you use multiple CAN adapters, Linux may swap <code>can0</code>/<code>can1</code> order across reboots.<br />
 Use a udev rule to assign a fixed name to a specific adapter.</p>
-<h3 id="1-find-a-unique-identifier">1. Find a Unique Identifier<a class="headerlink" href="#1-find-a-unique-identifier" title="Permanent link">&para;</a></h3>
+<p><strong>Step 1 - Find a unique identifier</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Replace can0 with your current interface</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>udevadm<span class="w"> </span>info<span class="w"> </span>-a<span class="w"> </span>-p<span class="w"> </span>/sys/class/net/can0<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;ATTRS\\{serial\\}|ATTRS\\{idVendor\\}|ATTRS\\{idProduct\\}&quot;</span>
 </span></code></pre></div>
 <p>Pick a stable value such as <code>ATTRS{serial}</code>.</p>
-<h3 id="2-create-a-udev-rule">2. Create a udev Rule<a class="headerlink" href="#2-create-a-udev-rule" title="Permanent link">&para;</a></h3>
+<p><strong>Step 2 - Create a udev rule</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/udev/rules.d/70-can-persistent.rules<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="s">SUBSYSTEM==&quot;net&quot;, ACTION==&quot;add&quot;, KERNEL==&quot;can*&quot;, ATTRS{serial}==&quot;YOUR_SERIAL_HERE&quot;, NAME=&quot;can_damiao&quot;</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="s">EOF</span>
@@ -1314,44 +1213,53 @@ Use a udev rule to assign a fixed name to a specific adapter.</p>
 <li>Replace <code>YOUR_SERIAL_HERE</code> with your adapter serial.</li>
 <li><code>can_damiao</code> is an example; interface names must be 15 characters or fewer.</li>
 </ul>
-<h3 id="3-reload-rules-and-reconnect-adapter">3. Reload Rules and Reconnect Adapter<a class="headerlink" href="#3-reload-rules-and-reconnect-adapter" title="Permanent link">&para;</a></h3>
+<p><strong>Step 3 - Reload rules and reconnect adapter</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w"> </span>--reload-rules
 </span></code></pre></div>
 <p>Then unplug/replug the adapter (or reboot).</p>
-<h3 id="4-use-the-fixed-name">4. Use the Fixed Name<a class="headerlink" href="#4-use-the-fixed-name" title="Permanent link">&para;</a></h3>
+<p><strong>Step 4 - Use the fixed name</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can_damiao<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--channel<span class="w"> </span>can_damiao
 </span></code></pre></div>
-<h2 id="testing-can-interface">Testing CAN Interface<a class="headerlink" href="#testing-can-interface" title="Permanent link">&para;</a></h2>
-<h3 id="using-candump">Using candump<a class="headerlink" href="#using-candump" title="Permanent link">&para;</a></h3>
+<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
+<p><strong>Using <code>candump</code></strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>can-utils
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>sudo<span class="w"> </span>candump<span class="w"> </span>can0
 </span></code></pre></div>
 <p>This will show all CAN messages on the bus.</p>
-<h3 id="using-damiao-scan">Using damiao scan<a class="headerlink" href="#using-damiao-scan" title="Permanent link">&para;</a></h3>
+<p><strong>Using <code>damiao scan</code></strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--channel<span class="w"> </span>can0
 </span></code></pre></div>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
-<h3 id="interface-not-found">Interface Not Found<a class="headerlink" href="#interface-not-found" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Check hardware connection</li>
-<li>Verify drivers are loaded: <code>lsmod | grep can</code></li>
-<li>Check dmesg for errors: <code>dmesg | grep can</code></li>
-</ul>
-<h3 id="permission-errors">Permission Errors<a class="headerlink" href="#permission-errors" title="Permanent link">&para;</a></h3>
-<p>You may need to run with <code>sudo</code> or add your user to a group with CAN access:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>dialout<span class="w"> </span><span class="nv">$USER</span>
-</span></code></pre></div>
-<p>Then log out and back in.</p>
-<h3 id="bitrate-mismatch">Bitrate Mismatch<a class="headerlink" href="#bitrate-mismatch" title="Permanent link">&para;</a></h3>
-<p>Ensure the CAN bitrate matches your motor configuration. Check motor firmware settings.</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Checks / Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interface not found</td>
+<td>Check hardware connection.<br>Verify drivers are loaded: <code>lsmod \| grep can</code>.<br>Check kernel logs: <code>dmesg \| grep can</code>.</td>
+</tr>
+<tr>
+<td>Permission errors</td>
+<td>Run with <code>sudo</code> or add user to CAN-access group:<br><code>sudo usermod -a -G dialout $USER</code>.<br>Log out and back in.</td>
+</tr>
+<tr>
+<td>Bitrate mismatch</td>
+<td>Ensure CAN bitrate matches motor firmware configuration.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="multiple-can-interfaces">Multiple CAN Interfaces<a class="headerlink" href="#multiple-can-interfaces" title="Permanent link">&para;</a></h2>
 <p>If you have multiple CAN interfaces:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can0<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can1<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can0<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can1<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
 </span></code></pre></div>
 <p>Then specify the channel in your code:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">controller</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;can1&quot;</span><span class="p">,</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;socketcan&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">controller</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;can1&quot;</span><span class="p">,</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;socketcan&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 
 

@@ -18,7 +18,7 @@
         <link rel="prev" href="../communication-protocol/">
       
       
-        <link rel="next" href="../../hardware-setup/can-set-up/">
+        <link rel="next" href="../../hardware-setup/motor-connection/">
       
       
         
@@ -285,7 +285,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../hardware-setup/can-set-up/" class="md-tabs__link">
+        <a href="../../hardware-setup/motor-connection/" class="md-tabs__link">
           
   
   
@@ -307,7 +307,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../package-usage/cli-tool/" class="md-tabs__link">
+        <a href="../../package-usage/web-gui/" class="md-tabs__link">
           
   
   
@@ -827,14 +827,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../hardware-setup/can-set-up/" class="md-nav__link">
+      <a href="../../hardware-setup/motor-connection/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    CAN Setup
+    Motor Connection
   
 
     
@@ -855,14 +855,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../hardware-setup/motor-connection/" class="md-nav__link">
+      <a href="../../hardware-setup/can-set-up/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Motor Connection
+    CAN Setup
   
 
     
@@ -891,6 +891,8 @@
   
     
     
+      
+        
       
         
       
@@ -950,6 +952,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../package-usage/web-gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../package-usage/cli-tool/" class="md-nav__link">
         
   
@@ -978,14 +1008,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../package-usage/web-gui/" class="md-nav__link">
+      <a href="../../package-usage/python-api/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Web GUI
+    Python API
   
 
     
@@ -1214,7 +1244,7 @@
 <tbody>
 <tr>
 <td><a href="../motor-control-modes/#mit-mode">MIT Control</a></td>
-<td><code>motor_id</code></td>
+<td><code>motor_id</code> (<a href="../registers/#reg-8-esc-id">ESC_ID reg 8</a>)</td>
 <td>0x001</td>
 </tr>
 <tr>
@@ -1239,7 +1269,7 @@
 </tr>
 <tr>
 <td>Feedback</td>
-<td><code>feedback_id</code> (MST_ID)</td>
+<td><code>feedback_id</code> (<a href="../registers/#reg-7-mst-id">MST_ID reg 7</a>)</td>
 <td>Variable</td>
 </tr>
 </tbody>

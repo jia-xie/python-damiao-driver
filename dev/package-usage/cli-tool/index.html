@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://jia-xie.github.io/python-damiao-driver/dev/package-usage/cli-tool/">
       
       
-        <link rel="prev" href="../../hardware-setup/motor-connection/">
+        <link rel="prev" href="../web-gui/">
       
       
-        <link rel="next" href="../web-gui/">
+        <link rel="next" href="../python-api/">
       
       
         
@@ -283,7 +283,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../hardware-setup/can-set-up/" class="md-tabs__link">
+        <a href="../../hardware-setup/motor-connection/" class="md-tabs__link">
           
   
   
@@ -307,7 +307,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../web-gui/" class="md-tabs__link">
           
   
   
@@ -667,14 +667,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../hardware-setup/can-set-up/" class="md-nav__link">
+      <a href="../../hardware-setup/motor-connection/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    CAN Setup
+    Motor Connection
   
 
     
@@ -695,14 +695,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../hardware-setup/motor-connection/" class="md-nav__link">
+      <a href="../../hardware-setup/can-set-up/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Motor Connection
+    CAN Setup
   
 
     
@@ -733,6 +733,8 @@
   
     
     
+      
+        
       
         
       
@@ -785,6 +787,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web-gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -864,6 +894,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#connection-bring-up-workflow-headless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Bring-Up Workflow (Headless)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connection Bring-Up Workflow (Headless)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-verify-can-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Verify CAN Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-scan-for-motors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scan for Motors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-configure-motor-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Configure Motor IDs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-test-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Test Communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-monitor-can-traffic-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Monitor CAN Traffic (Optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#register-persistence-write-vs-store" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -875,15 +977,55 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
+  <a href="#command-reference" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Commands
+        Command Reference
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Commands">
+    <nav class="md-nav" aria-label="Command Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gui-launcher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GUI Launcher
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GUI Launcher">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        gui
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery-and-bus-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery and Bus Checks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery and Bus Checks">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -896,6 +1038,23 @@
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Control Commands">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#send-cmd-mit" class="md-nav__link">
@@ -963,6 +1122,23 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-and-id-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register and ID Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Register and ID Configuration">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#set-can-timeout" class="md-nav__link">
     <span class="md-ellipsis">
@@ -996,14 +1172,8 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#gui" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        gui
-      
-    </span>
-  </a>
+      </ul>
+    </nav>
   
 </li>
         
@@ -1061,14 +1231,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../web-gui/" class="md-nav__link">
+      <a href="../python-api/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Web GUI
+    Python API
   
 
     
@@ -1258,6 +1428,54 @@
 <p class="admonition-title">Understand modes faster</p>
 <p>To better understand control mode behavior, use <a href="../web-gui/"><code>damiao gui</code></a> for interactive switching and live feedback, then use CLI commands for repeatable workflows.</p>
 </div>
+<h2 id="connection-bring-up-workflow-headless">Connection Bring-Up Workflow (Headless)<a class="headerlink" href="#connection-bring-up-workflow-headless" title="Permanent link">&para;</a></h2>
+<p>Use this workflow when running without the GUI.</p>
+<h3 id="1-verify-can-interface">1. Verify CAN Interface<a class="headerlink" href="#1-verify-can-interface" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Check interface is up</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>ip<span class="w"> </span>link<span class="w"> </span>show<span class="w"> </span>can0
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Should show: state UP</span>
+</span></code></pre></div>
+<h3 id="2-scan-for-motors">2. Scan for Motors<a class="headerlink" href="#2-scan-for-motors" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>damiao<span class="w"> </span>scan
+</span></code></pre></div>
+<h3 id="3-configure-motor-ids">3. Configure Motor IDs<a class="headerlink" href="#3-configure-motor-ids" title="Permanent link">&para;</a></h3>
+<p>Each motor on the same CAN bus must have unique IDs:</p>
+<ul>
+<li><strong>ESC_ID (<a href="../../concept/registers/#reg-8-esc-id">register 8</a>)</strong>: receive ID for commands</li>
+<li><strong>MST_ID (<a href="../../concept/registers/#reg-7-mst-id">register 7</a>)</strong>: feedback ID in status frames</li>
+</ul>
+<p>Change IDs (motor type is not needed for ID configuration):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>damiao<span class="w"> </span>set-motor-id<span class="w"> </span>--current<span class="w"> </span><span class="m">1</span><span class="w"> </span>--target<span class="w"> </span><span class="m">2</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>damiao<span class="w"> </span>set-feedback-id<span class="w"> </span>--current<span class="w"> </span><span class="m">1</span><span class="w"> </span>--target<span class="w"> </span><span class="m">3</span>
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">ID Selection</p>
+<ul>
+<li>Each motor on the same bus must have a unique ESC_ID and MST_ID.</li>
+<li>Use sequential IDs for simplicity (<code>0x01</code>, <code>0x02</code>, <code>0x03</code>, ...).</li>
+<li>Lower ID numbers have higher bus priority during arbitration.</li>
+</ul>
+</div>
+<h3 id="4-test-communication">4. Test Communication<a class="headerlink" href="#4-test-communication" title="Permanent link">&para;</a></h3>
+<p>Ensure control mode matches the command you send:</p>
+<ul>
+<li>MIT command path -&gt; MIT mode</li>
+<li>POS_VEL command path -&gt; POS_VEL mode</li>
+<li>VEL command path -&gt; VEL mode</li>
+<li>FORCE_POS command path -&gt; FORCE_POS mode</li>
+</ul>
+<p>CLI send commands call <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.ensure_control_mode"><code>ensure_control_mode(...)</code></a> internally before transmitting, so mode is validated/set automatically.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Send zero command to verify communication</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>damiao<span class="w"> </span>set-zero-command<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--motor-type<span class="w"> </span><span class="m">4340</span>
+</span></code></pre></div>
+<h3 id="5-monitor-can-traffic-optional">5. Monitor CAN Traffic (Optional)<a class="headerlink" href="#5-monitor-can-traffic-optional" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Install can-utils if needed</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>can-utils
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Monitor all CAN messages</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>candump<span class="w"> </span>can0
+</span></code></pre></div>
 <h2 id="register-persistence-write-vs-store">Register Persistence (Write vs Store)<a class="headerlink" href="#register-persistence-write-vs-store" title="Permanent link">&para;</a></h2>
 <p>Terminology:</p>
 <ul>
@@ -1277,12 +1495,12 @@
 <tbody>
 <tr>
 <td><code>damiao set-motor-id</code></td>
-<td>Writes register <code>8</code> (<code>ESC_ID</code>)</td>
+<td>Writes <a href="../../concept/registers/#reg-8-esc-id">register <code>8</code> (<code>ESC_ID</code>)</a></td>
 <td>Also calls <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a> -&gt; persisted to flash</td>
 </tr>
 <tr>
 <td><code>damiao set-feedback-id</code></td>
-<td>Writes register <code>7</code> (<code>MST_ID</code>)</td>
+<td>Writes <a href="../../concept/registers/#reg-7-mst-id">register <code>7</code> (<code>MST_ID</code>)</a></td>
 <td>Also calls <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a> -&gt; persisted to flash</td>
 </tr>
 <tr>
@@ -1293,10 +1511,65 @@
 </tbody>
 </table>
 <p>All other CLI commands are control/status operations and do not store register parameters to flash.</p>
-<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
-<h3 id="scan">scan<a class="headerlink" href="#scan" title="Permanent link">&para;</a></h3>
+<h2 id="command-reference">Command Reference<a class="headerlink" href="#command-reference" title="Permanent link">&para;</a></h2>
+<h3 id="gui-launcher">GUI Launcher<a class="headerlink" href="#gui-launcher" title="Permanent link">&para;</a></h3>
+<h4 id="gui">gui<a class="headerlink" href="#gui" title="Permanent link">&para;</a></h4>
+<p>Launch the web-based GUI for viewing and controlling DaMiao motors.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>damiao<span class="w"> </span>gui<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+</span></code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--host</code></td>
+<td><code>STR</code></td>
+<td>Host to bind to (default: 127.0.0.1)</td>
+</tr>
+<tr>
+<td><code>--port</code></td>
+<td><code>INT</code></td>
+<td>Port to bind to (default: 5000)</td>
+</tr>
+<tr>
+<td><code>--debug</code></td>
+<td>flag</td>
+<td>Enable debug mode</td>
+</tr>
+<tr>
+<td><code>--production</code></td>
+<td>flag</td>
+<td>Use production WSGI server (requires waitress)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Start GUI on default host and port (http://127.0.0.1:5000)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>damiao<span class="w"> </span>gui
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Start GUI on custom port</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>damiao<span class="w"> </span>gui<span class="w"> </span>--port<span class="w"> </span><span class="m">8080</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="c1"># Start GUI on all interfaces</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>damiao<span class="w"> </span>gui<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="c1"># Start GUI with production server</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>damiao<span class="w"> </span>gui<span class="w"> </span>--production
+</span></code></pre></div></p>
+<div class="admonition note">
+<p class="admonition-title">Backward Compatibility</p>
+<p>Use <code>damiao gui</code> to launch the GUI.</p>
+</div>
+<h3 id="discovery-and-bus-checks">Discovery and Bus Checks<a class="headerlink" href="#discovery-and-bus-checks" title="Permanent link">&para;</a></h3>
+<h4 id="scan">scan<a class="headerlink" href="#scan" title="Permanent link">&para;</a></h4>
 <p>Scan for connected motors on the CAN bus.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>damiao<span class="w"> </span>scan<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>damiao<span class="w"> </span>scan<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1341,24 +1614,25 @@
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Scan default ID range (0x01-0x10) - motor-type is optional</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>damiao<span class="w"> </span>scan
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Scan specific motor IDs</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--ids<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">3</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Scan with longer listen duration</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--duration<span class="w"> </span><span class="m">2</span>.0
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># Scan with specific motor type (optional, defaults to 4310)</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--motor-type<span class="w"> </span><span class="m">4340</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c1"># Scan with debug output</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--debug
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Scan default ID range (0x01-0x10) - motor-type is optional</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>damiao<span class="w"> </span>scan
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Scan specific motor IDs</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--ids<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">3</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Scan with longer listen duration</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--duration<span class="w"> </span><span class="m">2</span>.0
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="c1"># Scan with specific motor type (optional, defaults to 4310)</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--motor-type<span class="w"> </span><span class="m">4340</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="c1"># Scan with debug output</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--debug
 </span></code></pre></div></p>
-<h3 id="send-cmd-mit">send-cmd-mit<a class="headerlink" href="#send-cmd-mit" title="Permanent link">&para;</a></h3>
+<h3 id="control-commands">Control Commands<a class="headerlink" href="#control-commands" title="Permanent link">&para;</a></h3>
+<h4 id="send-cmd-mit">send-cmd-mit<a class="headerlink" href="#send-cmd-mit" title="Permanent link">&para;</a></h4>
 <p>Send <a href="../../concept/motor-control-modes/#mit-mode">MIT mode</a> command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for control mode details.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>damiao<span class="w"> </span>send-cmd-mit<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>damiao<span class="w"> </span>send-cmd-mit<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1423,15 +1697,15 @@
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># MIT mode with all parameters</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>damiao<span class="w"> </span>send-cmd-mit<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span>--stiffness<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>--damping<span class="w"> </span><span class="m">0</span>.5
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># With custom frequency</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>damiao<span class="w"> </span>send-cmd-mit<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span>--stiffness<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>--damping<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># MIT mode with all parameters</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>damiao<span class="w"> </span>send-cmd-mit<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span>--stiffness<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>--damping<span class="w"> </span><span class="m">0</span>.5
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># With custom frequency</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>damiao<span class="w"> </span>send-cmd-mit<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity<span class="w"> </span><span class="m">0</span>.0<span class="w"> </span>--stiffness<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>--damping<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
-<h3 id="send-cmd-pos-vel">send-cmd-pos-vel<a class="headerlink" href="#send-cmd-pos-vel" title="Permanent link">&para;</a></h3>
+<h4 id="send-cmd-pos-vel">send-cmd-pos-vel<a class="headerlink" href="#send-cmd-pos-vel" title="Permanent link">&para;</a></h4>
 <p>Send <a href="../../concept/motor-control-modes/#pos-vel-mode">POS_VEL mode</a> command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for control mode details.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>damiao<span class="w"> </span>send-cmd-pos-vel<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>damiao<span class="w"> </span>send-cmd-pos-vel<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1481,15 +1755,15 @@
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># POS_VEL mode</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>damiao<span class="w"> </span>send-cmd-pos-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">2</span>.0
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># With custom frequency</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>damiao<span class="w"> </span>send-cmd-pos-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">2</span>.0<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># POS_VEL mode</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>damiao<span class="w"> </span>send-cmd-pos-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">2</span>.0
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># With custom frequency</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>damiao<span class="w"> </span>send-cmd-pos-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">2</span>.0<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
-<h3 id="send-cmd-vel">send-cmd-vel<a class="headerlink" href="#send-cmd-vel" title="Permanent link">&para;</a></h3>
+<h4 id="send-cmd-vel">send-cmd-vel<a class="headerlink" href="#send-cmd-vel" title="Permanent link">&para;</a></h4>
 <p>Send <a href="../../concept/motor-control-modes/#vel-mode">VEL mode</a> command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for control mode details.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>damiao<span class="w"> </span>send-cmd-vel<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>damiao<span class="w"> </span>send-cmd-vel<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1534,15 +1808,15 @@
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># VEL mode</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>damiao<span class="w"> </span>send-cmd-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--velocity<span class="w"> </span><span class="m">3</span>.0
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># With custom frequency</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>damiao<span class="w"> </span>send-cmd-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--velocity<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># VEL mode</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>damiao<span class="w"> </span>send-cmd-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--velocity<span class="w"> </span><span class="m">3</span>.0
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># With custom frequency</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>damiao<span class="w"> </span>send-cmd-vel<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--velocity<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
-<h3 id="send-cmd-force-pos">send-cmd-force-pos<a class="headerlink" href="#send-cmd-force-pos" title="Permanent link">&para;</a></h3>
+<h4 id="send-cmd-force-pos">send-cmd-force-pos<a class="headerlink" href="#send-cmd-force-pos" title="Permanent link">&para;</a></h4>
 <p>Send <a href="../../concept/motor-control-modes/#force-pos-mode">FORCE_POS mode</a> command to motor. Loops continuously until Ctrl+C. See <a href="../../concept/motor-control-modes/">Motor Control Modes</a> for control mode details.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1597,15 +1871,15 @@
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># FORCE_POS mode</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">50</span>.0<span class="w"> </span>--torque-limit-ratio<span class="w"> </span><span class="m">0</span>.8
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># With custom frequency</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">50</span>.0<span class="w"> </span>--torque-limit-ratio<span class="w"> </span><span class="m">0</span>.8<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># FORCE_POS mode</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">50</span>.0<span class="w"> </span>--torque-limit-ratio<span class="w"> </span><span class="m">0</span>.8
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># With custom frequency</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>damiao<span class="w"> </span>send-cmd-force-pos<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--position<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>--velocity-limit<span class="w"> </span><span class="m">50</span>.0<span class="w"> </span>--torque-limit-ratio<span class="w"> </span><span class="m">0</span>.8<span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
-<h3 id="set-zero-command">set-zero-command<a class="headerlink" href="#set-zero-command" title="Permanent link">&para;</a></h3>
+<h4 id="set-zero-command">set-zero-command<a class="headerlink" href="#set-zero-command" title="Permanent link">&para;</a></h4>
 <p>Send zero command to a motor (pos=0, vel=0, torq=0, kp=0, kd=0). Loops continuously until Ctrl+C.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>damiao<span class="w"> </span>set-zero-command<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>damiao<span class="w"> </span>set-zero-command<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1645,15 +1919,15 @@
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Send zero command continuously</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>damiao<span class="w"> </span>set-zero-command<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># With custom frequency</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>damiao<span class="w"> </span>set-zero-command<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Send zero command continuously</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>damiao<span class="w"> </span>set-zero-command<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># With custom frequency</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>damiao<span class="w"> </span>set-zero-command<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--frequency<span class="w"> </span><span class="m">50</span>.0
 </span></code></pre></div></p>
-<h3 id="set-zero-position">set-zero-position<a class="headerlink" href="#set-zero-position" title="Permanent link">&para;</a></h3>
+<h4 id="set-zero-position">set-zero-position<a class="headerlink" href="#set-zero-position" title="Permanent link">&para;</a></h4>
 <p>Set the current output shaft position to zero.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>damiao<span class="w"> </span>set-zero-position<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>damiao<span class="w"> </span>set-zero-position<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1688,14 +1962,15 @@
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Set current position to zero</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>damiao<span class="w"> </span>set-zero-position<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Set current position to zero</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>damiao<span class="w"> </span>set-zero-position<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span>
 </span></code></pre></div></p>
-<h3 id="set-can-timeout">set-can-timeout<a class="headerlink" href="#set-can-timeout" title="Permanent link">&para;</a></h3>
+<h3 id="register-and-id-configuration">Register and ID Configuration<a class="headerlink" href="#register-and-id-configuration" title="Permanent link">&para;</a></h3>
+<h4 id="set-can-timeout">set-can-timeout<a class="headerlink" href="#set-can-timeout" title="Permanent link">&para;</a></h4>
 <p>Set CAN timeout alarm time (register 9).
 Register 9 stores timeout in units of 50 microseconds: <strong>1 register unit = 50 microseconds</strong>.
 The CLI converts milliseconds using <code>register_value = timeout_ms * 20</code>.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>damiao<span class="w"> </span>set-can-timeout<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>damiao<span class="w"> </span>set-can-timeout<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1735,12 +2010,12 @@ The CLI converts milliseconds using <code>register_value = timeout_ms * 20</code
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Set CAN timeout to 1000 ms</span>
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>damiao<span class="w"> </span>set-can-timeout<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--timeout<span class="w"> </span><span class="m">1000</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1"># Set CAN timeout to 1000 ms</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>damiao<span class="w"> </span>set-can-timeout<span class="w"> </span>--id<span class="w"> </span><span class="m">1</span><span class="w"> </span>--timeout<span class="w"> </span><span class="m">1000</span>
 </span></code></pre></div></p>
-<h3 id="set-motor-id">set-motor-id<a class="headerlink" href="#set-motor-id" title="Permanent link">&para;</a></h3>
-<p>Change the motor's receive ID (ESC_ID, register 8). This is the ID used to send commands to the motor.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>damiao<span class="w"> </span>set-motor-id<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<h4 id="set-motor-id">set-motor-id<a class="headerlink" href="#set-motor-id" title="Permanent link">&para;</a></h4>
+<p>Change the motor's receive ID (ESC_ID, <a href="../../concept/registers/#reg-8-esc-id">register 8</a>). This is the ID used to send commands to the motor.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>damiao<span class="w"> </span>set-motor-id<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1780,16 +2055,16 @@ The CLI converts milliseconds using <code>register_value = timeout_ms * 20</code
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Change motor ID from 1 to 2</span>
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>damiao<span class="w"> </span>set-motor-id<span class="w"> </span>--current<span class="w"> </span><span class="m">1</span><span class="w"> </span>--target<span class="w"> </span><span class="m">2</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># Change motor ID from 1 to 2</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>damiao<span class="w"> </span>set-motor-id<span class="w"> </span>--current<span class="w"> </span><span class="m">1</span><span class="w"> </span>--target<span class="w"> </span><span class="m">2</span>
 </span></code></pre></div></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>After changing the motor ID, you will need to use the new ID to communicate with the motor.</p>
 </div>
-<h3 id="set-feedback-id">set-feedback-id<a class="headerlink" href="#set-feedback-id" title="Permanent link">&para;</a></h3>
-<p>Change the motor's feedback ID (MST_ID, register 7). This is the ID used to identify feedback messages from the motor.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>damiao<span class="w"> </span>set-feedback-id<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<h4 id="set-feedback-id">set-feedback-id<a class="headerlink" href="#set-feedback-id" title="Permanent link">&para;</a></h4>
+<p>Change the motor's feedback ID (MST_ID, <a href="../../concept/registers/#reg-7-mst-id">register 7</a>). This is the ID used to identify feedback messages from the motor.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>damiao<span class="w"> </span>set-feedback-id<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table>
@@ -1829,65 +2104,12 @@ The CLI converts milliseconds using <code>register_value = timeout_ms * 20</code
 </tbody>
 </table>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Change feedback ID to 3 (using motor ID 1 to connect)</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>damiao<span class="w"> </span>set-feedback-id<span class="w"> </span>--current<span class="w"> </span><span class="m">1</span><span class="w"> </span>--target<span class="w"> </span><span class="m">3</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># Change feedback ID to 3 (using motor ID 1 to connect)</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>damiao<span class="w"> </span>set-feedback-id<span class="w"> </span>--current<span class="w"> </span><span class="m">1</span><span class="w"> </span>--target<span class="w"> </span><span class="m">3</span>
 </span></code></pre></div></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The motor will now respond with feedback using the new feedback ID.</p>
-</div>
-<h3 id="gui">gui<a class="headerlink" href="#gui" title="Permanent link">&para;</a></h3>
-<p>Launch the web-based GUI for viewing and controlling DaMiao motors.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>damiao<span class="w"> </span>gui<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
-</span></code></pre></div>
-<p><strong>Options:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--host</code></td>
-<td><code>STR</code></td>
-<td>Host to bind to (default: 127.0.0.1)</td>
-</tr>
-<tr>
-<td><code>--port</code></td>
-<td><code>INT</code></td>
-<td>Port to bind to (default: 5000)</td>
-</tr>
-<tr>
-<td><code>--debug</code></td>
-<td>flag</td>
-<td>Enable debug mode</td>
-</tr>
-<tr>
-<td><code>--production</code></td>
-<td>flag</td>
-<td>Use production WSGI server (requires waitress)</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># Start GUI on default host and port (http://127.0.0.1:5000)</span>
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>damiao<span class="w"> </span>gui
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
-</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="c1"># Start GUI on custom port</span>
-</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>damiao<span class="w"> </span>gui<span class="w"> </span>--port<span class="w"> </span><span class="m">8080</span>
-</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>
-</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="c1"># Start GUI on all interfaces</span>
-</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>damiao<span class="w"> </span>gui<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0
-</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>
-</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="c1"># Start GUI with production server</span>
-</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>damiao<span class="w"> </span>gui<span class="w"> </span>--production
-</span></code></pre></div></p>
-<div class="admonition note">
-<p class="admonition-title">Backward Compatibility</p>
-<p>Use <code>damiao gui</code> to launch the GUI.</p>
 </div>
 <h2 id="global-options">Global Options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
 <p>All commands support the following global options:</p>
@@ -1918,12 +2140,12 @@ The CLI converts milliseconds using <code>register_value = timeout_ms * 20</code
 </tbody>
 </table>
 <p>These options can be specified either before or after the subcommand:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>damiao<span class="w"> </span>--channel<span class="w"> </span>can1<span class="w"> </span>scan
-</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--channel<span class="w"> </span>can1
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>damiao<span class="w"> </span>--channel<span class="w"> </span>can1<span class="w"> </span>scan
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--channel<span class="w"> </span>can1
 </span></code></pre></div>
 <h2 id="real-time-feedback">Real-time Feedback<a class="headerlink" href="#real-time-feedback" title="Permanent link">&para;</a></h2>
 <p>All looping send commands (<code>send-cmd-mit</code>, <code>send-cmd-pos-vel</code>, <code>send-cmd-vel</code>, <code>send-cmd-force-pos</code>, <code>set-zero-command</code>) continuously print motor state information:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>State: 1 (ENABLED) | Pos:   1.234 rad | Vel:   0.567 rad/s | Torq:   0.123 Nm | T_mos: 45.0°C | T_rotor: 50.0°C
+<div class="language-text highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>State: 1 (ENABLED) | Pos:   1.234 rad | Vel:   0.567 rad/s | Torq:   0.123 Nm | T_mos: 45.0°C | T_rotor: 50.0°C
 </span></code></pre></div>
 <p>The state information includes:
 - <strong>State</strong>: Status code and human-readable status name
