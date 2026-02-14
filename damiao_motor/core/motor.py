@@ -599,6 +599,8 @@ class DaMiaoMotor:
         Note:
             Before using this method, ensure that the motor's control mode register (register 10)
             is set to MIT mode (value 1). Use `ensure_control_mode("MIT")` or `set_control_mode(1)`.
+            Documentation: [MIT mode](https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#mit-mode) and
+            [Communication Protocol message types](https://jia-xie.github.io/python-damiao-driver/dev/concept/communication-protocol/#message-types).
         """
         self._check_motor_status()
         data = self.encode_cmd_msg(
@@ -621,6 +623,8 @@ class DaMiaoMotor:
         Note:
             Before using this method, ensure that the motor's control mode register (register 10)
             is set to POS_VEL mode (value 2). Use `ensure_control_mode("POS_VEL")` or `set_control_mode(2)`.
+            Documentation: [POS_VEL mode](https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#pos-vel-mode) and
+            [Communication Protocol message types](https://jia-xie.github.io/python-damiao-driver/dev/concept/communication-protocol/#message-types).
         """
         self._check_motor_status()
         # POS_VEL Mode: CAN ID 0x100 + motor_id
@@ -641,6 +645,8 @@ class DaMiaoMotor:
         Note:
             Before using this method, ensure that the motor's control mode register (register 10)
             is set to VEL mode (value 3). Use `ensure_control_mode("VEL")` or `set_control_mode(3)`.
+            Documentation: [VEL mode](https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#vel-mode) and
+            [Communication Protocol message types](https://jia-xie.github.io/python-damiao-driver/dev/concept/communication-protocol/#message-types).
         """
         self._check_motor_status()
         # VEL Mode: CAN ID 0x200 + motor_id
@@ -670,6 +676,8 @@ class DaMiaoMotor:
         Note:
             Before using this method, ensure that the motor's control mode register (register 10)
             is set to FORCE_POS mode (value 4). Use `ensure_control_mode("FORCE_POS")` or `set_control_mode(4)`.
+            Documentation: [FORCE_POS mode](https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/#force-pos-mode) and
+            [Communication Protocol message types](https://jia-xie.github.io/python-damiao-driver/dev/concept/communication-protocol/#message-types).
         """
         self._check_motor_status()
         # FORCE_POS Mode: CAN ID 0x300 + motor_id
@@ -725,6 +733,8 @@ class DaMiaoMotor:
             Before using this method to send commands, ensure that the motor's control mode register (register 10)
             is set to match the desired control_mode argument ("MIT", "POS_VEL", "VEL", or "FORCE_POS").
             If the register does not match, the motor will not respond to commands and will not move.
+            Documentation: [Motor control modes](https://jia-xie.github.io/python-damiao-driver/dev/concept/motor-control-modes/)
+            and [Communication Protocol message types](https://jia-xie.github.io/python-damiao-driver/dev/concept/communication-protocol/#message-types).
         """
         if control_mode == "MIT":
             self.send_cmd_mit(
