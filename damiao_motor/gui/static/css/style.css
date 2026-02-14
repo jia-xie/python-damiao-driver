@@ -588,6 +588,17 @@
         .store-params-info:focus-within .store-params-tooltip {
             display: block;
         }
+        .register-action-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .register-write-info .store-params-tooltip {
+            left: auto;
+            right: 0;
+            width: 320px;
+        }
         .toggle-switch-container {
             display: flex;
             align-items: center;

@@ -21,6 +21,22 @@ app = Flask(__name__, template_folder=_template_dir, static_folder=_static_dir)
 _controller: Optional[DaMiaoController] = None
 _motors: Dict[int, Any] = {}
 
+TIMEOUT_REGISTER_ID = 9
+TIMEOUT_REGISTER_UNITS_PER_MS = 20.0
+
+
+def _timeout_register_units_to_ms(value: float | int) -> float:
+    """Convert register 9 raw units to milliseconds for GUI display."""
+    return float(value) / TIMEOUT_REGISTER_UNITS_PER_MS
+
+
+def _timeout_ms_to_register_units(timeout_ms: float | int) -> int:
+    """Convert milliseconds to register 9 raw units for motor write."""
+    timeout_ms_float = float(timeout_ms)
+    if timeout_ms_float < 0:
+        raise ValueError("Timeout must be >= 0 ms")
+    return int(round(timeout_ms_float * TIMEOUT_REGISTER_UNITS_PER_MS))
+
 
 def init_controller(channel: str = "can0", bustype: str = "socketcan") -> None:
     """Initialize the CAN controller."""
@@ -242,7 +258,11 @@ def scan():
 
 @app.route("/api/motors/<int:motor_id>/registers", methods=["GET"])
 def get_registers(motor_id: int):
-    """Get all registers for a motor."""
+    """
+    Get all registers for a motor.
+
+    Register 9 (TIMEOUT) is returned in milliseconds for Web GUI display.
+    """
     global _motors
     try:
         if motor_id not in _motors:
@@ -257,6 +277,9 @@ def get_registers(motor_id: int):
         clean_registers = {}
         for rid, value in registers.items():
             if not isinstance(value, str) or not value.startswith("ERROR"):
+                if rid == TIMEOUT_REGISTER_ID:
+                    clean_registers[rid] = _timeout_register_units_to_ms(value)
+                    continue
                 clean_registers[rid] = value
 
         return jsonify(
@@ -275,9 +298,9 @@ def set_register(motor_id: int, rid: int):
     """
     Set a register value.
 
-    For register 9 (TIMEOUT), this endpoint expects the raw register value.
-    Register 9 stores timeout in units of 50 microseconds:
-    1 register unit = 50 microseconds.
+    For register 9 (TIMEOUT), this endpoint expects milliseconds.
+    Register 9 stores timeout in units of 50 microseconds internally:
+    register_value = timeout_ms * 20.
     """
     global _controller, _motors
     try:
@@ -304,10 +327,11 @@ def set_register(motor_id: int, rid: int):
 
         motor = _motors[motor_id]
 
-        # Register 9 stores timeout in units of 50 microseconds:
-        # 1 register unit = 50 microseconds.
-        # Convert from milliseconds with: register_value = timeout_ms * 20
-        motor.write_register(rid, value)
+        if rid == TIMEOUT_REGISTER_ID:
+            register_value = _timeout_ms_to_register_units(value)
+            motor.write_register(rid, register_value)
+        else:
+            motor.write_register(rid, value)
 
         # If we changed register 7 (MST_ID/feedback_id) or 8 (ESC_ID/receive_id),
         # we need to update the motor's IDs and controller mappings

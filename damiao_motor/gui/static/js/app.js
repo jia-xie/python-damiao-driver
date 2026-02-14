@@ -308,6 +308,9 @@ let currentMotorId = null;
                 if (!regInfo) return;
                 
                 const isReadOnly = regInfo.access === 'RO';
+                const displayDescription = rid === 9
+                    ? 'Timeout alarm time (ms in GUI; internally 1 unit = 50 microseconds)'
+                    : regInfo.description;
                 
                 // Special handling for hex registers (7, 8) and dropdowns (10, 35)
                 let valueStr, inputHtml;
@@ -349,6 +352,15 @@ let currentMotorId = null;
                         });
                         inputHtml += `</select>`;
                     }
+                } else if (rid === 9) {
+                    // TIMEOUT register is shown/edited in milliseconds in GUI
+                    const timeoutMs = typeof value === 'string' ? parseFloat(value) : Number(value);
+                    const timeoutStr = Number.isFinite(timeoutMs) ? timeoutMs.toFixed(3).replace(/\.?0+$/, '') : String(value);
+                    valueStr = `${timeoutStr} ms`;
+
+                    if (!isReadOnly) {
+                        inputHtml = `<input type="number" step="0.05" min="0" id="input-${rid}" value="${timeoutStr}">`;
+                    }
                 } else if (rid === 7 || rid === 8) {
                     // Hex display for MST_ID and ESC_ID
                     const numValue = typeof value === 'string' ? 0 : parseInt(value);
@@ -368,7 +380,7 @@ let currentMotorId = null;
                 }
                 
                 html += `<tr class="${isReadOnly ? 'read-only' : ''}">`;
-                html += `<td>${regInfo.description}</td>`;
+                html += `<td>${displayDescription}</td>`;
                 html += `<td class="value-cell"><div class="value-cell-content">`;
                 html += `<span class="value-display" id="value-${rid}">${valueStr}</span>`;
                 if (!isReadOnly) {
@@ -377,12 +389,24 @@ let currentMotorId = null;
                     html += `</span>`;
                 }
                 html += `</div></td>`;
-                html += `<td>${regInfo.data_type}</td>`;
+                html += `<td>${rid === 9 ? 'ms (GUI)' : regInfo.data_type}</td>`;
                 html += `<td>`;
                 if (!isReadOnly) {
+                    html += `<div class="register-action-group">`;
                     html += `<button class="edit-btn" onclick="editRegister(${rid})" id="edit-btn-${rid}">Edit</button>`;
-                    html += `<button class="save-btn" onclick="saveRegister(${rid})" id="save-btn-${rid}" style="display:none;">Save</button>`;
+                    html += `<button class="save-btn" onclick="saveRegister(${rid})" id="save-btn-${rid}" style="display:none;">Write</button>`;
                     html += `<button class="cancel-btn" onclick="cancelEdit(${rid})" id="cancel-btn-${rid}" style="display:none;">Cancel</button>`;
+                    html += `
+                        <span class="store-params-info register-write-info" id="write-info-${rid}" style="display:none;">
+                            <button type="button" class="store-params-info-btn" aria-label="About Write vs Store">ⓘ</button>
+                            <span class="store-params-tooltip">
+                                <strong>Write</strong> applies this value at runtime.
+                                Use <strong>Store Parameters</strong> in the <strong>Motor Control</strong> section to persist after power cycle.
+                                See <a href="https://jia-xie.github.io/python-damiao-driver/dev/concept/registers/#registers-web-gui" target="_blank" rel="noopener noreferrer">register docs</a>.
+                            </span>
+                        </span>
+                    `;
+                    html += `</div>`;
                 } else {
                     html += `<span style="color: #999;">Read Only</span>`;
                 }
@@ -400,6 +424,10 @@ let currentMotorId = null;
             document.getElementById(`edit-btn-${rid}`).style.display = 'none';
             document.getElementById(`save-btn-${rid}`).style.display = 'inline-block';
             document.getElementById(`cancel-btn-${rid}`).style.display = 'inline-block';
+            const writeInfo = document.getElementById(`write-info-${rid}`);
+            if (writeInfo) {
+                writeInfo.style.display = 'inline-flex';
+            }
         }
 
         function cancelEdit(rid) {
@@ -408,6 +436,10 @@ let currentMotorId = null;
             document.getElementById(`edit-btn-${rid}`).style.display = 'inline-block';
             document.getElementById(`save-btn-${rid}`).style.display = 'none';
             document.getElementById(`cancel-btn-${rid}`).style.display = 'none';
+            const writeInfo = document.getElementById(`write-info-${rid}`);
+            if (writeInfo) {
+                writeInfo.style.display = 'none';
+            }
             
             // Restore original value with proper formatting
             const regInfo = window.registerTable[rid];
@@ -416,6 +448,9 @@ let currentMotorId = null;
             
             if (rid === 35 || rid === 10) {
                 input.value = originalValue;
+            } else if (rid === 9) {
+                const timeoutMs = typeof originalValue === 'string' ? parseFloat(originalValue) : Number(originalValue);
+                input.value = Number.isFinite(timeoutMs) ? timeoutMs.toFixed(3).replace(/\.?0+$/, '') : '';
             } else if (rid === 7 || rid === 8) {
                 const numValue = typeof originalValue === 'string' ? 0 : parseInt(originalValue);
                 input.value = `0x${numValue.toString(16).toUpperCase().padStart(3, '0')}`;
@@ -436,6 +471,9 @@ let currentMotorId = null;
             } else if (rid === 10) {
                 // Dropdown for control mode
                 newValue = parseInt(input.value);
+            } else if (rid === 9) {
+                // Timeout is edited in milliseconds in GUI
+                newValue = parseFloat(input.value);
             } else if (rid === 7 || rid === 8) {
                 // Hex input for MST_ID and ESC_ID
                 const inputValue = input.value.trim();
@@ -457,7 +495,7 @@ let currentMotorId = null;
                 return;
             }
             
-            showStatus('Saving register...', 'info');
+            showStatus('Writing register...', 'info');
             
             try {
                 const response = await fetch(`/api/motors/${currentMotorId}/registers/${rid}`, {
@@ -489,12 +527,12 @@ let currentMotorId = null;
                             // Motor ID changed, update our reference
                             const oldMotorId = currentMotorId;
                             currentMotorId = data.updated_ids.motor_id;
-                            showStatus(`Register saved. Motor ID changed from ${oldMotorId} to ${currentMotorId}. Rescanning...`, 'info');
+                            showStatus(`Register written. Motor ID changed from ${oldMotorId} to ${currentMotorId}. Rescanning...`, 'info');
                         } else if (data.updated_ids.feedback_id !== undefined) {
-                            showStatus(`Register saved. Feedback ID changed to ${data.updated_ids.feedback_id}. Rescanning...`, 'info');
+                            showStatus(`Register written. Feedback ID changed to ${data.updated_ids.feedback_id}. Rescanning...`, 'info');
                         }
                     } else {
-                        showStatus('Register saved. Rescanning motors and reloading registers...', 'info');
+                        showStatus('Register written. Rescanning motors and reloading registers...', 'info');
                     }
                     
                     // Rescan motors to find motor with new IDs
@@ -511,12 +549,12 @@ let currentMotorId = null;
                         await loadMotorRegisters();
                     }
                     
-                    showStatus('Register saved and data refreshed', 'success');
+                    showStatus('Register written and data refreshed', 'success');
                 } else {
-                    showStatus('Failed to save: ' + (data.error || 'Unknown error'), 'error');
+                    showStatus('Failed to write: ' + (data.error || 'Unknown error'), 'error');
                 }
             } catch (error) {
-                console.error('Save register error:', error);
+                console.error('Write register error:', error);
                 showStatus('Error: ' + error.message, 'error');
             }
         }
