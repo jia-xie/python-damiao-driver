@@ -1077,32 +1077,32 @@
 <h1 id="registers">Registers<a class="headerlink" href="#registers" title="Permanent link">&para;</a></h1>
 <p>This page documents all motor registers available in the DaMiao motor.</p>
 <h2 id="how-it-works">How it works?<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
-<p><strong>Register Persistence (RAM vs Flash)</strong></p>
-<p>When you write a register, it is applied immediately, but by default it is a runtime value (RAM).</p>
+<p><strong>Register Persistence (Write vs Store)</strong></p>
+<p><code>write</code> and <code>store</code> are two different operations:</p>
 <ul>
-<li>RAM write: takes effect now, but is lost after power cycle.</li>
-<li>Flash write: survives power cycle.</li>
+<li><strong>Write</strong> (<a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.write_register"><code>write_register</code></a>): update register value in RAM immediately (runtime only).</li>
+<li><strong>Store</strong> (<a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters</code></a>): persist current runtime register values to flash (survives power cycle).</li>
 </ul>
 <p><strong>Python API (<code>damiao_motor/core/motor.py</code>)</strong></p>
-<p>Use these methods on <code>DaMiaoMotor</code>:</p>
+<p>Use these methods on <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor"><code>DaMiaoMotor</code></a>:</p>
 <ul>
-<li><code>write_register(rid, value)</code> to write one register.</li>
-<li>Most <code>set_*</code> helper methods (for example <code>set_control_mode</code>, <code>set_speed_loop_kp</code>, <code>set_can_timeout</code>) internally call <code>write_register</code>.</li>
-<li><code>store_parameters()</code> to save current parameters to flash.</li>
-<li><code>set_can_baud_rate(...)</code> writes register <code>35</code> and then stores to flash automatically.</li>
+<li><a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.write_register"><code>write_register(rid, value)</code></a> to write one register at runtime (RAM).</li>
+<li>Most <code>set_*</code> helper methods (for example <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.set_control_mode"><code>set_control_mode</code></a>, <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.set_speed_loop_kp"><code>set_speed_loop_kp</code></a>, <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.set_can_timeout"><code>set_can_timeout</code></a>) internally call <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.write_register"><code>write_register</code></a>.</li>
+<li><a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a> to store current runtime parameters to flash.</li>
+<li><a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.set_can_baud_rate"><code>set_can_baud_rate(...)</code></a> writes register <code>35</code> and then calls store automatically.</li>
 </ul>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Write to register (RAM, immediate but NOT persistent)</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">motor</span><span class="o">.</span><span class="n">write_register</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>  <span class="c1"># KP_ASR</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Persist current parameters to flash</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Store current runtime parameters to flash (persistent)</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">motor</span><span class="o">.</span><span class="n">store_parameters</span><span class="p">()</span>
 </span></code></pre></div>
 <p><span id="registers-web-gui"></span>
-<strong>Web GUI</strong></p>
+<strong>Web GUI (Write vs Store)</strong></p>
 <ul>
-<li>Editing a register in the Web GUI writes it at runtime first.</li>
-<li>Click <code>Store Parameters</code> to write current parameters to flash.</li>
-<li>In current implementation, changing register <code>7</code> (<code>MST_ID</code>) or <code>8</code> (<code>ESC_ID</code>) also triggers a flash store automatically.</li>
+<li>Editing a register in the Web GUI performs a runtime write first.</li>
+<li>Click <code>Store Parameters</code> to store current runtime values to flash.</li>
+<li>In current implementation, changing register <code>7</code> (<code>MST_ID</code>) or <code>8</code> (<code>ESC_ID</code>) also triggers store automatically.</li>
 </ul>
 <p><img alt="Register Parameters – Description, Value, Type, Action; Edit with Save/Cancel for RW registers" src="../../package-usage/screenshots/registers.png" /></p>
 <p><strong>CLI</strong></p>
@@ -1111,29 +1111,29 @@
 <thead>
 <tr>
 <th>Command</th>
-<th>Register write</th>
-<th>Flash persistence</th>
+<th>Write action (RAM)</th>
+<th>Store behavior (flash)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>damiao set-motor-id</code></td>
 <td>Writes register <code>8</code> (<code>ESC_ID</code>)</td>
-<td>Yes (calls <code>store_parameters()</code>)</td>
+<td>Yes (calls <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a>)</td>
 </tr>
 <tr>
 <td><code>damiao set-feedback-id</code></td>
 <td>Writes register <code>7</code> (<code>MST_ID</code>)</td>
-<td>Yes (calls <code>store_parameters()</code>)</td>
+<td>Yes (calls <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a>)</td>
 </tr>
 <tr>
 <td><code>damiao set-can-timeout</code></td>
 <td>Writes register <code>9</code> (<code>TIMEOUT</code>, 1 register unit = 50 microseconds)</td>
-<td>Yes (calls <code>store_parameters()</code>)</td>
+<td>Yes (calls <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a>)</td>
 </tr>
 </tbody>
 </table>
-<p>Other CLI control commands (<code>send-cmd-*</code>, <code>set-zero-command</code>, <code>set-zero-position</code>) do not store parameters to flash.</p>
+<p>Other CLI control commands (<code>send-cmd-*</code>, <code>set-zero-command</code>, <code>set-zero-position</code>) do not call store, so parameter changes are not persisted.</p>
 <p><strong>CAN Baud Rate Codes</strong></p>
 <p>The <code>CAN_BAUD_RATE_CODES</code> dictionary maps baud rate codes to actual baud rates:</p>
 <table>
@@ -1188,7 +1188,7 @@
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Write to a register (only RW registers can be written)</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">motor</span><span class="o">.</span><span class="n">write_register</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">)</span>  <span class="c1"># Set MST_ID to 1 (RAM)</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Keep the change after power cycle</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Store to keep the change after power cycle</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">motor</span><span class="o">.</span><span class="n">store_parameters</span><span class="p">()</span>
 </span></code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">damiao_motor</span><span class="w"> </span><span class="kn">import</span> <span class="n">REGISTER_TABLE</span>

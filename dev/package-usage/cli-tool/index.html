@@ -864,10 +864,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#register-persistence-ram-vs-flash" class="md-nav__link">
+  <a href="#register-persistence-write-vs-store" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Register Persistence (RAM vs Flash)
+        Register Persistence (Write vs Store)
       
     </span>
   </a>
@@ -1258,32 +1258,37 @@
 <p class="admonition-title">Understand modes faster</p>
 <p>To better understand control mode behavior, use <a href="../web-gui/"><code>damiao gui</code></a> for interactive switching and live feedback, then use CLI commands for repeatable workflows.</p>
 </div>
-<h2 id="register-persistence-ram-vs-flash">Register Persistence (RAM vs Flash)<a class="headerlink" href="#register-persistence-ram-vs-flash" title="Permanent link">&para;</a></h2>
+<h2 id="register-persistence-write-vs-store">Register Persistence (Write vs Store)<a class="headerlink" href="#register-persistence-write-vs-store" title="Permanent link">&para;</a></h2>
+<p>Terminology:</p>
+<ul>
+<li><strong>Write</strong>: runtime register update in RAM.</li>
+<li><strong>Store</strong>: persist current runtime values to flash.</li>
+</ul>
 <p>Register writes are applied immediately at runtime. To keep them after power cycle, they must be stored to flash.</p>
 <p>Based on current CLI code behavior:</p>
 <table>
 <thead>
 <tr>
 <th>Command</th>
-<th>Register write</th>
-<th>Persistence behavior</th>
+<th>Write action (RAM)</th>
+<th>Store behavior (flash)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>damiao set-motor-id</code></td>
 <td>Writes register <code>8</code> (<code>ESC_ID</code>)</td>
-<td>Also calls <code>store_parameters()</code> -&gt; persisted to flash</td>
+<td>Also calls <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a> -&gt; persisted to flash</td>
 </tr>
 <tr>
 <td><code>damiao set-feedback-id</code></td>
 <td>Writes register <code>7</code> (<code>MST_ID</code>)</td>
-<td>Also calls <code>store_parameters()</code> -&gt; persisted to flash</td>
+<td>Also calls <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a> -&gt; persisted to flash</td>
 </tr>
 <tr>
 <td><code>damiao set-can-timeout</code></td>
 <td>Writes register <code>9</code> (<code>TIMEOUT</code>, 1 register unit = 50 microseconds)</td>
-<td>Also calls <code>store_parameters()</code> -&gt; persisted to flash</td>
+<td>Also calls <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a> -&gt; persisted to flash</td>
 </tr>
 </tbody>
 </table>

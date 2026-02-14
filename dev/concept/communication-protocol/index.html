@@ -1159,6 +1159,7 @@
 <p><strong>1. Control Commands</strong></p>
 <p>Control commands send motion commands to motors. All frames are standard CAN (<code>STD</code>) with 8-byte data payload (<code>D[0]..D[7]</code>).</p>
 <p><strong>MIT command frame</strong> (<a href="../motor-control-modes/#mit-mode">MIT mode</a>)</p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1189,7 +1190,9 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>POS_VEL command frame</strong> (<a href="../motor-control-modes/#pos-vel-mode">POS_VEL mode</a>, little-endian)</p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1220,7 +1223,9 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>VEL command frame</strong> (<a href="../motor-control-modes/#vel-mode">VEL mode</a>, little-endian)</p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1251,7 +1256,9 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>FORCE_POS command frame</strong> (<a href="../motor-control-modes/#force-pos-mode">FORCE_POS mode</a>, little-endian)</p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1282,9 +1289,11 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><code>b0</code> is the least significant byte (LSB), <code>b3</code> is the most significant byte (MSB).</p>
 <p><strong>2. System Commands</strong></p>
 <p>System commands also use <code>arbitration_id = motor_id</code> and <code>STD</code> frames:</p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1356,9 +1365,17 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>3. Register Operations</strong></p>
 <p>Register command requests use arbitration ID <code>0x7FF</code> and <code>STD</code> frames:</p>
+<p>For register semantics and persistence behavior:</p>
+<ul>
+<li>See <a href="../registers/#how-it-works">Registers: How it works?</a> for write (RAM/runtime) vs store (flash persistence) behavior (<a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.write_register"><code>write_register(...)</code></a> vs <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.store_parameters"><code>store_parameters()</code></a>).</li>
+<li>See <a href="../registers/#register-table">Register Table</a> for valid <code>RID</code>, access type (<code>RW</code>/<code>RO</code>), value range, and data type.</li>
+<li>Terminology used in this documentation: <strong>write</strong> = runtime RAM update, <strong>store</strong> = persist to flash.</li>
+</ul>
 <p><strong>Read register request (<code>D[2] = 0x33</code>)</strong></p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1389,7 +1406,9 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>Write register request (<code>D[2] = 0x55</code>)</strong></p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1420,7 +1439,9 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>Store parameters request (<code>D[2] = 0xAA</code>)</strong></p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1451,8 +1472,10 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>4. Feedback Messages</strong></p>
 <p>Motors continuously send feedback as <code>STD</code> frames:</p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1483,6 +1506,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <h4 id="status-codes">Status Codes<a class="headerlink" href="#status-codes" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
@@ -1552,6 +1576,7 @@
 </table>
 <p><strong>5. Register Reply Messages</strong></p>
 <p>Register read replies are <code>STD</code> frames:</p>
+<div class="protocol-frame">
 <table>
 <thead>
 <tr>
@@ -1582,6 +1607,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <h2 id="data-encoding">Data Encoding<a class="headerlink" href="#data-encoding" title="Permanent link">&para;</a></h2>
 <p><strong>Position/Velocity/Torque Encoding</strong></p>
 <p>Position, velocity, and torque values are encoded using a mapping function:</p>

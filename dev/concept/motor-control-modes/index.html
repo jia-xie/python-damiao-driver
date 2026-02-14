@@ -1116,10 +1116,10 @@
 </div>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Control modes determine how the motor interprets command messages. The control mode is set via <a href="../registers/">register 10 (CTRL_MODE)</a> and must match the command format being sent.</p>
-<p>API method: <a href="../../api/motor/"><code>DaMiaoMotor.ensure_control_mode()</code></a></p>
+<p>API method: <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.ensure_control_mode"><code>DaMiaoMotor.ensure_control_mode()</code></a></p>
 <p>Mode parameters marked as "Motor-specific" use the mapping limits for the selected motor type.
 See <a href="../registers/#pmax-vmax-tmax-defaults">PMAX / VMAX / TMAX defaults</a>. These registers are writable, but changing them is generally not recommended.</p>
-<p>The <code>ensure_control_mode()</code> method automatically:</p>
+<p>The <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.ensure_control_mode"><code>ensure_control_mode()</code></a> method automatically:</p>
 <ol>
 <li>
 <p>Reads the current mode from register 10</p>
