@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 680" font-family="'Times New Roman', 'STIX Two Math', Georgia, serif">
+  <defs>
+    <linearGradient id="blockGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90d9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2c6fbb;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000030"/>
+    </filter>
+    <filter id="shadowSmall" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" flood-color="#00000025"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="680" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="640" y="64" text-anchor="middle" font-size="58" font-weight="700" fill="#1e293b">CAN Bus Motor Connection</text>
+  <text x="640" y="106" text-anchor="middle" font-size="24" fill="#64748b">Daisy-chain CAN_H / CAN_L with 120Ω termination at both ends</text>
+
+  <!-- Device blocks -->
+  <rect x="170" y="170" width="230" height="170" rx="14" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="285" y="238" text-anchor="middle" font-size="50" font-weight="700" fill="white">Computer</text>
+  <text x="285" y="286" text-anchor="middle" font-size="24" fill="#dbeafe">CAN Interface</text>
+  <rect x="227" y="298" width="116" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+  <text x="285" y="323" text-anchor="middle" font-size="20" font-weight="600" fill="#059669">SocketCAN</text>
+  <circle cx="250" cy="340" r="8" fill="#0f172a"/>
+  <circle cx="320" cy="340" r="8" fill="#0f172a"/>
+
+  <rect x="460" y="170" width="230" height="170" rx="14" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="575" y="238" text-anchor="middle" font-size="50" font-weight="700" fill="white">Motor 1</text>
+  <text x="575" y="286" text-anchor="middle" font-size="24" fill="#dbeafe">ESC_ID 0x01</text>
+  <circle cx="540" cy="340" r="8" fill="#0f172a"/>
+  <circle cx="610" cy="340" r="8" fill="#0f172a"/>
+
+  <rect x="750" y="170" width="230" height="170" rx="14" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="865" y="238" text-anchor="middle" font-size="50" font-weight="700" fill="white">Motor 2</text>
+  <text x="865" y="286" text-anchor="middle" font-size="24" fill="#dbeafe">ESC_ID 0x02</text>
+  <circle cx="830" cy="340" r="8" fill="#0f172a"/>
+  <circle cx="900" cy="340" r="8" fill="#0f172a"/>
+
+  <rect x="1040" y="170" width="230" height="170" rx="14" fill="url(#blockGrad)" stroke="#1d4ed8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1155" y="238" text-anchor="middle" font-size="50" font-weight="700" fill="white">Motor 3</text>
+  <text x="1155" y="286" text-anchor="middle" font-size="24" fill="#dbeafe">ESC_ID 0x03</text>
+  <circle cx="1115" cy="340" r="8" fill="#0f172a"/>
+  <circle cx="1180" cy="340" r="8" fill="#0f172a"/>
+
+  <!-- Bus lines -->
+  <line x1="100" y1="390" x2="1220" y2="390" stroke="#334155" stroke-width="5"/>
+  <line x1="100" y1="470" x2="1220" y2="470" stroke="#334155" stroke-width="5"/>
+
+  <!-- Vertical drops from blocks to bus -->
+  <line x1="250" y1="340" x2="250" y2="390" stroke="#334155" stroke-width="4"/>
+  <line x1="320" y1="340" x2="320" y2="470" stroke="#334155" stroke-width="4"/>
+
+  <line x1="540" y1="340" x2="540" y2="390" stroke="#334155" stroke-width="4"/>
+  <line x1="610" y1="340" x2="610" y2="470" stroke="#334155" stroke-width="4"/>
+
+  <line x1="830" y1="340" x2="830" y2="390" stroke="#334155" stroke-width="4"/>
+  <line x1="900" y1="340" x2="900" y2="470" stroke="#334155" stroke-width="4"/>
+
+  <line x1="1115" y1="340" x2="1115" y2="390" stroke="#334155" stroke-width="4"/>
+  <line x1="1180" y1="340" x2="1180" y2="470" stroke="#334155" stroke-width="4"/>
+
+  <!-- Midline labels -->
+  <rect x="660" y="346" width="110" height="34" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadowSmall)"/>
+  <text x="715" y="369" text-anchor="middle" font-size="20" font-weight="700" fill="#1d4ed8">CAN<tspan font-size="14" baseline-shift="sub">H</tspan></text>
+
+  <rect x="660" y="480" width="110" height="34" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadowSmall)"/>
+  <text x="715" y="503" text-anchor="middle" font-size="20" font-weight="700" fill="#1d4ed8">CAN<tspan font-size="14" baseline-shift="sub">L</tspan></text>
+
+  <!-- Left termination -->
+  <path d="M 100 390 L 110 398 L 90 406 L 110 414 L 90 422 L 110 430 L 90 438 L 110 446 L 100 454 L 100 470"
+        fill="none" stroke="#dc2626" stroke-width="4"/>
+  <text x="132" y="432" font-size="20" fill="#dc2626" font-weight="700">120Ω</text>
+  <text x="132" y="456" font-size="15" fill="#64748b">Termination</text>
+
+  <!-- Right termination -->
+  <path d="M 1220 390 L 1230 398 L 1210 406 L 1230 414 L 1210 422 L 1230 430 L 1210 438 L 1230 446 L 1220 454 L 1220 470"
+        fill="none" stroke="#dc2626" stroke-width="4"/>
+  <text x="1220" y="374" text-anchor="middle" font-size="20" fill="#dc2626" font-weight="700">120Ω</text>
+  <text x="1220" y="498" text-anchor="middle" font-size="15" fill="#64748b">Termination</text>
+
+  <!-- Footer -->
+  <text x="640" y="620" text-anchor="middle" font-size="24" fill="#334155">
+    Keep wiring short, twisted where possible, and ensure shared signal ground between devices.
+  </text>
+</svg>
