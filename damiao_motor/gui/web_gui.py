@@ -38,7 +38,11 @@ def _timeout_ms_to_register_units(timeout_ms: float | int) -> int:
     return int(round(timeout_ms_float * TIMEOUT_REGISTER_UNITS_PER_MS))
 
 
-def init_controller(channel: str = "can0", bustype: str = "socketcan") -> None:
+def init_controller(
+    channel: str = "can0",
+    bustype: str = "socketcan",
+    bitrate: Optional[int] = None,
+) -> None:
     """Initialize the CAN controller."""
     global _controller, _motors
     # Shutdown existing controller if any
@@ -47,7 +51,7 @@ def init_controller(channel: str = "can0", bustype: str = "socketcan") -> None:
             _controller.shutdown()
         except Exception:
             pass
-    _controller = DaMiaoController(channel=channel, bustype=bustype)
+    _controller = DaMiaoController(channel=channel, bustype=bustype, bitrate=bitrate)
     _motors = {}
 
 
@@ -105,7 +109,11 @@ def connect():
     try:
         data = request.json
         channel = data.get("channel", "can0")
-        init_controller(channel=channel)
+        bustype = data.get("bustype", "socketcan")
+        bitrate = data.get("bitrate")
+        if bitrate is not None:
+            bitrate = int(bitrate)
+        init_controller(channel=channel, bustype=bustype, bitrate=bitrate)
         return jsonify({"success": True})
     except Exception as e:
         error_msg = str(e)

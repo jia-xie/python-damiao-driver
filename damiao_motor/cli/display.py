@@ -367,7 +367,7 @@ def scan_motors(
                 warning_text = f" {YELLOW}⚠ Warning: {channel} may not be properly configured{RESET}"
                 print(f"{BOX_VERTICAL}{pad_with_ansi(warning_text, 78)}{BOX_VERTICAL}")
 
-    controller = DaMiaoController(channel=channel, bustype=bustype)
+    controller = DaMiaoController(channel=channel, bustype=bustype, bitrate=bitrate)
 
     # Flush any pending messages from the bus
     line_text = " Flushing CAN bus buffer..."
@@ -475,11 +475,19 @@ def scan_motors(
                 msg = controller.bus.recv(timeout=0)
                 if msg is None:
                     break
+
+                # Skip echo frames (TX echos from gs_usb / candleLight adapters)
+                is_rx = getattr(msg, "is_rx", True)
                 data_hex = " ".join(f"{b:02X}" for b in msg.data)
-                debug_msg = f"  0x{msg.arbitration_id:03X} [{data_hex}]"
+                rx_tag = "RX" if is_rx else "TX"
+                debug_msg = f"  [{rx_tag}] 0x{msg.arbitration_id:03X} [{data_hex}]"
                 debug_messages.append(debug_msg)
                 # Print immediately in debug mode
                 print(debug_msg)
+
+                if not is_rx:
+                    continue
+
                 # Process the message manually for debug mode
                 if len(msg.data) == 8:
                     logical_id = msg.data[0] & 0x0F
@@ -507,6 +515,10 @@ def scan_motors(
                 msg = controller.bus.recv(timeout=0)
                 if msg is None:
                     break
+
+                # Skip echo frames (TX echos from gs_usb / candleLight adapters)
+                if not getattr(msg, "is_rx", True):
+                    continue
 
                 if len(msg.data) == 8:
                     logical_id = msg.data[0] & 0x0F

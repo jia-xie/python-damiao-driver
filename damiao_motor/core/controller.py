@@ -1,3 +1,4 @@
+import sys
 import threading
 import time
 from typing import Any, Dict, Iterable, Optional
@@ -5,6 +6,35 @@ from typing import Any, Dict, Iterable, Optional
 import can
 
 from .motor import DaMiaoMotor
+
+
+def _patch_gs_usb_for_macos() -> None:
+    """Patch gs_usb to handle macOS detach_kernel_driver failure.
+
+    On macOS, libusb's detach_kernel_driver is not supported and raises
+    USBError even when no kernel driver is attached.  The upstream gs_usb
+    library calls it unconditionally on non-Windows platforms, so we
+    monkey-patch the underlying pyusb device method to be a no-op for
+    detach_kernel_driver.
+    """
+    try:
+        import usb.core  # type: ignore[import-untyped]
+    except ImportError:
+        return  # pyusb not installed, nothing to patch
+
+    _original_detach = usb.core.Device.detach_kernel_driver
+
+    def _safe_detach(self, interface):  # type: ignore[no-untyped-def]
+        try:
+            _original_detach(self, interface)
+        except usb.core.USBError:
+            pass  # macOS: not supported / access denied — safe to ignore
+
+    usb.core.Device.detach_kernel_driver = _safe_detach
+
+
+if sys.platform == "darwin":
+    _patch_gs_usb_for_macos()
 
 
 class DaMiaoController:
@@ -20,8 +50,17 @@ class DaMiaoController:
         * poll feedback non-blockingly
     """
 
-    def __init__(self, channel: str = "can0", bustype: str = "socketcan") -> None:
-        self.bus: can.Bus = can.interface.Bus(channel=channel, bustype=bustype)
+    def __init__(
+        self,
+        channel: str = "can0",
+        bustype: str = "socketcan",
+        bitrate: Optional[int] = None,
+        **kwargs: Any,
+    ) -> None:
+        bus_kwargs: Dict[str, Any] = {"channel": channel, "bustype": bustype, **kwargs}
+        if bitrate is not None:
+            bus_kwargs["bitrate"] = bitrate
+        self.bus: can.Bus = can.interface.Bus(**bus_kwargs)
         # Keyed by command CAN ID (motor_id)
         self.motors: Dict[int, DaMiaoMotor] = {}
         # Keyed by logical motor ID (embedded in feedback frame)
@@ -220,6 +259,10 @@ class DaMiaoController:
                 msg = self.bus.recv(timeout=0)
                 if msg is None:
                     break
+
+                # Skip echo frames (TX echos from gs_usb / candleLight adapters)
+                if not getattr(msg, "is_rx", True):
+                    continue
 
                 if len(msg.data) != 8:
                     continue

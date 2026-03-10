@@ -1,11 +1,21 @@
 """Minimal DaMiao motor example. Sends a slow sine to position. Ctrl+C to stop."""
 
 import math
+import sys
 import time
 
 from damiao_motor import DaMiaoController
 
-controller = DaMiaoController(channel="can0", bustype="socketcan")
+# Linux (SocketCAN):
+#   controller = DaMiaoController(channel="can0", bustype="socketcan")
+# macOS (CANable / candleLight gs_usb):
+#   controller = DaMiaoController(channel=0, bustype="gs_usb", bitrate=1000000)
+
+if sys.platform == "darwin":
+    controller = DaMiaoController(channel=0, bustype="gs_usb", bitrate=1000000)
+else:
+    controller = DaMiaoController(channel="can0", bustype="socketcan")
+
 motor = controller.add_motor(motor_id=0x01, feedback_id=0x11, motor_type="4310")
 # Available motor types: 3507, 4310, 4340, 6006, 8006, 8009, 10010L,
 # 10010, H3510, G6215, H6220, JH11, 6248P

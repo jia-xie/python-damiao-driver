@@ -44,6 +44,10 @@ damiao_motor_docs = ["docs/assets/*.css"]
 damiao = "damiao_motor.cli:unified_main"
 
 [project.optional-dependencies]
+mac = [
+    "gs_usb>=0.3",
+    "pyusb>=1.2",
+]
 docs = [
     "mkdocs>=1.5.0",
     "mkdocs-material>=9.0.0",
