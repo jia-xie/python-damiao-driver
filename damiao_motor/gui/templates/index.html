@@ -20,10 +20,17 @@
             <div class="top-bar-section">
                 <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Connection</div>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <label for="can_channel" style="font-size: 13px;">CAN Channel:</label>
-                    <input type="text" id="can_channel" list="canInterfaces" value="can0" placeholder="can0" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; width: 100px;" title="Type or choose from detected interfaces">
+                    <label for="bus_type" style="font-size: 13px;">Bus Type:</label>
+                    <select id="bus_type" onchange="onBustypeChange()" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px;">
+                        <option value="socketcan">socketcan</option>
+                        <option value="gs_usb">gs_usb</option>
+                    </select>
+                    <label for="can_channel" style="font-size: 13px;">Channel:</label>
+                    <input type="text" id="can_channel" list="canInterfaces" value="can0" placeholder="can0" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; width: 80px;" title="Type or choose from detected interfaces">
                     <datalist id="canInterfaces"></datalist>
                     <button type="button" class="btn btn-secondary" onclick="loadCanInterfaces()" title="Refresh list of CAN interfaces" style="padding: 4px 8px; font-size: 12px;">↻</button>
+                    <label for="bitrate" id="bitrate_label" style="font-size: 13px; display: none;">Bitrate:</label>
+                    <input type="number" id="bitrate" value="1000000" min="10000" step="1000" style="padding: 6px; border: 1px solid #ced4da; border-radius: 4px; width: 110px; display: none;" title="CAN bitrate in bits per second">
                     <button class="btn btn-primary" onclick="connect()">Connect</button>
                     <button class="btn btn-secondary" onclick="disconnect()">Disconnect</button>
                 </div>

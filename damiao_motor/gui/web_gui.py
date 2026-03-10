@@ -79,21 +79,62 @@ def get_register_table():
     return jsonify({"success": True, "registers": registers})
 
 
+@app.route("/api/platform", methods=["GET"])
+def get_platform():
+    """Return platform info and recommended connection defaults."""
+    import sys
+
+    is_mac = sys.platform == "darwin"
+    return jsonify(
+        {
+            "success": True,
+            "platform": sys.platform,
+            "default_bustype": "gs_usb" if is_mac else "socketcan",
+            "default_channel": "0" if is_mac else "can0",
+        }
+    )
+
+
 @app.route("/api/can-interfaces", methods=["GET"])
 def list_can_interfaces():
-    """List available CAN interfaces (e.g. can0, vcan0) on the system.
-    On Linux with SocketCAN, reads /sys/class/net for names starting with 'can'.
+    """List available CAN interfaces on the system.
+
+    For socketcan (Linux): reads /sys/class/net for names starting with 'can'.
+    For gs_usb (macOS/Linux): enumerates connected gs_usb USB devices by index.
     """
+    bustype = request.args.get("bustype", "socketcan")
     interfaces = []
-    try:
-        net_dir = "/sys/class/net"
-        if os.path.isdir(net_dir):
-            for name in os.listdir(net_dir):
-                if name.startswith("can"):
-                    interfaces.append(name)
-            interfaces.sort()
-    except OSError:
-        pass
+
+    if bustype == "gs_usb":
+        # gs_usb channels are integer indices (0, 1, 2...) per connected device.
+        # Try to count connected devices via pyusb with known gs_usb VID/PIDs.
+        try:
+            import usb.core  # type: ignore[import-untyped]
+
+            # Common gs_usb-compatible device VID/PID combos (CANable, candleLight, etc.)
+            _GS_USB_IDS = [
+                (0x1D50, 0x606F),  # CANtact / candleLight / CANable
+                (0x6D04, 0x0060),  # CANable 2.0
+            ]
+            count = 0
+            for vid, pid in _GS_USB_IDS:
+                devices = usb.core.find(idVendor=vid, idProduct=pid, find_all=True)
+                if devices is not None:
+                    count += sum(1 for _ in devices)
+            interfaces = [str(i) for i in range(max(count, 1))]
+        except Exception:
+            interfaces = ["0"]
+    else:
+        try:
+            net_dir = "/sys/class/net"
+            if os.path.isdir(net_dir):
+                for name in os.listdir(net_dir):
+                    if name.startswith("can"):
+                        interfaces.append(name)
+                interfaces.sort()
+        except OSError:
+            pass
+
     return jsonify({"success": True, "interfaces": interfaces})
 
 

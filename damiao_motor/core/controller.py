@@ -9,28 +9,58 @@ from .motor import DaMiaoMotor
 
 
 def _patch_gs_usb_for_macos() -> None:
-    """Patch gs_usb to handle macOS detach_kernel_driver failure.
+    """Patch gs_usb for macOS compatibility.
 
-    On macOS, libusb's detach_kernel_driver is not supported and raises
-    USBError even when no kernel driver is attached.  The upstream gs_usb
-    library calls it unconditionally on non-Windows platforms, so we
-    monkey-patch the underlying pyusb device method to be a no-op for
-    detach_kernel_driver.
+    Applies two monkey-patches to work around macOS-specific libusb / gs_usb
+    behaviour that would otherwise prevent reconnecting without replugging:
+
+    1. ``GsUsb.start`` — the upstream ``start()`` calls ``device.reset()`` before
+       sending the GS_CAN_MODE_START control transfer.  On macOS a USB bus reset
+       causes the device to re-enumerate with a new address, which invalidates the
+       existing ``Device`` object and makes the subsequent ``ctrl_transfer`` fail
+       (~10 % of reconnect attempts).  We suppress the ``reset()`` call; the
+       GS_CAN_MODE_START ctrl_transfer is sufficient to (re-)activate the CAN
+       controller without a USB-level reset.
+
+    2. ``GsUsb.stop`` — ``stop()`` sends GS_CAN_MODE_RESET but never releases the
+       USB interface, so within the same process the interface stays soft-claimed
+       by libusb and every reconnect attempt fails.  We add a
+       ``usb.util.release_interface()`` call after the mode reset.
     """
     try:
-        import usb.core  # type: ignore[import-untyped]
+        import usb.util  # type: ignore[import-untyped]
+        from gs_usb.gs_usb import GsUsb as _GsUsb  # type: ignore[import-untyped]
     except ImportError:
-        return  # pyusb not installed, nothing to patch
+        return  # pyusb / gs_usb not installed, nothing to patch
 
-    _original_detach = usb.core.Device.detach_kernel_driver
+    # --- Patch 1: GsUsb.start — skip device.reset() ---
+    _original_gs_usb_start = _GsUsb.start
 
-    def _safe_detach(self, interface):  # type: ignore[no-untyped-def]
+    def _patched_gs_usb_start(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        # Temporarily replace reset with a no-op so that device.reset() inside
+        # start() is skipped.  On macOS the USB bus reset triggers re-enumeration
+        # which invalidates the Device object; the GS_CAN_MODE_START ctrl_transfer
+        # is sufficient to (re-)activate the CAN controller without a USB reset.
+        _orig_reset = self.gs_usb.reset
+        self.gs_usb.reset = lambda: None
         try:
-            _original_detach(self, interface)
-        except usb.core.USBError:
-            pass  # macOS: not supported / access denied — safe to ignore
+            _original_gs_usb_start(self, *args, **kwargs)
+        finally:
+            self.gs_usb.reset = _orig_reset
 
-    usb.core.Device.detach_kernel_driver = _safe_detach
+    _GsUsb.start = _patched_gs_usb_start
+
+    # --- Patch 2: GsUsb.stop — release USB interface ---
+    _original_gs_usb_stop = _GsUsb.stop
+
+    def _patched_gs_usb_stop(self):  # type: ignore[no-untyped-def]
+        _original_gs_usb_stop(self)
+        try:
+            usb.util.release_interface(self.gs_usb, 0)
+        except usb.core.USBError:
+            pass  # ignore if already released or not claimed
+
+    _GsUsb.stop = _patched_gs_usb_stop
 
 
 if sys.platform == "darwin":
@@ -57,7 +87,7 @@ class DaMiaoController:
         bitrate: Optional[int] = None,
         **kwargs: Any,
     ) -> None:
-        bus_kwargs: Dict[str, Any] = {"channel": channel, "bustype": bustype, **kwargs}
+        bus_kwargs: Dict[str, Any] = {"channel": channel, "interface": bustype, **kwargs}
         if bitrate is not None:
             bus_kwargs["bitrate"] = bitrate
         self.bus: can.Bus = can.interface.Bus(**bus_kwargs)
