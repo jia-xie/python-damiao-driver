@@ -67,6 +67,38 @@ if sys.platform == "darwin":
     _patch_gs_usb_for_macos()
 
 
+def _resolve_gs_usb_channel(channel: str) -> int:
+    """Resolve a gs_usb channel string to a device index.
+
+    Accepts either:
+    - A numeric string (``"0"``, ``"1"``, …) — used directly as the device index.
+    - A USB serial number string — scanned against connected gs_usb devices.
+
+    Args:
+        channel: Numeric index string or USB serial number.
+
+    Returns:
+        Integer device index suitable for ``can.Bus(channel=<index>, interface="gs_usb")``.
+
+    Raises:
+        RuntimeError: If no gs_usb device with the given serial number is found.
+        ImportError: If ``gs_usb`` is not installed.
+    """
+    if channel.isdigit():
+        return int(channel)
+
+    from gs_usb.gs_usb import GsUsb  # type: ignore[import-untyped]
+
+    devs = GsUsb.scan()
+    for i, dev in enumerate(devs):
+        if dev.serial_number == channel:
+            return i
+    raise RuntimeError(
+        f"No gs_usb device with serial number {channel!r} found. "
+        f"Connected devices: {[d.serial_number for d in devs]}"
+    )
+
+
 class DaMiaoController:
     """
     Simple multi-motor controller.
@@ -87,6 +119,33 @@ class DaMiaoController:
         bitrate: Optional[int] = None,
         **kwargs: Any,
     ) -> None:
+        """
+        Args:
+            channel: For ``socketcan``: the network interface name (e.g. ``"can0"``).
+                     For ``gs_usb``: either a numeric index string or a USB serial
+                     number string.
+
+                     - ``"0"``, ``"1"``, … — device index; ``"0"`` is the first
+                       detected device, ``"1"`` the second, and so on.
+                     - ``"DEADBEEF"`` (or any non-numeric string) — resolved by
+                       scanning connected devices and matching the serial number.
+
+                     To list connected gs_usb devices with their indices and serial
+                     numbers, run::
+
+                         uv run python -c "
+                         from gs_usb.gs_usb import GsUsb
+                         for i, d in enumerate(GsUsb.scan()):
+                             print(i, d.serial_number, d.gs_usb.port_numbers)
+                         "
+
+            bustype: python-can interface name (``"socketcan"`` or ``"gs_usb"``).
+            bitrate: CAN bitrate in bits/s.  Required for ``gs_usb``; ignored for
+                     ``socketcan`` (bitrate is set at the OS level via ``ip link``).
+            **kwargs: Extra arguments forwarded to ``can.interface.Bus``.
+        """
+        if bustype == "gs_usb":
+            channel = _resolve_gs_usb_channel(channel)
         bus_kwargs: Dict[str, Any] = {"channel": channel, "interface": bustype, **kwargs}
         if bitrate is not None:
             bus_kwargs["bitrate"] = bitrate
