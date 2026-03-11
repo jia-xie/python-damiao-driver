@@ -16,6 +16,8 @@ keywords = ["damiao", "motor", "can", "robotics"]
 dependencies = [
     "python-can>=4.3,<5.0",
     "flask>=3.0,<4.0",
+    "gs_usb>=0.3; sys_platform == 'darwin'",
+    "pyusb>=1.2; sys_platform == 'darwin'",
 ]
 
 [project.urls]
@@ -44,10 +46,6 @@ damiao_motor_docs = ["docs/assets/*.css"]
 damiao = "damiao_motor.cli:unified_main"
 
 [project.optional-dependencies]
-mac = [
-    "gs_usb>=0.3",
-    "pyusb>=1.2",
-]
 docs = [
     "mkdocs>=1.5.0",
     "mkdocs-material>=9.0.0",

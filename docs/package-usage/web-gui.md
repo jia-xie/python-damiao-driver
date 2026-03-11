@@ -79,10 +79,8 @@ Interface layout:
 - Use **Disconnect** to safely reset connection and clear detected motors.
 
 !!! note "macOS (gs_usb)"
-    On macOS, select **Bus Type → gs_usb** and install the `gs_usb` extra:
-    ```bash
-    pip install "damiao-motor[gs_usb]"
-    ```
+    On macOS, select **Bus Type → gs_usb**. The required `gs_usb` and `pyusb` libraries
+    are installed automatically with `pip install damiao-motor` on macOS.
     The GUI auto-detects your platform and pre-selects the correct bus type and channel on load.
 
 ![Connection bar – CAN channel, Connect, Disconnect, and status log](screenshots/connection.png){ .doc-screenshot }
