@@ -145,7 +145,9 @@ def cmd_set_zero(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         motor = controller.add_motor(
@@ -224,7 +226,9 @@ def cmd_set_motor_id(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         # Use current ID to connect
@@ -301,7 +305,9 @@ def cmd_set_zero_position(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         motor = controller.add_motor(
@@ -357,7 +363,9 @@ def cmd_set_can_timeout(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         motor = controller.add_motor(
@@ -426,7 +434,9 @@ def cmd_send_cmd_mit(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         motor = controller.add_motor(
@@ -502,7 +512,9 @@ def cmd_send_cmd_pos_vel(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         motor = controller.add_motor(
@@ -573,7 +585,9 @@ def cmd_send_cmd_vel(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         motor = controller.add_motor(
@@ -647,7 +661,9 @@ def cmd_send_cmd_force_pos(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         motor = controller.add_motor(
@@ -738,7 +754,9 @@ def cmd_set_feedback_id(args) -> None:
                 f"⚠ Warning: Could not verify {args.channel} is ready. Continuing anyway..."
             )
 
-    controller = DaMiaoController(channel=args.channel, bustype=args.bustype, bitrate=args.bitrate)
+    controller = DaMiaoController(
+        channel=args.channel, bustype=args.bustype, bitrate=args.bitrate
+    )
 
     try:
         # Use current motor ID to connect

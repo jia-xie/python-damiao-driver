@@ -146,7 +146,11 @@ class DaMiaoController:
         """
         if bustype == "gs_usb":
             channel = _resolve_gs_usb_channel(channel)
-        bus_kwargs: Dict[str, Any] = {"channel": channel, "interface": bustype, **kwargs}
+        bus_kwargs: Dict[str, Any] = {
+            "channel": channel,
+            "interface": bustype,
+            **kwargs,
+        }
         if bitrate is not None:
             bus_kwargs["bitrate"] = bitrate
         self.bus: can.Bus = can.interface.Bus(**bus_kwargs)

@@ -6,7 +6,9 @@ import time
 from damiao_motor import DaMiaoController
 
 if sys.platform == "darwin":
-    controller = DaMiaoController(channel="0046002E594E501820313332", bustype="gs_usb", bitrate=1000000)
+    controller = DaMiaoController(
+        channel="0046002E594E501820313332", bustype="gs_usb", bitrate=1000000
+    )
 else:
     controller = DaMiaoController(channel="can0", bustype="socketcan")
 
