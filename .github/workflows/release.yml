@@ -86,6 +86,6 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.version }}
           body_path: release_notes.md
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(steps.tag_version.outputs.version, 'a') || contains(steps.tag_version.outputs.version, 'b') || contains(steps.tag_version.outputs.version, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
