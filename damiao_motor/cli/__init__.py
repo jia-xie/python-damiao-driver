@@ -22,6 +22,14 @@ from .commands import (
 )
 from .formatter import ColorizedHelpFormatter
 
+# Platform-aware defaults: macOS uses gs_usb (CANable/candleLight), Linux uses socketcan
+if sys.platform == "darwin":
+    _DEFAULT_CHANNEL = "0"
+    _DEFAULT_BUSTYPE = "gs_usb"
+else:
+    _DEFAULT_CHANNEL = "can0"
+    _DEFAULT_BUSTYPE = "socketcan"
+
 
 def unified_main() -> None:
     """
@@ -80,20 +88,20 @@ For more information about a specific command, use:
     parser.add_argument(
         "--channel",
         type=str,
-        default="can0",
-        help="CAN channel (default: can0)",
+        default=_DEFAULT_CHANNEL,
+        help=f"CAN channel (default: {_DEFAULT_CHANNEL})",
     )
     parser.add_argument(
         "--bustype",
         type=str,
-        default="socketcan",
-        help="CAN bus type (default: socketcan)",
+        default=_DEFAULT_BUSTYPE,
+        help=f"CAN bus type (default: {_DEFAULT_BUSTYPE})",
     )
     parser.add_argument(
         "--bitrate",
         type=int,
         default=1000000,
-        help="CAN bitrate in bits per second (default: 1000000). Only used when bringing up interface.",
+        help="CAN bitrate in bits per second (default: 1000000).",
     )
 
     subparsers = parser.add_subparsers(
@@ -159,20 +167,20 @@ Examples:
         subparser.add_argument(
             "--channel",
             type=str,
-            default="can0",
-            help="CAN channel (default: can0)",
+            default=_DEFAULT_CHANNEL,
+            help=f"CAN channel (default: {_DEFAULT_CHANNEL})",
         )
         subparser.add_argument(
             "--bustype",
             type=str,
-            default="socketcan",
-            help="CAN bus type (default: socketcan)",
+            default=_DEFAULT_BUSTYPE,
+            help=f"CAN bus type (default: {_DEFAULT_BUSTYPE})",
         )
         subparser.add_argument(
             "--bitrate",
             type=int,
             default=1000000,
-            help="CAN bitrate in bits per second (default: 1000000). Only used when bringing up interface.",
+            help="CAN bitrate in bits per second (default: 1000000).",
         )
         if include_motor_type:
             subparser.add_argument(
@@ -246,20 +254,20 @@ Examples:
     scan_parser.add_argument(
         "--channel",
         type=str,
-        default="can0",
-        help="CAN channel (default: can0)",
+        default=_DEFAULT_CHANNEL,
+        help=f"CAN channel (default: {_DEFAULT_CHANNEL})",
     )
     scan_parser.add_argument(
         "--bustype",
         type=str,
-        default="socketcan",
-        help="CAN bus type (default: socketcan)",
+        default=_DEFAULT_BUSTYPE,
+        help=f"CAN bus type (default: {_DEFAULT_BUSTYPE})",
     )
     scan_parser.add_argument(
         "--bitrate",
         type=int,
         default=1000000,
-        help="CAN bitrate in bits per second (default: 1000000). Only used when bringing up interface.",
+        help="CAN bitrate in bits per second (default: 1000000).",
     )
     # Motor type is optional for scan (defaults to 4310)
     scan_parser.add_argument(

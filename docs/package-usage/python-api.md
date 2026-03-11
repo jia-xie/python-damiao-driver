@@ -60,7 +60,7 @@ When a motor is added to [`DaMiaoController`](../api/controller.md#damiao_motor.
 
 1. [`add_motor(...)`](../api/controller.md#damiao_motor.core.controller.DaMiaoController.add_motor) registers the motor and starts background polling.
 2. The controller thread repeatedly calls [`poll_feedback()`](../api/controller.md#damiao_motor.core.controller.DaMiaoController.poll_feedback).
-3. `poll_feedback()` drains pending frames with non-blocking `recv(timeout=0)`, extracts logical ID from `D[0]`, and dispatches frames to [`process_feedback_frame(...)`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.process_feedback_frame).
+3. `poll_feedback()` drains pending frames with non-blocking `recv(timeout=0)`, extracts logical ID from `D[0]`, and dispatches frames to `process_feedback_frame(...)` on the matched motor.
 4. The motor decoder updates runtime state (`status`, `pos`, `vel`, `torq`, `t_mos`, `t_rotor`) and processes register replies if present.
 5. Your code reads a snapshot via [`get_states()`](../api/motor.md#damiao_motor.core.motor.DaMiaoMotor.get_states).
 

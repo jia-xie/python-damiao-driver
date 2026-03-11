@@ -1,3 +1,4 @@
+import sys
 import threading
 import time
 from typing import Any, Dict, Iterable, Optional
@@ -5,6 +6,97 @@ from typing import Any, Dict, Iterable, Optional
 import can
 
 from .motor import DaMiaoMotor
+
+
+def _patch_gs_usb_for_macos() -> None:
+    """Patch gs_usb for macOS compatibility.
+
+    Applies two monkey-patches to work around macOS-specific libusb / gs_usb
+    behaviour that would otherwise prevent reconnecting without replugging:
+
+    1. ``GsUsb.start`` — the upstream ``start()`` calls ``device.reset()`` before
+       sending the GS_CAN_MODE_START control transfer.  On macOS a USB bus reset
+       causes the device to re-enumerate with a new address, which invalidates the
+       existing ``Device`` object and makes the subsequent ``ctrl_transfer`` fail
+       (~10 % of reconnect attempts).  We suppress the ``reset()`` call; the
+       GS_CAN_MODE_START ctrl_transfer is sufficient to (re-)activate the CAN
+       controller without a USB-level reset.
+
+    2. ``GsUsb.stop`` — ``stop()`` sends GS_CAN_MODE_RESET but never releases the
+       USB interface, so within the same process the interface stays soft-claimed
+       by libusb and every reconnect attempt fails.  We add a
+       ``usb.util.release_interface()`` call after the mode reset.
+    """
+    try:
+        import usb.util  # type: ignore[import-untyped]
+        from gs_usb.gs_usb import GsUsb as _GsUsb  # type: ignore[import-untyped]
+    except ImportError:
+        return  # pyusb / gs_usb not installed, nothing to patch
+
+    # --- Patch 1: GsUsb.start — skip device.reset() ---
+    _original_gs_usb_start = _GsUsb.start
+
+    def _patched_gs_usb_start(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        # Temporarily replace reset with a no-op so that device.reset() inside
+        # start() is skipped.  On macOS the USB bus reset triggers re-enumeration
+        # which invalidates the Device object; the GS_CAN_MODE_START ctrl_transfer
+        # is sufficient to (re-)activate the CAN controller without a USB reset.
+        _orig_reset = self.gs_usb.reset
+        self.gs_usb.reset = lambda: None
+        try:
+            _original_gs_usb_start(self, *args, **kwargs)
+        finally:
+            self.gs_usb.reset = _orig_reset
+
+    _GsUsb.start = _patched_gs_usb_start
+
+    # --- Patch 2: GsUsb.stop — release USB interface ---
+    _original_gs_usb_stop = _GsUsb.stop
+
+    def _patched_gs_usb_stop(self):  # type: ignore[no-untyped-def]
+        _original_gs_usb_stop(self)
+        try:
+            usb.util.release_interface(self.gs_usb, 0)
+        except usb.core.USBError:
+            pass  # ignore if already released or not claimed
+
+    _GsUsb.stop = _patched_gs_usb_stop
+
+
+if sys.platform == "darwin":
+    _patch_gs_usb_for_macos()
+
+
+def _resolve_gs_usb_channel(channel: str) -> int:
+    """Resolve a gs_usb channel string to a device index.
+
+    Accepts either:
+    - A numeric string (``"0"``, ``"1"``, …) — used directly as the device index.
+    - A USB serial number string — scanned against connected gs_usb devices.
+
+    Args:
+        channel: Numeric index string or USB serial number.
+
+    Returns:
+        Integer device index suitable for ``can.Bus(channel=<index>, interface="gs_usb")``.
+
+    Raises:
+        RuntimeError: If no gs_usb device with the given serial number is found.
+        ImportError: If ``gs_usb`` is not installed.
+    """
+    if channel.isdigit():
+        return int(channel)
+
+    from gs_usb.gs_usb import GsUsb  # type: ignore[import-untyped]
+
+    devs = GsUsb.scan()
+    for i, dev in enumerate(devs):
+        if dev.serial_number == channel:
+            return i
+    raise RuntimeError(
+        f"No gs_usb device with serial number {channel!r} found. "
+        f"Connected devices: {[d.serial_number for d in devs]}"
+    )
 
 
 class DaMiaoController:
@@ -20,8 +112,48 @@ class DaMiaoController:
         * poll feedback non-blockingly
     """
 
-    def __init__(self, channel: str = "can0", bustype: str = "socketcan") -> None:
-        self.bus: can.Bus = can.interface.Bus(channel=channel, bustype=bustype)
+    def __init__(
+        self,
+        channel: str = "can0",
+        bustype: str = "socketcan",
+        bitrate: Optional[int] = None,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Args:
+            channel: For ``socketcan``: the network interface name (e.g. ``"can0"``).
+                     For ``gs_usb``: either a numeric index string or a USB serial
+                     number string.
+
+                     - ``"0"``, ``"1"``, … — device index; ``"0"`` is the first
+                       detected device, ``"1"`` the second, and so on.
+                     - ``"DEADBEEF"`` (or any non-numeric string) — resolved by
+                       scanning connected devices and matching the serial number.
+
+                     To list connected gs_usb devices with their indices and serial
+                     numbers, run::
+
+                         uv run python -c "
+                         from gs_usb.gs_usb import GsUsb
+                         for i, d in enumerate(GsUsb.scan()):
+                             print(i, d.serial_number, d.gs_usb.port_numbers)
+                         "
+
+            bustype: python-can interface name (``"socketcan"`` or ``"gs_usb"``).
+            bitrate: CAN bitrate in bits/s.  Required for ``gs_usb``; ignored for
+                     ``socketcan`` (bitrate is set at the OS level via ``ip link``).
+            **kwargs: Extra arguments forwarded to ``can.interface.Bus``.
+        """
+        if bustype == "gs_usb":
+            channel = _resolve_gs_usb_channel(channel)
+        bus_kwargs: Dict[str, Any] = {
+            "channel": channel,
+            "interface": bustype,
+            **kwargs,
+        }
+        if bitrate is not None:
+            bus_kwargs["bitrate"] = bitrate
+        self.bus: can.Bus = can.interface.Bus(**bus_kwargs)
         # Keyed by command CAN ID (motor_id)
         self.motors: Dict[int, DaMiaoMotor] = {}
         # Keyed by logical motor ID (embedded in feedback frame)
@@ -220,6 +352,10 @@ class DaMiaoController:
                 msg = self.bus.recv(timeout=0)
                 if msg is None:
                     break
+
+                # Skip echo frames (TX echos from gs_usb / candleLight adapters)
+                if not getattr(msg, "is_rx", True):
+                    continue
 
                 if len(msg.data) != 8:
                     continue

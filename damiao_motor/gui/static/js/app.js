@@ -38,24 +38,73 @@ let currentMotorId = null;
             }, 3000);
         }
 
+        function onBustypeChange() {
+            const bustype = document.getElementById('bus_type').value;
+            const channelInput = document.getElementById('can_channel');
+            const bitrateLabel = document.getElementById('bitrate_label');
+            const bitrateInput = document.getElementById('bitrate');
+            if (bustype === 'gs_usb') {
+                bitrateLabel.style.display = '';
+                bitrateInput.style.display = '';
+                channelInput.value = '0';
+                channelInput.placeholder = '0';
+            } else {
+                bitrateLabel.style.display = 'none';
+                bitrateInput.style.display = 'none';
+                channelInput.value = 'can0';
+                channelInput.placeholder = 'can0';
+            }
+            loadCanInterfaces();
+        }
+
+        async function loadPlatformDefaults() {
+            try {
+                const response = await fetch('/api/platform');
+                const data = await response.json();
+                if (data.success) {
+                    const bustypeSelect = document.getElementById('bus_type');
+                    bustypeSelect.value = data.default_bustype;
+                    const channelInput = document.getElementById('can_channel');
+                    channelInput.value = data.default_channel;
+                    channelInput.placeholder = data.default_channel;
+                    // Show/hide bitrate field based on default bustype
+                    const bitrateLabel = document.getElementById('bitrate_label');
+                    const bitrateInput = document.getElementById('bitrate');
+                    if (data.default_bustype === 'gs_usb') {
+                        bitrateLabel.style.display = '';
+                        bitrateInput.style.display = '';
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not load platform defaults:', e);
+            }
+        }
+
         async function connect() {
             const channel = document.getElementById('can_channel').value;
+            const bustype = document.getElementById('bus_type').value;
             if (!channel) {
-                showStatus('Please enter a CAN channel (e.g., can0)', 'error');
+                showStatus('Please enter a CAN channel', 'error');
                 return;
             }
-            
+
+            const bitrateInput = document.getElementById('bitrate');
+            const body = {channel, bustype};
+            if (bustype === 'gs_usb') {
+                body.bitrate = parseInt(bitrateInput.value) || 1000000;
+            }
+
             const connectBtn = event.target;
             const originalText = connectBtn.textContent;
             connectBtn.disabled = true;
             connectBtn.textContent = 'Connecting...';
             showStatus('Connecting to CAN bus...', 'info');
-            
+
             try {
                 const response = await fetch('/api/connect', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({channel: channel})
+                    body: JSON.stringify(body)
                 });
                 const data = await response.json();
                 if (data.success) {
@@ -1947,7 +1996,8 @@ let currentMotorId = null;
 
         async function loadCanInterfaces() {
             try {
-                const response = await fetch('/api/can-interfaces');
+                const bustype = document.getElementById('bus_type').value;
+                const response = await fetch(`/api/can-interfaces?bustype=${bustype}`);
                 const data = await response.json();
                 const list = document.getElementById('canInterfaces');
                 if (data.success && data.interfaces && data.interfaces.length && list) {
@@ -1987,6 +2037,7 @@ let currentMotorId = null;
             } catch (error) {
                 console.error('Failed to load register table:', error);
             }
+            await loadPlatformDefaults();
             await loadCanInterfaces();
             await loadMotorTypes();
         });
