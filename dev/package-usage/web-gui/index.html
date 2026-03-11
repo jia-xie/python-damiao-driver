@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
@@ -1278,11 +1278,19 @@
 </ul>
 <h3 id="2-connect-to-can-interface">2. Connect to CAN Interface<a class="headerlink" href="#2-connect-to-can-interface" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Select CAN channel (<code>can0</code>, <code>vcan0</code>, etc.) and click <strong>Connect</strong>.</li>
-<li>If your interface is not listed, use the refresh button and select again.</li>
+<li>Select <strong>Bus Type</strong> (<code>socketcan</code> on Linux, <code>gs_usb</code> on macOS with a CANable/candleLight adapter).</li>
+<li>Select the CAN channel (<code>can0</code> for socketcan; <code>0</code> for the first gs_usb device) and click <strong>Connect</strong>.</li>
+<li>For <code>gs_usb</code>, set the <strong>Bitrate</strong> to match your CAN network (typically 1000000).</li>
+<li>If your interface is not listed, use the refresh button (↻) and select again.</li>
 <li>Confirm status log messages show successful connection (for example: <em>Connecting...</em>, then <em>Connected to CAN bus: can0</em>).</li>
 <li>Use <strong>Disconnect</strong> to safely reset connection and clear detected motors.</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">macOS (gs_usb)</p>
+<p>On macOS, select <strong>Bus Type → gs_usb</strong>. The required <code>gs_usb</code> and <code>pyusb</code> libraries
+are installed automatically with <code>pip install damiao-motor</code> on macOS.
+The GUI auto-detects your platform and pre-selects the correct bus type and channel on load.</p>
+</div>
 <p><img alt="Connection bar – CAN channel, Connect, Disconnect, and status log" class="doc-screenshot" src="../screenshots/connection.png" /></p>
 <h3 id="3-scan-and-select-motor">3. Scan and Select Motor<a class="headerlink" href="#3-scan-and-select-motor" title="Permanent link">&para;</a></h3>
 <ul>

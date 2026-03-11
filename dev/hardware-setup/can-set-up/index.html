@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
@@ -758,10 +758,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#tested-hardware" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prerequisites
+        Tested Hardware
       
     </span>
   </a>
@@ -780,17 +780,40 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#basic-can-setup" class="md-nav__link">
+  <a href="#linux-socketcan-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic CAN Setup
+        Linux — SocketCAN Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Linux — SocketCAN Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
       
     </span>
   </a>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-setup" class="md-nav__link">
+    <span class="md-ellipsis">
       
-        <li class="md-nav__item">
+        Basic Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#persistent-interface-name-fixed-device-name" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -798,6 +821,72 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-can-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple CAN Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#macos-gs_usb-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS — gs_usb Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="macOS — gs_usb Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-setup_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identifying-adapters-without-unique-serials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identifying Adapters Without Unique Serials
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -817,17 +906,6 @@
     <span class="md-ellipsis">
       
         Troubleshooting
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multiple-can-interfaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Multiple CAN Interfaces
       
     </span>
   </a>
@@ -1160,14 +1238,38 @@
 
 
 <h1 id="can-setup">CAN Setup<a class="headerlink" href="#can-setup" title="Permanent link">&para;</a></h1>
-<p>This guide covers setting up the CAN interface for use with DaMiao motors.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Linux operating system</li>
-<li>CAN interface hardware (USB-CAN adapter, CAN-capable board, etc.)</li>
-<li>SocketCAN drivers</li>
-<li>Jetson: <a href="https://docs.nvidia.com/jetson/archives/r35.3.1/DeveloperGuide/text/HR/ControllerAreaNetworkCan.html">NVIDIA Jetson Linux CAN guide</a></li>
-</ul>
+<p>This guide covers setting up the CAN interface for use with DaMiao motors on Linux (SocketCAN) and macOS (gs_usb).</p>
+<h2 id="tested-hardware">Tested Hardware<a class="headerlink" href="#tested-hardware" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Interface</th>
+<th>Linux</th>
+<th>macOS</th>
+<th>Serial Number per Unit</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://i2rt.com/products/usb-to-can-converter">i2rt USB2CAN</a></td>
+<td>socketcan (Linux) / gs_usb (macOS)</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>socketcan on Linux; gs_usb on macOS</td>
+</tr>
+<tr>
+<td>CANable 2.0 (Amazon)</td>
+<td>socketcan (Linux) / gs_usb (macOS)</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>candleLight firmware; use index <code>"0"</code> or serial number</td>
+</tr>
+</tbody>
+</table>
 <h2 id="termination-resistors">Termination Resistors<a class="headerlink" href="#termination-resistors" title="Permanent link">&para;</a></h2>
 <p><strong>Critical</strong>: Termination resistors (120 ohms) must be installed at <strong>both ends</strong> of the bus.</p>
 <ul>
@@ -1181,29 +1283,36 @@
 <p class="admonition-title">Note</p>
 <p>Some CAN devices (for example USB2CAN adapters and DaMiao Motor 3507) have a termination resistor switch to engage onboard resistors.</p>
 </div>
-<h2 id="basic-can-setup">Basic CAN Setup<a class="headerlink" href="#basic-can-setup" title="Permanent link">&para;</a></h2>
-<p><strong>Step 1 - Check CAN interface</strong></p>
-<p>List available network interfaces:</p>
+<hr />
+<h2 id="linux-socketcan-setup">Linux — SocketCAN Setup<a class="headerlink" href="#linux-socketcan-setup" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Linux operating system</li>
+<li>CAN interface hardware (USB-CAN adapter, CAN-capable board, etc.)</li>
+<li>SocketCAN drivers</li>
+<li>Jetson: <a href="https://docs.nvidia.com/jetson/archives/r35.3.1/DeveloperGuide/text/HR/ControllerAreaNetworkCan.html">NVIDIA Jetson Linux CAN guide</a></li>
+</ul>
+<h3 id="basic-setup">Basic Setup<a class="headerlink" href="#basic-setup" title="Permanent link">&para;</a></h3>
+<p><strong>Step 1 — Check CAN interface</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ip<span class="w"> </span>link<span class="w"> </span>show
 </span></code></pre></div>
 <p>Look for <code>can0</code>, <code>can1</code>, or similar interfaces.</p>
-<p><strong>Step 2 - Bring up CAN interface</strong></p>
+<p><strong>Step 2 — Bring up CAN interface</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can0<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
 </span></code></pre></div>
-<p>This sets up <code>can0</code> with a 1 Mbps bitrate.</p>
-<p><strong>Step 3 - Verify interface state</strong></p>
+<p><strong>Step 3 — Verify interface state</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ip<span class="w"> </span>link<span class="w"> </span>show<span class="w"> </span>can0
 </span></code></pre></div>
 <p>You should see the interface is <code>UP</code>.</p>
-<h2 id="persistent-interface-name-fixed-device-name">Persistent Interface Name (Fixed Device Name)<a class="headerlink" href="#persistent-interface-name-fixed-device-name" title="Permanent link">&para;</a></h2>
-<p>If you use multiple CAN adapters, Linux may swap <code>can0</code>/<code>can1</code> order across reboots.<br />
+<h3 id="persistent-interface-name-fixed-device-name">Persistent Interface Name (Fixed Device Name)<a class="headerlink" href="#persistent-interface-name-fixed-device-name" title="Permanent link">&para;</a></h3>
+<p>If you use multiple CAN adapters, Linux may swap <code>can0</code>/<code>can1</code> order across reboots.
 Use a udev rule to assign a fixed name to a specific adapter.</p>
-<p><strong>Step 1 - Find a unique identifier</strong></p>
+<p><strong>Step 1 — Find a unique identifier</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Replace can0 with your current interface</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>udevadm<span class="w"> </span>info<span class="w"> </span>-a<span class="w"> </span>-p<span class="w"> </span>/sys/class/net/can0<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;ATTRS\\{serial\\}|ATTRS\\{idVendor\\}|ATTRS\\{idProduct\\}&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>udevadm<span class="w"> </span>info<span class="w"> </span>-a<span class="w"> </span>-p<span class="w"> </span>/sys/class/net/can0<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;ATTRS\{serial\}|ATTRS\{idVendor\}|ATTRS\{idProduct\}&quot;</span>
 </span></code></pre></div>
 <p>Pick a stable value such as <code>ATTRS{serial}</code>.</p>
-<p><strong>Step 2 - Create a udev rule</strong></p>
+<p><strong>Step 2 — Create a udev rule</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/udev/rules.d/70-can-persistent.rules<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="s">SUBSYSTEM==&quot;net&quot;, ACTION==&quot;add&quot;, KERNEL==&quot;can*&quot;, ATTRS{serial}==&quot;YOUR_SERIAL_HERE&quot;, NAME=&quot;can_damiao&quot;</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="s">EOF</span>
@@ -1212,24 +1321,81 @@ Use a udev rule to assign a fixed name to a specific adapter.</p>
 <ul>
 <li>Replace <code>YOUR_SERIAL_HERE</code> with your adapter serial.</li>
 <li><code>can_damiao</code> is an example; interface names must be 15 characters or fewer.</li>
+<li>To distinguish two identical adapters without unique serials, match by USB port path using <code>KERNELS=="1-1.2.1"</code> instead.</li>
 </ul>
-<p><strong>Step 3 - Reload rules and reconnect adapter</strong></p>
+<p><strong>Step 3 — Reload rules and reconnect adapter</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w"> </span>--reload-rules
 </span></code></pre></div>
 <p>Then unplug/replug the adapter (or reboot).</p>
-<p><strong>Step 4 - Use the fixed name</strong></p>
+<p><strong>Step 4 — Use the fixed name</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can_damiao<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--channel<span class="w"> </span>can_damiao
 </span></code></pre></div>
+<h3 id="multiple-can-interfaces">Multiple CAN Interfaces<a class="headerlink" href="#multiple-can-interfaces" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can0<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can1<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">controller_l</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;can_follow_l&quot;</span><span class="p">,</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;socketcan&quot;</span><span class="p">)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">controller_r</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;can_follow_r&quot;</span><span class="p">,</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;socketcan&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="macos-gs_usb-setup">macOS — gs_usb Setup<a class="headerlink" href="#macos-gs_usb-setup" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites_1">Prerequisites<a class="headerlink" href="#prerequisites_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>macOS with a gs_usb-compatible USB-CAN adapter (CANable, candleLight, etc.)</li>
+<li><code>gs_usb</code> and <code>pyusb</code> are installed automatically with <code>pip install damiao-motor</code> on macOS — no extra flags needed.</li>
+</ul>
+<h3 id="basic-setup_1">Basic Setup<a class="headerlink" href="#basic-setup_1" title="Permanent link">&para;</a></h3>
+<p>No OS-level interface configuration is needed. The adapter is opened directly via libusb.</p>
+<p><strong>Step 1 — List connected devices</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="s2">from gs_usb.gs_usb import GsUsb</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="s2">for i, d in enumerate(GsUsb.scan()):</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="s2">    print(i, d.serial_number, d.gs_usb.port_numbers)</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="s2">&quot;</span>
+</span></code></pre></div>
+<p>Example output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>0 0046002E594E501820313332 (1, 1)
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>1 0046002E594E501820313333 (1, 2)
+</span></code></pre></div>
+<p>Each row shows: <code>&lt;index&gt; &lt;serial_number&gt; &lt;port_numbers&gt;</code></p>
+<p><strong>Step 2 — Connect in Python</strong></p>
+<p>By index (first detected device):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">controller</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;gs_usb&quot;</span><span class="p">,</span> <span class="n">bitrate</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">)</span>
+</span></code></pre></div>
+<p>By serial number (stable across replugs, recommended if unique serials are present):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">controller</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;ABCD1234&quot;</span><span class="p">,</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;gs_usb&quot;</span><span class="p">,</span> <span class="n">bitrate</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="identifying-adapters-without-unique-serials">Identifying Adapters Without Unique Serials<a class="headerlink" href="#identifying-adapters-without-unique-serials" title="Permanent link">&para;</a></h3>
+<p>Many cheap CANable clones have no serial number (<code>None</code>) or the same hardcoded value on every unit. In that case, identify by physical USB port — the <code>port_numbers</code> tuple stays stable as long as the cable is plugged into the same physical socket:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">gs_usb.gs_usb</span><span class="w"> </span><span class="kn">import</span> <span class="n">GsUsb</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">find_gs_usb_index_by_port</span><span class="p">(</span><span class="n">port_path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    <span class="n">devs</span> <span class="o">=</span> <span class="n">GsUsb</span><span class="o">.</span><span class="n">scan</span><span class="p">()</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dev</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">devs</span><span class="p">):</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>        <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">gs_usb</span><span class="o">.</span><span class="n">port_numbers</span><span class="p">)</span> <span class="o">==</span> <span class="n">port_path</span><span class="p">:</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>            <span class="k">return</span> <span class="n">i</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No gs_usb device on port </span><span class="si">{</span><span class="n">port_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="c1"># Plug adapters in and note their port_numbers from the scan above, then:</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="n">ctrl_l</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">find_gs_usb_index_by_port</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;gs_usb&quot;</span><span class="p">,</span> <span class="n">bitrate</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">)</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="n">ctrl_r</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">find_gs_usb_index_by_port</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))),</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;gs_usb&quot;</span><span class="p">,</span> <span class="n">bitrate</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">)</span>
+</span></code></pre></div>
+<p>This is the macOS equivalent of Linux udev <code>KERNELS==</code> port-path matching.</p>
+<hr />
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
-<p><strong>Using <code>candump</code></strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>can-utils
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>sudo<span class="w"> </span>candump<span class="w"> </span>can0
+<p><strong>Linux — using <code>candump</code></strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>can-utils
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>sudo<span class="w"> </span>candump<span class="w"> </span>can0
 </span></code></pre></div>
-<p>This will show all CAN messages on the bus.</p>
-<p><strong>Using <code>damiao scan</code></strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--channel<span class="w"> </span>can0
+<p><strong>All platforms — using <code>damiao scan</code></strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Linux</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--channel<span class="w"> </span>can0
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="c1"># macOS</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>damiao<span class="w"> </span>scan<span class="w"> </span>--channel<span class="w"> </span><span class="m">0</span><span class="w"> </span>--bustype<span class="w"> </span>gs_usb<span class="w"> </span>--bitrate<span class="w"> </span><span class="m">1000000</span>
 </span></code></pre></div>
+<hr />
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1240,12 +1406,20 @@ Use a udev rule to assign a fixed name to a specific adapter.</p>
 </thead>
 <tbody>
 <tr>
-<td>Interface not found</td>
-<td>Check hardware connection.<br>Verify drivers are loaded: <code>lsmod \| grep can</code>.<br>Check kernel logs: <code>dmesg \| grep can</code>.</td>
+<td>Interface not found (Linux)</td>
+<td>Check hardware connection.<br>Verify drivers: <code>lsmod \| grep can</code>.<br>Check kernel logs: <code>dmesg \| grep can</code>.</td>
 </tr>
 <tr>
-<td>Permission errors</td>
-<td>Run with <code>sudo</code> or add user to CAN-access group:<br><code>sudo usermod -a -G dialout $USER</code>.<br>Log out and back in.</td>
+<td>Permission errors (Linux)</td>
+<td>Run with <code>sudo</code> or add user to group:<br><code>sudo usermod -a -G dialout $USER</code>. Log out and back in.</td>
+</tr>
+<tr>
+<td>Device not found (macOS)</td>
+<td>Run <code>python -c "from gs_usb.gs_usb import GsUsb; print(GsUsb.scan())"</code> to verify pyusb sees the adapter.<br>Try a different USB port or cable.</td>
+</tr>
+<tr>
+<td>Reconnect fails (macOS)</td>
+<td>Ensure <code>damiao-motor</code> was installed on macOS so that <code>gs_usb</code> and <code>pyusb</code> were pulled in automatically.</td>
 </tr>
 <tr>
 <td>Bitrate mismatch</td>
@@ -1253,14 +1427,6 @@ Use a udev rule to assign a fixed name to a specific adapter.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="multiple-can-interfaces">Multiple CAN Interfaces<a class="headerlink" href="#multiple-can-interfaces" title="Permanent link">&para;</a></h2>
-<p>If you have multiple CAN interfaces:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can0<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>can1<span class="w"> </span>up<span class="w"> </span><span class="nb">type</span><span class="w"> </span>can<span class="w"> </span>bitrate<span class="w"> </span><span class="m">1000000</span>
-</span></code></pre></div>
-<p>Then specify the channel in your code:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">controller</span> <span class="o">=</span> <span class="n">DaMiaoController</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;can1&quot;</span><span class="p">,</span> <span class="n">bustype</span><span class="o">=</span><span class="s2">&quot;socketcan&quot;</span><span class="p">)</span>
-</span></code></pre></div>
 
 
 

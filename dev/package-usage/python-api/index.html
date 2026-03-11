@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
@@ -1192,7 +1192,7 @@
 <ol>
 <li><a href="../../api/controller/#damiao_motor.core.controller.DaMiaoController.add_motor"><code>add_motor(...)</code></a> registers the motor and starts background polling.</li>
 <li>The controller thread repeatedly calls <a href="../../api/controller/#damiao_motor.core.controller.DaMiaoController.poll_feedback"><code>poll_feedback()</code></a>.</li>
-<li><code>poll_feedback()</code> drains pending frames with non-blocking <code>recv(timeout=0)</code>, extracts logical ID from <code>D[0]</code>, and dispatches frames to <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.process_feedback_frame"><code>process_feedback_frame(...)</code></a>.</li>
+<li><code>poll_feedback()</code> drains pending frames with non-blocking <code>recv(timeout=0)</code>, extracts logical ID from <code>D[0]</code>, and dispatches frames to <code>process_feedback_frame(...)</code> on the matched motor.</li>
 <li>The motor decoder updates runtime state (<code>status</code>, <code>pos</code>, <code>vel</code>, <code>torq</code>, <code>t_mos</code>, <code>t_rotor</code>) and processes register replies if present.</li>
 <li>Your code reads a snapshot via <a href="../../api/motor/#damiao_motor.core.motor.DaMiaoMotor.get_states"><code>get_states()</code></a>.</li>
 </ol>
