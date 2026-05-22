@@ -285,16 +285,19 @@ def cmd_set_zero_position(args) -> None:
 
     Args:
         args: Parsed command-line arguments containing:
-            - motor_id: Motor ID (required)
+            - motor_ids: List of motor IDs (required)
             - channel: CAN channel (default: can0)
             - bustype: CAN bus type (default: socketcan)
             - bitrate: CAN bitrate in bits per second (default: 1000000)
     """
+    motor_ids = args.motor_ids
+    ids_str = ", ".join(f"0x{mid:02X} ({mid})" for mid in motor_ids)
+
     print("=" * 60)
     print("DaMiao Motor - Set Zero Position")
     print("=" * 60)
     print(f"CAN channel: {args.channel}")
-    print(f"Motor ID: 0x{args.motor_id:02X} ({args.motor_id})")
+    print(f"Motor ID(s): {ids_str}")
     print("=" * 60)
     print()
 
@@ -310,13 +313,13 @@ def cmd_set_zero_position(args) -> None:
     )
 
     try:
-        motor = controller.add_motor(
-            motor_id=args.motor_id, feedback_id=0x00, motor_type=args.motor_type
-        )
-
-        print("Setting current position to zero...")
-        motor.set_zero_position()
-        print("✓ Position zero set")
+        for motor_id in motor_ids:
+            motor = controller.add_motor(
+                motor_id=motor_id, feedback_id=0x00, motor_type=args.motor_type
+            )
+            print(f"Setting position to zero for motor 0x{motor_id:02X}...")
+            motor.set_zero_position()
+            print(f"✓ Position zero set for motor 0x{motor_id:02X}")
 
     except Exception as e:
         print(f"Error: {e}")

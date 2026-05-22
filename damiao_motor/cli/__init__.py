@@ -335,16 +335,21 @@ Examples:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Set current position to zero
+  # Set current position to zero for one motor
   damiao set-zero-position --id 1
+
+  # Set current position to zero for multiple motors
+  damiao set-zero-position --id 1 2 3 4 5 6
         """,
     )
     zero_pos_parser.add_argument(
         "--id",
         type=int,
+        nargs="+",
         required=True,
-        dest="motor_id",
-        help="Motor ID",
+        metavar="ID",
+        dest="motor_ids",
+        help="Motor ID(s) (e.g., --id 1 2 3)",
     )
     add_global_args(zero_pos_parser)
     zero_pos_parser.set_defaults(func=cmd_set_zero_position)
