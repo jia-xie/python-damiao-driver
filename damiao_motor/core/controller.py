@@ -116,6 +116,7 @@ class DaMiaoController:
         self,
         channel: str = "can0",
         bustype: str = "socketcan",
+        fd: bool = False,
         bitrate: Optional[int] = None,
         **kwargs: Any,
     ) -> None:
@@ -149,6 +150,7 @@ class DaMiaoController:
         bus_kwargs: Dict[str, Any] = {
             "channel": channel,
             "interface": bustype,
+            "fd": fd,
             **kwargs,
         }
         if bitrate is not None:
@@ -162,6 +164,7 @@ class DaMiaoController:
         self._polling_thread: Optional[threading.Thread] = None
         self._polling_active = False
         self._polling_lock = threading.Lock()
+        self._fd = fd
 
     # -----------------------
     # Motor management
@@ -192,6 +195,7 @@ class DaMiaoController:
             feedback_id=feedback_id,
             bus=self.bus,
             motor_type=motor_type,
+            fd=self._fd,
             **kwargs,
         )
         self.motors[motor_id] = motor
