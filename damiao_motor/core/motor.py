@@ -928,6 +928,10 @@ class DaMiaoMotor:
             raise ValueError(
                 f"Unknown data_type: {reg_info.data_type} for register {rid}"
             )
+        
+        # Clear stale cache before sending write command.
+        with self.registers_lock:
+            self.registers.pop(rid, None)
 
         # Send write command
         self._send_register_cmd(0x55, rid, data_bytes)
