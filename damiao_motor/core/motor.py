@@ -279,6 +279,7 @@ class DaMiaoMotor:
         motor_id: int,
         feedback_id: int,
         bus: can.Bus,
+        fd: bool,
         *,
         motor_type: str,
         p_min: Optional[float] = None,
@@ -323,6 +324,7 @@ class DaMiaoMotor:
         self.register_request_time_lock = threading.Lock()
         self.register_reply_time: Dict[int, float] = {}
         self.register_reply_time_lock = threading.Lock()
+        self._fd = fd
 
     def _resolve_limits(self, motor_type: str) -> Dict[str, float]:
         """Resolve limits from motor_type preset. Returns a dict of the 6 P/V/T limit values."""
@@ -439,7 +441,7 @@ class DaMiaoMotor:
 
         try:
             msg = can.Message(
-                arbitration_id=arbitration_id, data=data, is_extended_id=False
+                arbitration_id=arbitration_id, data=data, is_extended_id=False, is_fd=self._fd
             )
             self.bus.send(msg)
         except OSError as e:
@@ -926,6 +928,10 @@ class DaMiaoMotor:
             raise ValueError(
                 f"Unknown data_type: {reg_info.data_type} for register {rid}"
             )
+        
+        # Clear stale cache before sending write command.
+        with self.registers_lock:
+            self.registers.pop(rid, None)
 
         # Send write command
         self._send_register_cmd(0x55, rid, data_bytes)
