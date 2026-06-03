@@ -441,7 +441,10 @@ class DaMiaoMotor:
 
         try:
             msg = can.Message(
-                arbitration_id=arbitration_id, data=data, is_extended_id=False, is_fd=self._fd
+                arbitration_id=arbitration_id,
+                data=data,
+                is_extended_id=False,
+                is_fd=self._fd,
             )
             self.bus.send(msg)
         except OSError as e:
@@ -928,7 +931,7 @@ class DaMiaoMotor:
             raise ValueError(
                 f"Unknown data_type: {reg_info.data_type} for register {rid}"
             )
-        
+
         # Clear stale cache before sending write command.
         with self.registers_lock:
             self.registers.pop(rid, None)
