@@ -19,6 +19,7 @@ from .commands import (
     cmd_send_cmd_vel,
     cmd_send_cmd_force_pos,
     cmd_gui,
+    cmd_monitor,
 )
 from .formatter import ColorizedHelpFormatter
 
@@ -160,6 +161,46 @@ Examples:
         help="Use production WSGI server (requires waitress)",
     )
     gui_parser.set_defaults(func=cmd_gui)
+
+    # monitor command (passive, listen-only dashboard)
+    monitor_parser = subparsers.add_parser(
+        "monitor",
+        help="Launch passive (listen-only) realtime monitoring dashboard",
+        description=(
+            "Launch a listen-only dashboard that decodes both the commands another "
+            "controller is sending and the motors' feedback, in realtime. Never transmits."
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Monitor a socketcan bus while another controller drives the motors
+  damiao monitor --channel can0
+
+  # I2RT-style feedback id scheme is +16 (the default); override if needed
+  damiao monitor --channel can_arm_l --feedback-offset 16
+
+  # Try the dashboard with synthetic traffic (no CAN hardware needed)
+  damiao monitor --demo
+        """,
+    )
+    monitor_parser.add_argument("--host", type=str, default="127.0.0.1",
+                                help="Host to bind to (default: 127.0.0.1)")
+    monitor_parser.add_argument("--port", type=int, default=5001,
+                                help="Port to bind to (default: 5001)")
+    monitor_parser.add_argument("--channel", type=str, default="can0",
+                                help="CAN channel to listen on (default: can0)")
+    monitor_parser.add_argument("--bustype", type=str, default="socketcan",
+                                help="CAN bus type (default: socketcan)")
+    monitor_parser.add_argument("--bitrate", type=int, default=None,
+                                help="CAN bitrate (required for some interfaces, e.g. gs_usb)")
+    monitor_parser.add_argument("--feedback-offset", type=int, default=16, dest="feedback_offset",
+                                help="feedback arb id = motor id + offset (default: 16, the p16 scheme)")
+    monitor_parser.add_argument("--motor-type", type=str, default="DM4310", dest="default_motor_type",
+                                help="Default motor type for value scaling (default: DM4310)")
+    monitor_parser.add_argument("--demo", action="store_true",
+                                help="Synthesize traffic instead of opening a CAN bus")
+    monitor_parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    monitor_parser.set_defaults(func=cmd_monitor)
 
     # Helper function to add global arguments to subcommands
     def add_global_args(subparser, include_motor_type: bool = True):

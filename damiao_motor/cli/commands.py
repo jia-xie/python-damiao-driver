@@ -723,6 +723,33 @@ def cmd_gui(args) -> None:
     )
 
 
+def cmd_monitor(args) -> None:
+    """
+    Handle 'monitor' subcommand.
+
+    Launches the passive (listen-only) realtime monitoring dashboard. It decodes both
+    the commands another controller is sending and the motors' feedback, and never
+    transmits on the bus.
+
+    Args:
+        args: Parsed command-line arguments containing host, port, channel, bustype,
+            bitrate, feedback_offset, default_motor_type, demo, debug.
+    """
+    from damiao_motor.monitor import server as monitor_server
+
+    monitor_server.run_server(
+        host=args.host,
+        port=args.port,
+        channel=args.channel,
+        bustype=args.bustype,
+        bitrate=args.bitrate,
+        feedback_offset=args.feedback_offset,
+        default_motor_type=args.default_motor_type,
+        debug=args.debug,
+        demo=args.demo,
+    )
+
+
 def cmd_set_feedback_id(args) -> None:
     """
     Handle 'set-feedback-id' subcommand.

@@ -21,11 +21,32 @@ jobs:
         with:
           python-version: "3.11"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build monitor dashboard (SPA)
+        run: |
+          cd damiao_motor/gui/webapp
+          npm ci
+          npm run build
+
       - name: Install build tools
         run: python -m pip install --upgrade build twine
 
       - name: Build package
         run: python -m build
+
+      - name: Verify SPA bundle is in the wheel
+        run: |
+          python - <<'PY'
+          import glob, zipfile, sys
+          whl = sorted(glob.glob("dist/*.whl"))[-1]
+          names = zipfile.ZipFile(whl).namelist()
+          assert any("gui/webapp/dist/index.html" in n for n in names), "SPA index.html missing from wheel"
+          assert any("monitor/server.py" in n for n in names), "monitor package missing from wheel"
+          print("OK: SPA + monitor present in", whl)
+          PY
 
       - name: Upload to PyPI
         run: python -m twine upload dist/*
