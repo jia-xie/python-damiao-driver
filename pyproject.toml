@@ -16,6 +16,7 @@ keywords = ["damiao", "motor", "can", "robotics"]
 dependencies = [
     "python-can>=4.3,<5.0",
     "flask>=3.0,<4.0",
+    "flask-sock>=0.7",
     "gs_usb>=0.3; sys_platform == 'darwin'",
     "pyusb>=1.2; sys_platform == 'darwin'",
 ]
