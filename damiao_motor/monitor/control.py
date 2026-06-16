@@ -15,12 +15,22 @@ import time
 from typing import Any, Dict, List, Optional
 
 from damiao_motor.core.controller import DaMiaoController
-from damiao_motor.core.motor import REGISTER_TABLE
+from damiao_motor.core.motor import MOTOR_TYPE_PRESETS, REGISTER_TABLE
 from damiao_motor.monitor.decode import KIND_COMMAND, KIND_FEEDBACK, DecodedFrame
 from damiao_motor.monitor.store import SignalStore
 
 TIMEOUT_REGISTER_ID = 9
 TIMEOUT_UNITS_PER_MS = 20.0
+
+
+def _core_motor_type(name: str) -> str:
+    """Map a (possibly extended, e.g. 'DM4310') motor-type name to a core preset name
+    the DaMiaoController understands ('4310'). Falls back to '4310'."""
+    if name in MOTOR_TYPE_PRESETS:
+        return name
+    if name.startswith("DM") and name[2:] in MOTOR_TYPE_PRESETS:
+        return name[2:]
+    return "4310"
 
 # command-mode -> the cmd field names the store/plots expect (match decode.py)
 _CONTROL_MODES = {"MIT", "POS_VEL", "VEL", "FORCE_POS"}
@@ -62,12 +72,13 @@ class ControlService:
     # ---------------------------------------------------------------- scan
     def scan(self, motor_type: str, settle: float = 0.5) -> List[Dict[str, Any]]:
         c = self._require()
+        core_type = _core_motor_type(motor_type)
         c.motors = {}
         c._motors_by_feedback = {}
         c.flush_bus()
         for motor_id in range(0x01, 0x11):
             try:
-                m = c.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type=motor_type)
+                m = c.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type=core_type)
                 m.send_cmd_mit(0.0, 0.0, 0.0, 0.0, 0.0)
             except ValueError:
                 pass
@@ -138,7 +149,7 @@ class ControlService:
         self._require().motors[motor_id].store_parameters()
 
     def set_motor_type(self, motor_id: int, motor_type: str) -> None:
-        self._require().motors[motor_id].set_motor_type(motor_type)
+        self._require().motors[motor_id].set_motor_type(_core_motor_type(motor_type))
 
     def command(self, motor_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
         c = self._require()
