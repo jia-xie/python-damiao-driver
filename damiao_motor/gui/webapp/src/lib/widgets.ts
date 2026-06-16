@@ -11,7 +11,7 @@ export interface Widget {
   h: number;
 }
 
-const KEY = "damiao.monitor.widgets.v2";
+const KEY = "damiao.monitor.widgets.v3";
 
 function load(): Widget[] | null {
   try {
@@ -33,10 +33,12 @@ function persist(widgets: Widget[]) {
 }
 
 const DEFAULT_WIDGETS: Widget[] = [
-  { id: "plot-1", kind: "plot", x: 0, y: 0, w: 7, h: 6 },
-  { id: "cards-1", kind: "cards", x: 7, y: 0, w: 5, h: 6 },
-  { id: "table-1", kind: "table", x: 0, y: 6, w: 7, h: 5 },
-  { id: "rawlog-1", kind: "rawlog", x: 7, y: 6, w: 5, h: 5 },
+  { id: "connection-1", kind: "connection", x: 0, y: 0, w: 3, h: 4 },
+  { id: "control-1", kind: "control", x: 0, y: 4, w: 3, h: 8 },
+  { id: "plot-1", kind: "plot", x: 3, y: 0, w: 6, h: 6 },
+  { id: "cards-1", kind: "cards", x: 9, y: 0, w: 3, h: 6 },
+  { id: "table-1", kind: "table", x: 3, y: 6, w: 6, h: 6 },
+  { id: "registers-1", kind: "registers", x: 9, y: 6, w: 3, h: 6 },
 ];
 
 let counter = 1;

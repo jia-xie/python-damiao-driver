@@ -25,10 +25,10 @@ export interface MotorView {
 }
 
 export interface ServerStatus {
-  channel: string;
+  mode: "monitor" | "control";
+  connected: boolean;
+  channel: string | null;
   bustype: string;
-  bitrate: number | null;
-  started: boolean;
   error: string | null;
   listenOnly: boolean;
   feedbackOffset: number;

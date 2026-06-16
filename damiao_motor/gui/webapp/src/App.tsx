@@ -15,20 +15,35 @@ import Canvas from "./components/Canvas";
 import { useApp } from "./lib/store";
 import { connectWs, fetchMotorTypes } from "./lib/ws";
 import { shortSignal } from "./lib/format";
+import { api } from "./lib/control";
 
 export default function App() {
   const addSignalToPlot = useApp((s) => s.addSignalToPlot);
   const setMotorTypes = useApp((s) => s.setMotorTypes);
+  const setMode = useApp((s) => s.setMode);
+  const setStatus = useApp((s) => s.setStatus);
+  const setRegisterTable = useApp((s) => s.setRegisterTable);
   const [dragLabel, setDragLabel] = useState<string | null>(null);
 
   // a 4 px activation distance so clicks on chips don't accidentally start drags
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
   useEffect(() => {
-    // store hydrates plot configs synchronously at creation; just connect + load types
+    // store hydrates plot configs synchronously at creation; just connect + load metadata
     connectWs();
     fetchMotorTypes().then(setMotorTypes);
-  }, [setMotorTypes]);
+    api.status().then((s) => {
+      if (s?.mode) setMode(s.mode);
+      setStatus(s);
+    });
+    api.registerTable().then((d) => {
+      if (d?.registers) {
+        const t: Record<number, any> = {};
+        for (const r of d.registers) t[r.rid] = r;
+        setRegisterTable(t);
+      }
+    });
+  }, [setMotorTypes, setMode, setStatus, setRegisterTable]);
 
   const onDragStart = (e: DragStartEvent) => {
     const sid = e.active.data.current?.signalId as string | undefined;

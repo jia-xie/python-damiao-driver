@@ -10,6 +10,9 @@ import PlotPanel from "./PlotPanel";
 import TablePanel from "./TablePanel";
 import CardsPanel from "./CardsPanel";
 import RawLogPanel from "./RawLogPanel";
+import ConnectionPanel from "./ConnectionPanel";
+import ControlPanel from "./ControlPanel";
+import RegisterPanel from "./RegisterPanel";
 
 export interface PanelDef {
   kind: string;
@@ -21,6 +24,27 @@ export interface PanelDef {
 }
 
 export const PANELS: PanelDef[] = [
+  {
+    kind: "connection",
+    title: "Connection",
+    icon: "⇄",
+    description: "Connect to a CAN bus, scan, and select a motor.",
+    render: () => <ConnectionPanel />,
+  },
+  {
+    kind: "control",
+    title: "Motor Control",
+    icon: "◉",
+    description: "Drive the selected motor (MIT/POS_VEL/VEL/FORCE_POS), enable, zero, store.",
+    render: () => <ControlPanel />,
+  },
+  {
+    kind: "registers",
+    title: "Registers",
+    icon: "≡",
+    description: "Read/write the selected motor's registers.",
+    render: () => <RegisterPanel />,
+  },
   {
     kind: "plot",
     title: "Plot",

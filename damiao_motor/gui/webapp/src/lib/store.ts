@@ -26,6 +26,15 @@ export function persistPlotConfigs(cfgs: Record<string, PlotConfig>) {
   }
 }
 
+export interface RegisterInfo {
+  rid: number;
+  variable: string;
+  description: string;
+  access: string;
+  range_str: string;
+  data_type: string;
+}
+
 interface AppState {
   connected: boolean;
   status: ServerStatus | null;
@@ -36,11 +45,21 @@ interface AppState {
   // per-panel plot configs (signals shown), persisted alongside the dock layout
   plotConfigs: Record<string, PlotConfig>;
 
+  // control state
+  mode: "monitor" | "control";
+  controlMotors: { id: number; motor_type: string }[];
+  currentMotorId: number | null;
+  registerTable: Record<number, RegisterInfo>;
+
   setConnected: (c: boolean) => void;
   setStatus: (s: ServerStatus) => void;
   setMeta: (signals: SignalDescriptor[], pairs: Pair[]) => void;
   setMotors: (m: MotorView[]) => void;
   setMotorTypes: (t: string[]) => void;
+  setMode: (m: "monitor" | "control") => void;
+  setControlMotors: (m: { id: number; motor_type: string }[]) => void;
+  setCurrentMotor: (id: number | null) => void;
+  setRegisterTable: (t: Record<number, RegisterInfo>) => void;
 
   ensurePlot: (id: string) => void;
   setPlotConfig: (id: string, cfg: Partial<PlotConfig>) => void;
@@ -58,11 +77,20 @@ export const useApp = create<AppState>((set, get) => ({
   motorTypes: [],
   plotConfigs: loadPlotConfigs(), // hydrate synchronously to avoid effect-ordering races
 
+  mode: "monitor",
+  controlMotors: [],
+  currentMotorId: null,
+  registerTable: {},
+
   setConnected: (c) => set({ connected: c }),
   setStatus: (s) => set({ status: s }),
   setMeta: (signals, pairs) => set({ signals, pairs }),
   setMotors: (motors) => set({ motors }),
   setMotorTypes: (motorTypes) => set({ motorTypes }),
+  setMode: (mode) => set({ mode }),
+  setControlMotors: (controlMotors) => set({ controlMotors }),
+  setCurrentMotor: (currentMotorId) => set({ currentMotorId }),
+  setRegisterTable: (registerTable) => set({ registerTable }),
 
   ensurePlot: (id) =>
     set((st) =>
