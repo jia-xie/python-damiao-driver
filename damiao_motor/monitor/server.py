@@ -48,8 +48,13 @@ code{background:#1d242e;padding:2px 6px;border-radius:4px;color:#6aa3ff}</style>
 class Studio:
     """Holds the shared store + the active mode's data source."""
 
-    def __init__(self, mode: str = "monitor", feedback_offset: int = DEFAULT_FEEDBACK_OFFSET,
-                 default_motor_type: str = DEFAULT_MOTOR_TYPE, raw_log_size: int = 4000) -> None:
+    def __init__(
+        self,
+        mode: str = "monitor",
+        feedback_offset: int = DEFAULT_FEEDBACK_OFFSET,
+        default_motor_type: str = DEFAULT_MOTOR_TYPE,
+        raw_log_size: int = 4000,
+    ) -> None:
         self.mode = mode  # 'monitor' | 'control'
         self.feedback_offset = feedback_offset
         self.default_motor_type = default_motor_type
@@ -69,7 +74,9 @@ class Studio:
         self._raw_seq += 1
         self._raw.append(_frame_to_log(self._raw_seq, frame))
 
-    def raw_since(self, since_seq: int, limit: int = 400) -> Tuple[int, List[Dict[str, Any]]]:
+    def raw_since(
+        self, since_seq: int, limit: int = 400
+    ) -> Tuple[int, List[Dict[str, Any]]]:
         if not self._raw:
             return since_seq, []
         items = [r for r in self._raw if r["seq"] > since_seq]
@@ -82,8 +89,14 @@ class Studio:
         self.store.ingest(frame)
         self._raw_push(frame)
 
-    def connect(self, channel: str, bustype: str, bitrate: Optional[int],
-                motor_type: Optional[str] = None, feedback_offset: Optional[int] = None) -> Dict[str, Any]:
+    def connect(
+        self,
+        channel: str,
+        bustype: str,
+        bitrate: Optional[int],
+        motor_type: Optional[str] = None,
+        feedback_offset: Optional[int] = None,
+    ) -> Dict[str, Any]:
         self.disconnect()
         self.error = None
         self.channel, self.bustype = channel, bustype
@@ -95,7 +108,9 @@ class Studio:
             return {"motors": found}
         else:
             self.listener = PassiveCanListener(
-                channel=channel, bustype=bustype, bitrate=bitrate,
+                channel=channel,
+                bustype=bustype,
+                bitrate=bitrate,
                 feedback_offset=self.feedback_offset,
                 default_motor_type=motor_type or self.default_motor_type,
                 on_frame=self._on_passive_frame,
@@ -129,8 +144,11 @@ class Studio:
 
     # ------------------------------------------------------------- readouts
     def status(self) -> Dict[str, Any]:
-        connected = (self.mode == "control" and self.control.connected) or (
-            self.listener is not None) or (self._demo_source is not None)
+        connected = (
+            (self.mode == "control" and self.control.connected)
+            or (self.listener is not None)
+            or (self._demo_source is not None)
+        )
         return {
             "mode": self.mode,
             "connected": connected,
@@ -147,8 +165,12 @@ class Studio:
         }
 
     def signals(self) -> Dict[str, Any]:
-        return {"signals": self.store.list_signals(), "pairs": self.store.pairs(),
-                "motors": self.store.motor_views(), "version": self.store.registry_version}
+        return {
+            "signals": self.store.list_signals(),
+            "pairs": self.store.pairs(),
+            "motors": self.store.motor_views(),
+            "version": self.store.registry_version,
+        }
 
     def snapshot(self, ids: List[str], n: int) -> Dict[str, List[Tuple[float, float]]]:
         return {sid: self.store.series_last_n(sid, n) for sid in ids}
@@ -156,9 +178,11 @@ class Studio:
 
 def _platform_defaults() -> Dict[str, Any]:
     is_mac = sys.platform == "darwin"
-    return {"platform": sys.platform,
-            "default_bustype": "gs_usb" if is_mac else "socketcan",
-            "default_channel": "0" if is_mac else "can0"}
+    return {
+        "platform": sys.platform,
+        "default_bustype": "gs_usb" if is_mac else "socketcan",
+        "default_channel": "0" if is_mac else "can0",
+    }
 
 
 def create_app(studio: Studio) -> Flask:
@@ -194,9 +218,13 @@ def create_app(studio: Studio) -> Flask:
         bitrate = data.get("bitrate")
         bitrate = int(bitrate) if bitrate not in (None, "") else None
         try:
-            res = studio.connect(channel, bustype, bitrate,
-                                 motor_type=data.get("motor_type"),
-                                 feedback_offset=data.get("feedback_offset"))
+            res = studio.connect(
+                channel,
+                bustype,
+                bitrate,
+                motor_type=data.get("motor_type"),
+                feedback_offset=data.get("feedback_offset"),
+            )
             return jsonify({"success": True, **res})
         except Exception as e:
             studio.error = str(e)
@@ -214,6 +242,7 @@ def create_app(studio: Studio) -> Flask:
     @app.route("/api/motor-types")
     def motor_types():
         from damiao_motor.monitor.decode import MONITOR_MOTOR_PRESETS
+
         return jsonify({"types": sorted(MONITOR_MOTOR_PRESETS.keys())})
 
     @app.route("/api/register-table")
@@ -228,7 +257,9 @@ def create_app(studio: Studio) -> Flask:
             try:
                 net = "/sys/class/net"
                 if os.path.isdir(net):
-                    interfaces = sorted(n for n in os.listdir(net) if n.startswith("can"))
+                    interfaces = sorted(
+                        n for n in os.listdir(net) if n.startswith("can")
+                    )
             except OSError:
                 pass
         return jsonify({"success": True, "interfaces": interfaces})
@@ -266,7 +297,9 @@ def create_app(studio: Studio) -> Flask:
                 t = cmd.get("type")
                 if t == "subscribe":
                     now = time.time()
-                    new = {sid: subscribed.get(sid, now) for sid in cmd.get("signals", [])}
+                    new = {
+                        sid: subscribed.get(sid, now) for sid in cmd.get("signals", [])
+                    }
                     subscribed.clear()
                     subscribed.update(new)
                 elif t == "rate":
@@ -285,8 +318,15 @@ def create_app(studio: Studio) -> Flask:
                 if sig["version"] != last_version:
                     last_version = sig["version"]
                     ws.send(json.dumps({"type": "meta", **sig}))
-                ws.send(json.dumps({"type": "motors", "motors": sig["motors"],
-                                    "status": studio.status()}))
+                ws.send(
+                    json.dumps(
+                        {
+                            "type": "motors",
+                            "motors": sig["motors"],
+                            "status": studio.status(),
+                        }
+                    )
+                )
                 batch = {}
                 for sid, cursor in list(subscribed.items()):
                     pts = studio.store.series_since(sid, cursor)
@@ -315,7 +355,9 @@ def create_app(studio: Studio) -> Flask:
             return g
         data = request.get_json(force=True, silent=True) or {}
         try:
-            found = studio.control.scan(data.get("motor_type") or studio.default_motor_type)
+            found = studio.control.scan(
+                data.get("motor_type") or studio.default_motor_type
+            )
             return jsonify({"success": True, "motors": found})
         except Exception as e:
             return jsonify({"success": False, "error": str(e)}), 500
@@ -422,7 +464,11 @@ def create_app(studio: Studio) -> Flask:
     @app.route("/")
     def index():
         idx = os.path.join(_WEBAPP_DIST, "index.html")
-        return send_from_directory(_WEBAPP_DIST, "index.html") if os.path.exists(idx) else _DEV_PLACEHOLDER
+        return (
+            send_from_directory(_WEBAPP_DIST, "index.html")
+            if os.path.exists(idx)
+            else _DEV_PLACEHOLDER
+        )
 
     @app.route("/<path:path>")
     def spa(path):
@@ -432,17 +478,33 @@ def create_app(studio: Studio) -> Flask:
         if os.path.exists(full) and os.path.isfile(full):
             return send_from_directory(_WEBAPP_DIST, path)
         idx = os.path.join(_WEBAPP_DIST, "index.html")
-        return send_from_directory(_WEBAPP_DIST, "index.html") if os.path.exists(idx) else _DEV_PLACEHOLDER
+        return (
+            send_from_directory(_WEBAPP_DIST, "index.html")
+            if os.path.exists(idx)
+            else _DEV_PLACEHOLDER
+        )
 
     return app
 
 
-def run_server(host: str = "127.0.0.1", port: int = 5001, mode: str = "monitor",
-               channel: str = "can0", bustype: str = "socketcan", bitrate: Optional[int] = None,
-               feedback_offset: int = 16, default_motor_type: str = "DM4310",
-               debug: bool = False, demo: bool = False) -> None:
+def run_server(
+    host: str = "127.0.0.1",
+    port: int = 5001,
+    mode: str = "monitor",
+    channel: str = "can0",
+    bustype: str = "socketcan",
+    bitrate: Optional[int] = None,
+    feedback_offset: int = 16,
+    default_motor_type: str = "DM4310",
+    debug: bool = False,
+    demo: bool = False,
+) -> None:
     """Start the unified DaMiao Studio server (blocking)."""
-    studio = Studio(mode=mode, feedback_offset=feedback_offset, default_motor_type=default_motor_type)
+    studio = Studio(
+        mode=mode,
+        feedback_offset=feedback_offset,
+        default_motor_type=default_motor_type,
+    )
 
     if demo:
         studio.mode = "monitor"

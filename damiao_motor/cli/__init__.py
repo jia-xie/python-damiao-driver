@@ -183,23 +183,55 @@ Examples:
   damiao monitor --demo
         """,
     )
-    monitor_parser.add_argument("--host", type=str, default="127.0.0.1",
-                                help="Host to bind to (default: 127.0.0.1)")
-    monitor_parser.add_argument("--port", type=int, default=5001,
-                                help="Port to bind to (default: 5001)")
-    monitor_parser.add_argument("--channel", type=str, default="can0",
-                                help="CAN channel to listen on (default: can0)")
-    monitor_parser.add_argument("--bustype", type=str, default="socketcan",
-                                help="CAN bus type (default: socketcan)")
-    monitor_parser.add_argument("--bitrate", type=int, default=None,
-                                help="CAN bitrate (required for some interfaces, e.g. gs_usb)")
-    monitor_parser.add_argument("--feedback-offset", type=int, default=16, dest="feedback_offset",
-                                help="feedback arb id = motor id + offset (default: 16, the p16 scheme)")
-    monitor_parser.add_argument("--motor-type", type=str, default="DM4310", dest="default_motor_type",
-                                help="Default motor type for value scaling (default: DM4310)")
-    monitor_parser.add_argument("--demo", action="store_true",
-                                help="Synthesize traffic instead of opening a CAN bus")
-    monitor_parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    monitor_parser.add_argument(
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="Host to bind to (default: 127.0.0.1)",
+    )
+    monitor_parser.add_argument(
+        "--port", type=int, default=5001, help="Port to bind to (default: 5001)"
+    )
+    monitor_parser.add_argument(
+        "--channel",
+        type=str,
+        default="can0",
+        help="CAN channel to listen on (default: can0)",
+    )
+    monitor_parser.add_argument(
+        "--bustype",
+        type=str,
+        default="socketcan",
+        help="CAN bus type (default: socketcan)",
+    )
+    monitor_parser.add_argument(
+        "--bitrate",
+        type=int,
+        default=None,
+        help="CAN bitrate (required for some interfaces, e.g. gs_usb)",
+    )
+    monitor_parser.add_argument(
+        "--feedback-offset",
+        type=int,
+        default=16,
+        dest="feedback_offset",
+        help="feedback arb id = motor id + offset (default: 16, the p16 scheme)",
+    )
+    monitor_parser.add_argument(
+        "--motor-type",
+        type=str,
+        default="DM4310",
+        dest="default_motor_type",
+        help="Default motor type for value scaling (default: DM4310)",
+    )
+    monitor_parser.add_argument(
+        "--demo",
+        action="store_true",
+        help="Synthesize traffic instead of opening a CAN bus",
+    )
+    monitor_parser.add_argument(
+        "--debug", action="store_true", help="Enable debug mode"
+    )
     monitor_parser.set_defaults(func=cmd_monitor)
 
     # Helper function to add global arguments to subcommands

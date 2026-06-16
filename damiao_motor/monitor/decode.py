@@ -239,19 +239,37 @@ def decode_frame(
     if POS_VEL_BASE <= arbitration_id < POS_VEL_BASE + 0x100:
         mid = arbitration_id - POS_VEL_BASE
         pos, vel_limit = struct.unpack("<ff", data[:8])
-        return DecodedFrame(t, arbitration_id, KIND_COMMAND, mid, bytes(data),
-                            mode="POS_VEL", fields={"pos": pos, "vel_limit": vel_limit})
+        return DecodedFrame(
+            t,
+            arbitration_id,
+            KIND_COMMAND,
+            mid,
+            bytes(data),
+            mode="POS_VEL",
+            fields={"pos": pos, "vel_limit": vel_limit},
+        )
     if VEL_BASE <= arbitration_id < VEL_BASE + 0x100:
         mid = arbitration_id - VEL_BASE
         (vel,) = struct.unpack("<f", data[:4])
-        return DecodedFrame(t, arbitration_id, KIND_COMMAND, mid, bytes(data),
-                            mode="VEL", fields={"vel": vel})
+        return DecodedFrame(
+            t,
+            arbitration_id,
+            KIND_COMMAND,
+            mid,
+            bytes(data),
+            mode="VEL",
+            fields={"vel": vel},
+        )
     if FORCE_POS_BASE <= arbitration_id < FORCE_POS_BASE + 0x100:
         mid = arbitration_id - FORCE_POS_BASE
         pos, v_scaled, i_scaled = struct.unpack("<fHH", data[:8])
         lim = lim_for(mid)
         return DecodedFrame(
-            t, arbitration_id, KIND_COMMAND, mid, bytes(data),
+            t,
+            arbitration_id,
+            KIND_COMMAND,
+            mid,
+            bytes(data),
             mode="FORCE_POS",
             fields={
                 "pos": pos,
@@ -267,18 +285,38 @@ def decode_frame(
         lim = lim_for(mid)
         fb = _decode_feedback(data, lim)
         status_name = _decode_status_name(int(fb["status_code"]))
-        return DecodedFrame(t, arbitration_id, KIND_FEEDBACK, mid, bytes(data),
-                            fields=fb, note=status_name)
+        return DecodedFrame(
+            t,
+            arbitration_id,
+            KIND_FEEDBACK,
+            mid,
+            bytes(data),
+            fields=fb,
+            note=status_name,
+        )
 
     # 5) Otherwise treat a low-id frame as an MIT command.
     if 1 <= arbitration_id < POS_VEL_BASE:
         lim = lim_for(arbitration_id)
-        return DecodedFrame(t, arbitration_id, KIND_COMMAND, arbitration_id, bytes(data),
-                            mode="MIT", fields=_decode_mit(data, lim))
+        return DecodedFrame(
+            t,
+            arbitration_id,
+            KIND_COMMAND,
+            arbitration_id,
+            bytes(data),
+            mode="MIT",
+            fields=_decode_mit(data, lim),
+        )
 
     # 6) Register command space / anything else.
     if arbitration_id == REGISTER_ARB:
-        return DecodedFrame(t, arbitration_id, KIND_REGISTER,
-                            data[0] | (data[1] << 8), bytes(data), note="register cmd")
+        return DecodedFrame(
+            t,
+            arbitration_id,
+            KIND_REGISTER,
+            data[0] | (data[1] << 8),
+            bytes(data),
+            note="register cmd",
+        )
 
     return DecodedFrame(t, arbitration_id, KIND_UNKNOWN, arbitration_id, bytes(data))

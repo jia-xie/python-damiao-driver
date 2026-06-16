@@ -32,6 +32,7 @@ def _core_motor_type(name: str) -> str:
         return name[2:]
     return "4310"
 
+
 # command-mode -> the cmd field names the store/plots expect (match decode.py)
 _CONTROL_MODES = {"MIT", "POS_VEL", "VEL", "FORCE_POS"}
 
@@ -48,9 +49,13 @@ class ControlService:
         self.error: Optional[str] = None
 
     # ------------------------------------------------------------- lifecycle
-    def connect(self, channel: str, bustype: str = "socketcan", bitrate: Optional[int] = None) -> None:
+    def connect(
+        self, channel: str, bustype: str = "socketcan", bitrate: Optional[int] = None
+    ) -> None:
         self.disconnect()
-        self.controller = DaMiaoController(channel=channel, bustype=bustype, bitrate=bitrate)
+        self.controller = DaMiaoController(
+            channel=channel, bustype=bustype, bitrate=bitrate
+        )
         self.channel, self.bustype, self.bitrate = channel, bustype, bitrate
         self.connected = True
         self.error = None
@@ -78,7 +83,9 @@ class ControlService:
         c.flush_bus()
         for motor_id in range(0x01, 0x11):
             try:
-                m = c.add_motor(motor_id=motor_id, feedback_id=0x00, motor_type=core_type)
+                m = c.add_motor(
+                    motor_id=motor_id, feedback_id=0x00, motor_type=core_type
+                )
                 m.send_cmd_mit(0.0, 0.0, 0.0, 0.0, 0.0)
             except ValueError:
                 pass
@@ -90,10 +97,19 @@ class ControlService:
         while time.perf_counter() - t0 < settle:
             c.poll_feedback()
             for mid, m in c.motors.items():
-                if m.state and m.state.get("can_id") is not None and mid not in responded:
+                if (
+                    m.state
+                    and m.state.get("can_id") is not None
+                    and mid not in responded
+                ):
                     responded.add(mid)
-                    found.append({"id": mid, "arb_id": m.state.get("arbitration_id") or 0,
-                                  "motor_type": m.motor_type})
+                    found.append(
+                        {
+                            "id": mid,
+                            "arb_id": m.state.get("arbitration_id") or 0,
+                            "motor_type": m.motor_type,
+                        }
+                    )
                     self._push_feedback(mid, m.get_states())
             time.sleep(0.01)
         # keep only responders
@@ -102,12 +118,22 @@ class ControlService:
 
     def motors(self) -> List[Dict[str, Any]]:
         c = self._require()
-        return [{"id": mid, "motor_type": m.motor_type} for mid, m in sorted(c.motors.items())]
+        return [
+            {"id": mid, "motor_type": m.motor_type}
+            for mid, m in sorted(c.motors.items())
+        ]
 
     # ---------------------------------------------------------- store feed
     def _push_command(self, motor_id: int, mode: str, fields: Dict[str, float]) -> None:
-        fr = DecodedFrame(t=time.time(), arbitration_id=motor_id, kind=KIND_COMMAND,
-                          motor_id=motor_id, raw=b"", mode=mode, fields=fields)
+        fr = DecodedFrame(
+            t=time.time(),
+            arbitration_id=motor_id,
+            kind=KIND_COMMAND,
+            motor_id=motor_id,
+            raw=b"",
+            mode=mode,
+            fields=fields,
+        )
         self.store.ingest(fr)
         if self._raw_push:
             self._raw_push(fr)
@@ -123,9 +149,15 @@ class ControlService:
             "t_rotor": float(state.get("t_rotor", 0.0)),
             "status_code": float(state.get("status_code", 0)),
         }
-        fr = DecodedFrame(t=time.time(), arbitration_id=motor_id + 16, kind=KIND_FEEDBACK,
-                          motor_id=motor_id, raw=b"", fields=fields,
-                          note=str(state.get("status", "")))
+        fr = DecodedFrame(
+            t=time.time(),
+            arbitration_id=motor_id + 16,
+            kind=KIND_FEEDBACK,
+            motor_id=motor_id,
+            raw=b"",
+            fields=fields,
+            note=str(state.get("status", "")),
+        )
         self.store.ingest(fr)
         if self._raw_push:
             self._raw_push(fr)
@@ -165,8 +197,11 @@ class ControlService:
 
         if mode == "MIT":
             m.send_cmd_mit(pos, vel, kp, kd, tau)
-            self._push_command(motor_id, "MIT",
-                               {"pos": pos, "vel": vel, "kp": kp, "kd": kd, "torque": tau})
+            self._push_command(
+                motor_id,
+                "MIT",
+                {"pos": pos, "vel": vel, "kp": kp, "kd": kd, "torque": tau},
+            )
         elif mode == "POS_VEL":
             m.send_cmd_pos_vel(pos, vel)
             self._push_command(motor_id, "POS_VEL", {"pos": pos, "vel_limit": vel})
@@ -175,8 +210,11 @@ class ControlService:
             self._push_command(motor_id, "VEL", {"vel": vel})
         elif mode == "FORCE_POS":
             m.send_cmd_force_pos(pos, vlim, tlim)
-            self._push_command(motor_id, "FORCE_POS",
-                               {"pos": pos, "vel_limit": vlim, "torque_limit_ratio": tlim})
+            self._push_command(
+                motor_id,
+                "FORCE_POS",
+                {"pos": pos, "vel_limit": vlim, "torque_limit_ratio": tlim},
+            )
         else:
             raise ValueError(f"Unknown control_mode: {mode}")
 
@@ -247,7 +285,13 @@ class ControlService:
     @staticmethod
     def register_table() -> List[Dict[str, Any]]:
         return [
-            {"rid": r.rid, "variable": r.variable, "description": r.description,
-             "access": r.access, "range_str": r.range_str, "data_type": r.data_type}
+            {
+                "rid": r.rid,
+                "variable": r.variable,
+                "description": r.description,
+                "access": r.access,
+                "range_str": r.range_str,
+                "data_type": r.data_type,
+            }
             for r in REGISTER_TABLE.values()
         ]

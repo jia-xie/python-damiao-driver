@@ -6,7 +6,6 @@ Command handlers for CLI subcommands.
 import time
 
 from damiao_motor.core.controller import DaMiaoController
-from damiao_motor.gui import web_gui
 from .display import (
     BOX_CORNER_TL,
     BOX_CORNER_TR,
@@ -722,7 +721,9 @@ def cmd_gui(args) -> None:
     # the realtime monitor in one UI). The legacy Flask GUI remains in web_gui.py.
     from damiao_motor.monitor import server as studio_server
 
-    studio_server.run_server(host=args.host, port=args.port, mode="control", debug=args.debug)
+    studio_server.run_server(
+        host=args.host, port=args.port, mode="control", debug=args.debug
+    )
 
 
 def cmd_monitor(args) -> None:

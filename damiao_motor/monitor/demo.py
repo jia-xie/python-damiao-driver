@@ -22,8 +22,13 @@ FrameCallback = Callable[[DecodedFrame], None]
 
 
 class DemoSource:
-    def __init__(self, on_frame: FrameCallback, bus_name: str = "demo",
-                 motor_ids: List[int] = (1, 2, 3), rate_hz: float = 100.0) -> None:
+    def __init__(
+        self,
+        on_frame: FrameCallback,
+        bus_name: str = "demo",
+        motor_ids: List[int] = (1, 2, 3),
+        rate_hz: float = 100.0,
+    ) -> None:
         self.on_frame = on_frame
         self.bus_name = bus_name
         self.motor_ids = list(motor_ids)
@@ -37,7 +42,9 @@ class DemoSource:
         if self._running:
             return
         self._running = True
-        self._thread = threading.Thread(target=self._loop, name="demo-source", daemon=True)
+        self._thread = threading.Thread(
+            target=self._loop, name="demo-source", daemon=True
+        )
         self._thread.start()
 
     def stop(self) -> None:
@@ -56,7 +63,9 @@ class DemoSource:
                 phase = i * 0.7
                 freq = 0.25 + 0.15 * i
                 cmd_pos = 1.5 * math.sin(2 * math.pi * freq * t + phase)
-                cmd_vel = 1.5 * 2 * math.pi * freq * math.cos(2 * math.pi * freq * t + phase)
+                cmd_vel = (
+                    1.5 * 2 * math.pi * freq * math.cos(2 * math.pi * freq * t + phase)
+                )
                 kp, kd = 60.0, 1.5
                 # feedback lags the command and carries noise + load torque
                 lag = 0.15
@@ -68,15 +77,39 @@ class DemoSource:
                 t_mos = 32 + 3 * math.sin(0.1 * t + mid)
                 t_rotor = 35 + 4 * math.sin(0.08 * t + mid)
 
-                self.on_frame(DecodedFrame(
-                    t=now, arbitration_id=mid, kind=KIND_COMMAND, motor_id=mid,
-                    raw=b"\x00" * 8, mode="MIT",
-                    fields={"pos": cmd_pos, "vel": cmd_vel, "torque": 0.0, "kp": kp, "kd": kd},
-                ))
-                self.on_frame(DecodedFrame(
-                    t=now, arbitration_id=mid + 16, kind=KIND_FEEDBACK, motor_id=mid,
-                    raw=b"\x00" * 8, note="ENABLED",
-                    fields={"pos": fb_pos, "vel": fb_vel, "torque": fb_torq,
-                            "t_mos": t_mos, "t_rotor": t_rotor, "status_code": 1.0},
-                ))
+                self.on_frame(
+                    DecodedFrame(
+                        t=now,
+                        arbitration_id=mid,
+                        kind=KIND_COMMAND,
+                        motor_id=mid,
+                        raw=b"\x00" * 8,
+                        mode="MIT",
+                        fields={
+                            "pos": cmd_pos,
+                            "vel": cmd_vel,
+                            "torque": 0.0,
+                            "kp": kp,
+                            "kd": kd,
+                        },
+                    )
+                )
+                self.on_frame(
+                    DecodedFrame(
+                        t=now,
+                        arbitration_id=mid + 16,
+                        kind=KIND_FEEDBACK,
+                        motor_id=mid,
+                        raw=b"\x00" * 8,
+                        note="ENABLED",
+                        fields={
+                            "pos": fb_pos,
+                            "vel": fb_vel,
+                            "torque": fb_torq,
+                            "t_mos": t_mos,
+                            "t_rotor": t_rotor,
+                            "status_code": 1.0,
+                        },
+                    )
+                )
             time.sleep(period)

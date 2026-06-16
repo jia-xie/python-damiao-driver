@@ -130,10 +130,14 @@ class MonitorService:
             "version": self.store.registry_version,
         }
 
-    def snapshot(self, signal_ids: List[str], n: int) -> Dict[str, List[Tuple[float, float]]]:
+    def snapshot(
+        self, signal_ids: List[str], n: int
+    ) -> Dict[str, List[Tuple[float, float]]]:
         return {sid: self.store.series_last_n(sid, n) for sid in signal_ids}
 
-    def raw_since(self, since_seq: int, limit: int = 500) -> Tuple[int, List[Dict[str, object]]]:
+    def raw_since(
+        self, since_seq: int, limit: int = 500
+    ) -> Tuple[int, List[Dict[str, object]]]:
         with self._raw_lock:
             if not self._raw_log:
                 return since_seq, []

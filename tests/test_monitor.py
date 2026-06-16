@@ -26,24 +26,27 @@ MOTOR_TYPE = "4310"
 
 def _motor():
     # bus is unused by the encode_* helpers, so None is fine here.
-    return DaMiaoMotor(motor_id=MOTOR_ID, feedback_id=MOTOR_ID + 16, bus=None,
-                       motor_type=MOTOR_TYPE)
+    return DaMiaoMotor(
+        motor_id=MOTOR_ID, feedback_id=MOTOR_ID + 16, bus=None, motor_type=MOTOR_TYPE
+    )
 
 
 def _make_feedback_frame(motor_id, status, pos, vel, torq, t_mos, t_rotor, lim):
     pos_u = float_to_uint(pos, lim["p_min"], lim["p_max"], 16)
     vel_u = float_to_uint(vel, lim["v_min"], lim["v_max"], 12)
     torq_u = float_to_uint(torq, lim["t_min"], lim["t_max"], 12)
-    return bytes([
-        (status << 4) | (motor_id & 0x0F),
-        (pos_u >> 8) & 0xFF,
-        pos_u & 0xFF,
-        (vel_u >> 4) & 0xFF,
-        ((vel_u & 0xF) << 4) | ((torq_u >> 8) & 0xF),
-        torq_u & 0xFF,
-        t_mos & 0xFF,
-        t_rotor & 0xFF,
-    ])
+    return bytes(
+        [
+            (status << 4) | (motor_id & 0x0F),
+            (pos_u >> 8) & 0xFF,
+            pos_u & 0xFF,
+            (vel_u >> 4) & 0xFF,
+            ((vel_u & 0xF) << 4) | ((torq_u >> 8) & 0xF),
+            torq_u & 0xFF,
+            t_mos & 0xFF,
+            t_rotor & 0xFF,
+        ]
+    )
 
 
 # --------------------------------------------------------------------- decode
@@ -120,12 +123,19 @@ def test_special_command():
 def test_mit_and_feedback_not_confused():
     """A MIT command to motor 3 (arb 3) and feedback from motor 3 (arb 19) classify distinctly."""
     m = _motor()
-    cmd = decode_frame(MOTOR_ID, m.encode_cmd_msg(0.0, 0.0, 0.0, 10.0, 1.0), t=0.0,
-                       motor_types={MOTOR_ID: MOTOR_TYPE})
+    cmd = decode_frame(
+        MOTOR_ID,
+        m.encode_cmd_msg(0.0, 0.0, 0.0, 10.0, 1.0),
+        t=0.0,
+        motor_types={MOTOR_ID: MOTOR_TYPE},
+    )
     lim = resolve_limits(MOTOR_TYPE)
-    fb = decode_frame(MOTOR_ID + 16,
-                      _make_feedback_frame(MOTOR_ID, 1, 0.0, 0.0, 0.0, 30, 30, lim),
-                      t=0.0, motor_types={MOTOR_ID: MOTOR_TYPE})
+    fb = decode_frame(
+        MOTOR_ID + 16,
+        _make_feedback_frame(MOTOR_ID, 1, 0.0, 0.0, 0.0, 30, 30, lim),
+        t=0.0,
+        motor_types={MOTOR_ID: MOTOR_TYPE},
+    )
     assert cmd.kind == KIND_COMMAND and cmd.mode == "MIT"
     assert fb.kind == KIND_FEEDBACK
 
@@ -135,11 +145,18 @@ def test_store_ingest_and_pairing():
     store = SignalStore("can_test")
     m = _motor()
     lim = resolve_limits(MOTOR_TYPE)
-    cmd = decode_frame(MOTOR_ID, m.encode_cmd_msg(1.0, 0.0, 0.0, 10.0, 1.0), t=1.0,
-                       motor_types={MOTOR_ID: MOTOR_TYPE})
-    fb = decode_frame(MOTOR_ID + 16,
-                      _make_feedback_frame(MOTOR_ID, 1, 0.9, 0.0, 0.0, 30, 30, lim),
-                      t=1.0, motor_types={MOTOR_ID: MOTOR_TYPE})
+    cmd = decode_frame(
+        MOTOR_ID,
+        m.encode_cmd_msg(1.0, 0.0, 0.0, 10.0, 1.0),
+        t=1.0,
+        motor_types={MOTOR_ID: MOTOR_TYPE},
+    )
+    fb = decode_frame(
+        MOTOR_ID + 16,
+        _make_feedback_frame(MOTOR_ID, 1, 0.9, 0.0, 0.0, 30, 30, lim),
+        t=1.0,
+        motor_types={MOTOR_ID: MOTOR_TYPE},
+    )
     store.ingest(cmd)
     store.ingest(fb)
 
@@ -183,9 +200,12 @@ class _FakeBus:
 def test_listener_never_transmits_and_decodes():
     lim = resolve_limits(MOTOR_TYPE)
     msgs = [
-        can.Message(arbitration_id=MOTOR_ID + 16,
-                    data=_make_feedback_frame(MOTOR_ID, 1, 1.0, 2.0, 0.5, 30, 31, lim),
-                    timestamp=1.0, is_extended_id=False),
+        can.Message(
+            arbitration_id=MOTOR_ID + 16,
+            data=_make_feedback_frame(MOTOR_ID, 1, 1.0, 2.0, 0.5, 30, 31, lim),
+            timestamp=1.0,
+            is_extended_id=False,
+        ),
     ]
     received = []
     listener = PassiveCanListener(channel="vcan_test", on_frame=received.append)
