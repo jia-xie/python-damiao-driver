@@ -23,6 +23,22 @@ export function signalColor(sig: { field: string; source: string }): string {
   return sig.source === "cmd" ? lighten(base, 0.15) : base;
 }
 
+export function withAlpha(hex: string, a: number): string {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.slice(0, 2), 16);
+  const g = parseInt(c.slice(2, 4), 16);
+  const b = parseInt(c.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/** Plot stroke style: actual = bold solid; command = fainter, thinner "ghost" of the same hue. */
+export function seriesStyle(sig: { field: string; source: string }): { stroke: string; width: number } {
+  const base = fieldColor(sig.field);
+  return sig.source === "cmd"
+    ? { stroke: withAlpha(base, 0.45), width: 1.25 }
+    : { stroke: base, width: 1.85 };
+}
+
 export function signalLabel(sig: SignalDescriptor): string {
   return `m${sig.motorId} ${sig.source}.${sig.field}`;
 }

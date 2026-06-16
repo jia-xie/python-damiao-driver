@@ -11,7 +11,7 @@ import {
   unsubscribeSignal,
 } from "../lib/dataStore";
 import { fetchSnapshot } from "../lib/ws";
-import { isCmd, shortSignal, signalColor } from "../lib/format";
+import { isCmd, shortSignal, seriesStyle } from "../lib/format";
 
 const MAX_X = 2000; // cap aligned x points per frame
 
@@ -72,12 +72,11 @@ export default function PlotPanel({ panelId }: { panelId: string }) {
       { label: "t" },
       ...signals.map((id) => {
         const d = descById.get(id);
-        const color = d ? signalColor(d) : "#8b949e";
+        const style = d ? seriesStyle(d) : { stroke: "#8b949e", width: 1.5 };
         return {
           label: shortSignal(id),
-          stroke: color,
-          width: 1.5,
-          dash: isCmd(id) ? [6, 4] : undefined,
+          stroke: style.stroke,
+          width: style.width,
           points: { show: false },
         } as uPlot.Series;
       }),
@@ -178,9 +177,13 @@ export default function PlotPanel({ panelId }: { panelId: string }) {
         <div className="legend">
           {signals.map((id) => {
             const d = descById.get(id);
+            const style = d ? seriesStyle(d) : { stroke: "#555" };
             return (
-              <span className="legend-chip" key={id} style={{ borderColor: d ? signalColor(d) : "#555" }}>
-                <span className="legend-swatch" style={{ background: d ? signalColor(d) : "#555", borderStyle: isCmd(id) ? "dashed" : "solid" }} />
+              <span className="legend-chip" key={id}>
+                <span
+                  className="legend-swatch"
+                  style={{ background: style.stroke, opacity: isCmd(id) ? 0.9 : 1 }}
+                />
                 {shortSignal(id)}
                 <button className="legend-x" onClick={() => removeSignalFromPlot(panelId, id)}>×</button>
               </span>
