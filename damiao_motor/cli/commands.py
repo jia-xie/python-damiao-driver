@@ -6,7 +6,6 @@ Command handlers for CLI subcommands.
 import time
 
 from damiao_motor.core.controller import DaMiaoController
-from damiao_motor.gui import web_gui
 from .display import (
     BOX_CORNER_TL,
     BOX_CORNER_TR,
@@ -718,8 +717,39 @@ def cmd_gui(args) -> None:
             - debug: Enable debug mode (default: False)
             - production: Use production WSGI server (default: False)
     """
-    web_gui.run_server(
-        host=args.host, port=args.port, debug=args.debug, production=args.production
+    # `gui` now launches the unified DaMiao Studio in control mode (active control +
+    # the realtime monitor in one UI). The legacy Flask GUI remains in web_gui.py.
+    from damiao_motor.monitor import server as studio_server
+
+    studio_server.run_server(
+        host=args.host, port=args.port, mode="control", debug=args.debug
+    )
+
+
+def cmd_monitor(args) -> None:
+    """
+    Handle 'monitor' subcommand.
+
+    Launches the passive (listen-only) realtime monitoring dashboard. It decodes both
+    the commands another controller is sending and the motors' feedback, and never
+    transmits on the bus.
+
+    Args:
+        args: Parsed command-line arguments containing host, port, channel, bustype,
+            bitrate, feedback_offset, default_motor_type, demo, debug.
+    """
+    from damiao_motor.monitor import server as monitor_server
+
+    monitor_server.run_server(
+        host=args.host,
+        port=args.port,
+        channel=args.channel,
+        bustype=args.bustype,
+        bitrate=args.bitrate,
+        feedback_offset=args.feedback_offset,
+        default_motor_type=args.default_motor_type,
+        debug=args.debug,
+        demo=args.demo,
     )
 
 

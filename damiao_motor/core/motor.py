@@ -279,7 +279,7 @@ class DaMiaoMotor:
         motor_id: int,
         feedback_id: int,
         bus: can.Bus,
-        fd: bool,
+        fd: bool = False,
         *,
         motor_type: str,
         p_min: Optional[float] = None,

@@ -16,6 +16,7 @@ keywords = ["damiao", "motor", "can", "robotics"]
 dependencies = [
     "python-can>=4.3,<5.0",
     "flask>=3.0,<4.0",
+    "flask-sock>=0.7",
     "gs_usb>=0.3; sys_platform == 'darwin'",
     "pyusb>=1.2; sys_platform == 'darwin'",
 ]
@@ -24,8 +25,8 @@ dependencies = [
 Homepage = "https://github.com/jia-xie/python-damiao-driver"
 Repository = "https://github.com/jia-xie/python-damiao-driver"
 
-[tool.setuptools]
-packages = ["damiao_motor"]
+[tool.setuptools.packages.find]
+include = ["damiao_motor*"]
 
 [tool.setuptools_scm]
 write_to = "damiao_motor/_version.py"
@@ -39,7 +40,14 @@ dev = [
 ]
 
 [tool.setuptools.package-data]
-damiao_motor = ["gui/templates/*.html", "gui/static/css/*.css", "gui/static/js/*.js"]
+damiao_motor = [
+    "gui/templates/*.html",
+    "gui/static/css/*.css",
+    "gui/static/js/*.js",
+    "gui/webapp/dist/*",
+    "gui/webapp/dist/**/*",
+    "gui/webapp/dist/assets/*",
+]
 damiao_motor_docs = ["docs/assets/*.css"]
 
 [project.scripts]
