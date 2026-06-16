@@ -1,5 +1,6 @@
 import { useApp } from "../lib/store";
 import { addPanelOfKind } from "../lib/dock";
+import { PANELS } from "../panels/registry";
 
 export default function Toolbar() {
   const connected = useApp((s) => s.connected);
@@ -39,10 +40,16 @@ export default function Toolbar() {
       <div className="spacer" />
 
       <div className="actions">
-        <button className="btn" onClick={() => addPanelOfKind("plot")}>+ Plot</button>
-        <button className="btn" onClick={() => addPanelOfKind("table")}>+ Table</button>
-        <button className="btn" onClick={() => addPanelOfKind("cards")}>+ Cards</button>
-        <button className="btn" onClick={() => addPanelOfKind("rawlog")}>+ Raw Log</button>
+        {PANELS.map((p) => (
+          <button
+            key={p.kind}
+            className="btn"
+            title={p.description}
+            onClick={() => addPanelOfKind(p.kind)}
+          >
+            <span className="btn-icon">{p.icon}</span> {p.title}
+          </button>
+        ))}
         <button className="btn ghost" onClick={resetLayout}>Reset</button>
       </div>
     </header>

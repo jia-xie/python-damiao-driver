@@ -1,7 +1,7 @@
 /** Low-frequency app state (registry, status, motor views, panel configs, layout). */
 
 import { create } from "zustand";
-import type { MotorView, Pair, PanelKind, ServerStatus, SignalDescriptor } from "./types";
+import type { MotorView, Pair, ServerStatus, SignalDescriptor } from "./types";
 
 export interface PlotConfig {
   signals: string[];
@@ -106,10 +106,3 @@ export const useApp = create<AppState>((set, get) => ({
 
 // persist plot configs whenever they change (dock layout persisted by the Dock component)
 useApp.subscribe((st) => persistPlotConfigs(st.plotConfigs));
-
-export const PANEL_TITLES: Record<PanelKind, string> = {
-  plot: "Plot",
-  table: "Motor Table",
-  cards: "Motor Cards",
-  rawlog: "Raw CAN Log",
-};

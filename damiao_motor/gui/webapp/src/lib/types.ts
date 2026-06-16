@@ -51,4 +51,4 @@ export interface RawFrame {
   raw: string;
 }
 
-export type PanelKind = "plot" | "table" | "cards" | "rawlog";
+// Panel kinds are open-ended; see panels/registry.tsx for the registered set.

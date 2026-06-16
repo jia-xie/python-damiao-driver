@@ -72,6 +72,7 @@ body {
 .btn.ghost { background: transparent; }
 .btn.small { padding: 3px 8px; font-size: 11px; }
 .btn.active { border-color: var(--accent); color: var(--accent); }
+.btn-icon { color: var(--accent); margin-right: 1px; font-size: 12px; }
 
 /* ------------------------------------------------------------- sidebar */
 .sidebar {
@@ -167,11 +168,31 @@ body {
 /* raw log */
 .rawlog-panel { font-size: 11.5px; }
 .rawlog-toolbar { display: flex; align-items: center; gap: 10px; padding: 5px 10px; border-bottom: 1px solid var(--border); }
-.rawlog-head, .rawlog-row { display: grid; grid-template-columns: 70px 64px 50px 90px 1fr 180px; gap: 8px; align-items: center; }
-.rawlog-head { flex: 1; color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.3px; }
-.rawlog-body { flex: 1; overflow: auto; padding: 0 10px; }
-.rawlog-row { position: absolute; left: 10px; right: 10px; height: 22px; border-bottom: 1px solid rgba(42,49,60,0.5); }
-.rawlog-row .c-r { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rawlog-body { flex: 1; overflow: auto; }
+/* header + rows share one grid template + padding so columns align exactly */
+.rawlog-head, .rawlog-row {
+  display: grid;
+  grid-template-columns: 96px 60px 46px 76px minmax(0, 1fr) 150px;
+  gap: 10px;
+  align-items: center;
+  padding: 0 10px;
+}
+.rawlog-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 26px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.rawlog-row { position: absolute; left: 0; right: 0; height: 22px; line-height: 22px; border-bottom: 1px solid rgba(42,49,60,0.5); }
+/* every cell stays on one line and clips with an ellipsis so rows never overlap */
+.rawlog-head > span, .rawlog-row > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.rawlog-row .c-f { color: var(--text); }
 .rawlog-row.k-command .c-k { color: var(--accent); }
 .rawlog-row.k-feedback .c-k { color: var(--ok); }
 .rawlog-row.k-special .c-k { color: var(--warn); }
