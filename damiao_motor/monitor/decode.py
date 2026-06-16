@@ -168,9 +168,17 @@ def _decode_feedback(data: bytes, lim: Dict[str, float]) -> Dict[str, float]:
 
 
 def _looks_like_feedback(arb: int, data: bytes, offset: int) -> Optional[int]:
-    """Return the motor id if the frame looks like a feedback frame, else None."""
+    """Return the motor id if the frame looks like a feedback frame, else None.
+
+    Feedback arbitration id = motor_id + offset, with the motor's CAN id in the low
+    nibble of ``data[0]``. We deliberately do NOT require the status nibble to be a known
+    code: real motors report states outside the documented set (observed: status 3 on
+    linearbot joints 4-7), and the arb-range + can-id-nibble match is already unambiguous
+    for the standard schemes (feedback ids offset+1..offset+15 don't overlap MIT command
+    ids 1..15 for offset >= 16).
+    """
     mid = arb - offset
-    if 1 <= mid <= 15 and (data[0] & 0x0F) == mid and (data[0] >> 4) in KNOWN_STATUS:
+    if 1 <= mid <= 15 and (data[0] & 0x0F) == mid:
         return mid
     return None
 

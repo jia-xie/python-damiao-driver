@@ -99,6 +99,19 @@ def test_feedback_roundtrip_and_disambiguation():
     assert frame.note == "ENABLED"
 
 
+def test_feedback_with_undocumented_status_still_decodes():
+    """Real linearbot joints 4-7 report status nibble 3 (not in the documented set);
+    such frames must still classify as feedback, not be misread as commands."""
+    lim = resolve_limits(MOTOR_TYPE)
+    # motor id 4 -> feedback arb 20, status nibble 3
+    data = _make_feedback_frame(4, 3, 1.0, 0.0, 0.0, 30, 30, lim)
+    frame = decode_frame(4 + 16, data, t=0.0, motor_types={4: MOTOR_TYPE})
+    assert frame.kind == KIND_FEEDBACK
+    assert frame.motor_id == 4
+    assert frame.fields["pos"] == pytest.approx(1.0, abs=1e-3)
+    assert "UNKNOWN" in frame.note  # status 3 surfaced as UNKNOWN(3), not dropped
+
+
 def test_special_command():
     frame = decode_frame(MOTOR_ID, bytes([0xFF] * 7 + [0xFC]), t=0.0)
     assert frame.kind == KIND_SPECIAL and frame.note == "enable"
