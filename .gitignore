@@ -15,10 +15,8 @@ dist/
 *.egg
 damiao_motor/_version.py
 
-# ...but DO ship the built monitor SPA (end users have no node toolchain).
-# These negations override the unanchored build/ and dist/ rules above.
-!damiao_motor/gui/webapp/dist/
-!damiao_motor/gui/webapp/dist/**
+# The monitor SPA build output is NOT committed — CI builds it into the wheel
+# (release.yml). Committing it + rebuilding in CI dirtied the tree and broke versioning.
 damiao_motor/gui/webapp/node_modules/
 
 # IDE / editor
