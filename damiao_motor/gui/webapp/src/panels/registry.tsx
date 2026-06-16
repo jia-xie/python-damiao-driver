@@ -6,7 +6,6 @@
  * titling are all derived from this list, so nothing else needs editing.
  */
 
-import type { IDockviewPanelProps } from "dockview";
 import PlotPanel from "./PlotPanel";
 import TablePanel from "./TablePanel";
 import CardsPanel from "./CardsPanel";
@@ -54,12 +53,4 @@ export const PANELS: PanelDef[] = [
 
 export const PANEL_BY_KIND: Record<string, PanelDef> = Object.fromEntries(
   PANELS.map((p) => [p.kind, p])
-);
-
-/** dockview component map, derived from the registry. */
-export const dockComponents: Record<
-  string,
-  (props: IDockviewPanelProps) => JSX.Element
-> = Object.fromEntries(
-  PANELS.map((p) => [p.kind, (props: IDockviewPanelProps) => p.render(props.api.id)])
 );

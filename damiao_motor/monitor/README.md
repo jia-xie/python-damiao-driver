@@ -22,13 +22,15 @@ scheme), `--motor-type` (default scaling, default `DM4310`), `--demo`, `--port`.
 
 ## Using the dashboard
 
-- **Drag** a signal from the left sidebar onto a **Plot** panel to chart it. Drop a `cmd.*`
+- **Free-form widget canvas**: each panel is a widget you can **drag by its header** and
+  **resize from any edge/corner**, placed anywhere on the grid. Add widgets from the
+  toolbar (**Plot / Motor Table / Motor Cards / Raw CAN Log**), remove with the **×** on
+  the widget header. Layout + plot contents persist across reloads (**Reset** restores the
+  default layout).
+- **Drag** a signal from the left sidebar onto a **Plot** widget to chart it. Drop a `cmd.*`
   signal onto the plot already showing its `fb.*` to **overlay** them (dashed = command,
   solid = feedback).
-- **Dock / merge** panels VS-Code-style: drag a panel's tab to split or group into tabs.
-  Layout + plots persist across reloads.
-- Add more panels from the toolbar: **Plot**, **Motor Table**, **Motor Cards**, **Raw CAN
-  Log**. Per-motor **motor-type** can be overridden in the cards (rescales decode).
+- Per-motor **motor-type** can be overridden in the cards (rescales decode).
 
 ## How it stays passive
 

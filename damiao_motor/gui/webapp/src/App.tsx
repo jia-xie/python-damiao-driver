@@ -11,7 +11,7 @@ import {
 
 import Toolbar from "./components/Toolbar";
 import SignalSidebar from "./components/SignalSidebar";
-import Dock from "./components/Dock";
+import Canvas from "./components/Canvas";
 import { useApp } from "./lib/store";
 import { connectWs, fetchMotorTypes } from "./lib/ws";
 import { shortSignal } from "./lib/format";
@@ -50,8 +50,8 @@ export default function App() {
         <Toolbar />
         <div className="body">
           <SignalSidebar />
-          <main className="dock-host">
-            <Dock />
+          <main className="canvas-host">
+            <Canvas />
           </main>
         </div>
       </div>

@@ -1,16 +1,14 @@
 import { useApp } from "../lib/store";
-import { addPanelOfKind } from "../lib/dock";
+import { useWidgets } from "../lib/widgets";
 import { PANELS } from "../panels/registry";
 
 export default function Toolbar() {
   const connected = useApp((s) => s.connected);
   const status = useApp((s) => s.status);
+  const addWidget = useWidgets((s) => s.addWidget);
+  const resetWidgets = useWidgets((s) => s.resetWidgets);
 
-  const resetLayout = () => {
-    localStorage.removeItem("damiao.monitor.layout");
-    localStorage.removeItem("damiao.monitor.plotConfigs");
-    location.reload();
-  };
+  const resetLayout = () => resetWidgets();
 
   return (
     <header className="toolbar">
@@ -45,7 +43,7 @@ export default function Toolbar() {
             key={p.kind}
             className="btn"
             title={p.description}
-            onClick={() => addPanelOfKind(p.kind)}
+            onClick={() => addWidget(p.kind)}
           >
             <span className="btn-icon">{p.icon}</span> {p.title}
           </button>
