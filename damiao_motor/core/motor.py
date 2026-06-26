@@ -1170,6 +1170,7 @@ class DaMiaoMotor:
 
         Args:
             baud_rate_code: Baud rate code (0=125K, 1=200K, 2=250K, 3=500K, 4=1M, 5=2M, 6=2.5M, 7=3.2M, 8=4M, 9=5M)
+            persist: Store all current parameters to flash. The motor need to be in disabled Mode for this to work.
 
         Raises:
             ValueError: If baud_rate_code is not in valid range [0, 9]
