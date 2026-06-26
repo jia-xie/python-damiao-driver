@@ -142,6 +142,14 @@ CAN_BAUD_RATE_CODES = {
     4: 1000000,  # 1M
 }
 
+# CAN_FD baud rate codes
+CAN_FD_BAUD_RATE_CODES = {
+    5: 2000000,  # 2M
+    6: 2500000,  # 2.5M
+    7: 3200000,  # 3.2M
+    8: 4000000,  # 4M
+    9: 5000000,  # 5M
+}
 
 # -----------------------
 # Helper functions
