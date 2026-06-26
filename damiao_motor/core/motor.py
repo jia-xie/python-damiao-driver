@@ -1164,20 +1164,21 @@ class DaMiaoMotor:
         """Set speed loop enhancement coefficient (register 34)."""
         self.write_register(34, value)
 
-    def set_can_baud_rate(self, baud_rate_code: int) -> None:
+    def set_can_baud_rate(self, baud_rate_code: int, persist: bool = True) -> None:
         """
         Set CAN baud rate using register 35 (can_br).
 
         Args:
-            baud_rate_code: Baud rate code (0=125K, 1=200K, 2=250K, 3=500K, 4=1M)
+            baud_rate_code: Baud rate code (0=125K, 1=200K, 2=250K, 3=500K, 4=1M, 5=2M, 6=2.5M, 7=3.2M, 8=4M, 9=5M)
 
         Raises:
-            ValueError: If baud_rate_code is not in valid range [0, 4]
+            ValueError: If baud_rate_code is not in valid range [0, 9]
         """
-        if baud_rate_code not in CAN_BAUD_RATE_CODES:
+        if baud_rate_code not in CAN_BAUD_RATE_CODES and baud_rate_code not in CAN_FD_BAUD_RATE_CODES:
             raise ValueError(
-                f"Invalid baud rate code: {baud_rate_code}. Must be in {list(CAN_BAUD_RATE_CODES.keys())}"
+                f"Invalid baud rate code: {baud_rate_code}. Must be in {list(CAN_BAUD_RATE_CODES.keys())} or {list(CAN_FD_BAUD_RATE_CODES.keys())}"
             )
 
         self.write_register(35, baud_rate_code)  # Register 35 is can_br
-        self.store_parameters()  # Store to flash so it persists
+        if persist:
+            self.store_parameters()  # Store to flash so it persists
