@@ -1,12 +1,24 @@
 # Cloudflare Workers static-assets headers for damiao-motor.jia-xie.com.
 #
 # This site is served by an assets-only Worker (no Worker script), so a
-# _headers file applies — unlike jia-xie.com, where the entry Worker means
-# headers have to be set in code. Keep it that way.
+# _headers file applies here — unlike jia-xie.com, where the entry Worker means
+# headers have to be set in code instead. Keep it that way.
 #
-# MkDocs Material fingerprints its own bundles (bundle.<hash>.min.js), so those
-# are safe to cache forever. HTML stays revalidating so doc edits go live at
-# once.
+# TWO RULES OF THIS FILE:
+#
+# 1. Rules that set the same header MUST NOT overlap. Cloudflare concatenates
+#    them rather than picking the most specific, so /assets/* plus /*.jpg gave
+#    `Cache-Control: public, max-age=604800, public, max-age=31536000, immutable`
+#    on one response. The /* block below is safe to overlap only because it sets
+#    no Cache-Control.
+#
+# 2. `immutable` is only for content-addressed filenames. Not everything under
+#    /assets/ is hashed — Material hashes its own bundles (main.<hash>.min.css,
+#    bundle.<hash>.min.js) but extra.css, _mkdocstrings.css, favicon.png and the
+#    lunr.*.min.js search files keep stable names. Freezing those for a year
+#    would mean a palette edit never reaching anyone who had already visited.
+#    Anything not hashed gets a week at most; the default (revalidate every
+#    time) is the right answer for HTML.
 
 /*
   X-Content-Type-Options: nosniff
@@ -14,17 +26,21 @@
   X-Frame-Options: SAMEORIGIN
   Strict-Transport-Security: max-age=300
 
-/assets/*
+# Hashed by MkDocs Material — the filename changes when the content does.
+/assets/stylesheets/*
   Cache-Control: public, max-age=31536000, immutable
 
-/javascripts/*
+# Mixed: bundle.<hash>.min.js is hashed, the lunr.*.min.js search files are not.
+# A week suits both.
+/assets/javascripts/*
   Cache-Control: public, max-age=604800
 
-/*.png
+/assets/images/*
   Cache-Control: public, max-age=604800
 
-/*.jpg
+/assets/og-card.jpg
   Cache-Control: public, max-age=604800
 
-/*.svg
-  Cache-Control: public, max-age=604800
+# Deliberately not listed, so they keep the revalidating default:
+#   /assets/extra.css, /assets/_mkdocstrings.css  — stable names, edited by hand
+#   every *.html                                  — doc edits must go live at once
