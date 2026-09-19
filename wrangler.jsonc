@@ -1,5 +1,9 @@
 {
   "name": "damiao-docs",
   "compatibility_date": "2026-06-01",
-  "assets": { "directory": "./site" }
+  "assets": {
+    "directory": "./site",
+    // MkDocs Material builds a 404.html; serve it instead of an empty body.
+    "not_found_handling": "404-page"
+  }
 }

@@ -9,16 +9,17 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  custom_dir: docs/overrides
   palette:
     - scheme: default
-      primary: blue
-      accent: blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: blue
-      accent: blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -119,14 +120,15 @@ nav:
 
 extra:
   social:
+    - icon: material/home-outline
+      link: https://jia-xie.com
+      name: jia-xie.com
     - icon: fontawesome/brands/github
       link: https://github.com/jia-xie/python-damiao-driver
       name: GitHub
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/damiao-motor/
       name: PyPI
-  version:
-    provider: mike
 
 extra_javascript:
   - javascripts/mathjax.js

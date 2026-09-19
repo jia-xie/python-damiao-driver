@@ -244,3 +244,36 @@
 .md-typeset .mode-chip:hover {
     filter: brightness(0.95);
 }
+
+/* ---------------------------------------------------------------------------
+   Brand palette — shared with jia-xie.com (warm paper + rust), so the docs and
+   the personal site read as one thing. Requires `primary: custom` and
+   `accent: custom` in the theme config.
+   --------------------------------------------------------------------------- */
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #b0492d;
+  --md-primary-fg-color--light: #c76a4f;
+  --md-primary-fg-color--dark:  #8e3a24;
+  --md-primary-bg-color:        #fdfcf9;
+  --md-primary-bg-color--light: rgba(253, 252, 249, 0.7);
+  --md-accent-fg-color:         #8e3a24;
+  --md-accent-fg-color--transparent: rgba(176, 73, 45, 0.1);
+  --md-default-bg-color:        #faf9f6;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #b0492d;
+  --md-primary-fg-color--light: #c76a4f;
+  --md-primary-fg-color--dark:  #8e3a24;
+  --md-accent-fg-color:         #d2795c;
+  --md-accent-fg-color--transparent: rgba(210, 121, 92, 0.12);
+}
+
+/* The home hero was keyed to the old blue theme. */
+.home-hero {
+  border-color: rgba(176, 73, 45, 0.22);
+  background:
+      radial-gradient(circle at top right, rgba(199, 106, 79, 0.16), transparent 45%),
+      linear-gradient(135deg, rgba(176, 73, 45, 0.08), rgba(142, 58, 36, 0.10));
+}

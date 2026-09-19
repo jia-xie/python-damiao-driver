@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{#
+  Social + canonical metadata.
+
+  Done as a template override rather than with mkdocs-material's `social`
+  plugin on purpose: that plugin pulls in cairosvg/pillow, which would mean new
+  system dependencies in CI for what is a handful of static meta tags. This adds
+  no dependencies at all.
+#}
+{% block extrahead %}
+  {%- set page_title = config.site_name -%}
+  {%- if page and page.title and not page.is_homepage -%}
+    {%- set page_title = page.title ~ " — " ~ config.site_name -%}
+  {%- endif -%}
+  {%- set page_desc = config.site_description -%}
+  {%- if page and page.meta and page.meta.description -%}
+    {%- set page_desc = page.meta.description -%}
+  {%- endif -%}
+  {%- set card = config.site_url ~ "assets/og-card.jpg" -%}
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="{{ config.site_name }}" />
+  <meta property="og:title" content="{{ page_title }}" />
+  <meta property="og:description" content="{{ page_desc }}" />
+  <meta property="og:url" content="{{ page.canonical_url if page else config.site_url }}" />
+  <meta property="og:image" content="{{ card }}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="DaMiao Motor — Python driver for DaMiao motors over CAN" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ page_title }}" />
+  <meta name="twitter:description" content="{{ page_desc }}" />
+  <meta name="twitter:image" content="{{ card }}" />
+
+  <meta name="theme-color" content="#b0492d" />
+{% endblock %}
